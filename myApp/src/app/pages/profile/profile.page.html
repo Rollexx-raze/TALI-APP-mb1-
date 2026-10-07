@@ -19,7 +19,7 @@
           <p>{{ profile.username }}</p>
           @if (profile.bio) { <p class="profile-bio">{{ profile.bio }}</p> }
           @if (isOwnProfile) {
-            <ion-button fill="outline" size="small" (click)="openProfileEditor()"><ion-icon slot="start" name="create-outline"></ion-icon>Edit profile</ion-button>
+            <ion-button class="edit-profile-button" fill="outline" size="small" (click)="openProfileEditor()"><ion-icon slot="start" name="create-outline"></ion-icon><span>Edit profile</span></ion-button>
           } @else {
             <div class="profile-actions">
               <ion-button fill="outline" size="small" (click)="toggleFollowProfile()">{{ isFollowingProfile ? 'Following' : 'Follow' }}</ion-button>

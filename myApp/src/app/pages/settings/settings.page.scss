@@ -41,6 +41,14 @@
 .connection-row span, .activity-post time { color: var(--page-muted); font-size: .72rem; }
 .activity-post { padding: 12px 0; border-bottom: 1px solid rgba(237, 241, 239, .1); }
 .activity-post p { margin: 0 0 6px; font-size: .82rem; }
+.logout-confirm-backdrop { position: fixed; z-index: 200; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(0, 0, 0, .78); backdrop-filter: blur(8px); }
+.logout-confirm-dialog { width: min(100%, 420px); padding: 24px; border: 1px solid rgba(230, 237, 253, .82); border-radius: 18px; background: rgba(15, 34, 112, .82); color: #e6edfd; box-shadow: 0 20px 60px rgba(0, 0, 0, .48); backdrop-filter: blur(18px); }
+.logout-confirm-dialog h2 { margin: 0 0 9px; color: #e6edfd; font-size: 1.15rem; font-weight: 700; }
+.logout-confirm-dialog p { margin: 0; color: #afc5f8; font-size: .9rem; line-height: 1.5; }
+.logout-confirm-actions { display: grid; gap: 9px; margin-top: 22px; }
+.logout-confirm-actions button { min-height: 42px; padding: 8px 14px; border: 1px solid rgba(230, 237, 253, .8); border-radius: 11px; background: transparent; color: #e6edfd; font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; }
+.logout-confirm-actions button:hover, .logout-confirm-actions button:focus-visible { background: rgba(110, 146, 242, .18); outline: 2px solid #afc5f8; outline-offset: 2px; }
+.logout-confirm-actions .logout-save-button { border-color: #6e92f2; background: rgba(46, 93, 230, .24); }
 @media (max-width: 680px) {
 	.settings-layout { display: block; }
 	.settings-categories { flex-direction: column; overflow: visible; gap: 2px; padding: 12px; border-right: 0; border-bottom: 1px solid var(--page-border); }

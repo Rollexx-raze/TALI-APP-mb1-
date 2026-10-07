@@ -1323,3 +1323,82 @@ html.app-light body :is(
   background: #dbe5ff !important;
   color: #1a3bb0 !important;
 }
+/* Authentication screens use translucent fields and blue actions, not white controls. */
+html:not(.app-light) body ion-content.auth-screen .login-field ion-input::part(native) {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #e6edfd !important;
+  -webkit-text-fill-color: #e6edfd !important;
+  box-shadow: none !important;
+}
+html:not(.app-light) body ion-content.auth-screen ion-item.login-field,
+html:not(.app-light) body ion-content.auth-screen ion-item.login-field::part(native) {
+  --background: rgba(230, 237, 253, .045) !important;
+  --ion-item-background: rgba(230, 237, 253, .045) !important;
+  background: transparent !important;
+}
+html:not(.app-light) body ion-content.auth-screen ion-item.login-field ion-input {
+  --background: transparent !important;
+  --color: #e6edfd !important;
+  background: transparent !important;
+}
+html:not(.app-light) body ion-content.auth-screen ion-item.login-field ion-input::part(native) {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+html:not(.app-light) body ion-content.auth-screen input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]) {
+  background: transparent !important;
+  color: #e6edfd !important;
+  -webkit-text-fill-color: #e6edfd !important;
+  caret-color: #e6edfd !important;
+}
+html:not(.app-light) body ion-content.auth-screen ion-button.login-button,
+html:not(.app-light) body ion-content.auth-screen ion-button.create-account-button {
+  --background: #2e5de6 !important;
+  --background-activated: #2852ca !important;
+  --color: #e6edfd !important;
+  --border-color: #2e5de6 !important;
+  --box-shadow: 0 8px 22px rgba(46, 93, 230, .2) !important;
+}
+html:not(.app-light) body ion-content.auth-screen ion-button.login-button::part(native),
+html:not(.app-light) body ion-content.auth-screen ion-button.create-account-button::part(native) {
+  background: #2e5de6 !important;
+  color: #e6edfd !important;
+}
+html:not(.app-light) body ion-content.auth-screen button.account-more-button {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: #afc5f8 !important;
+}
+html:not(.app-light) body ion-content.auth-screen .account-action-menu button {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: #e6edfd !important;
+}
+html body .logout-confirm-actions button {
+  border: 1px solid rgba(230, 237, 253, .8) !important;
+  background: transparent !important;
+  color: #e6edfd !important;
+}
+html body .logout-confirm-actions button.logout-save-button {
+  border-color: #6e92f2 !important;
+  background: rgba(46, 93, 230, .24) !important;
+  color: #e6edfd !important;
+}
+
+/* Keep the profile edit action readable over the blue hero in light mode. */
+html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button,
+html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button::part(native) {
+  --color: #fff !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button span,
+html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button ion-icon {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}

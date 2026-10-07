@@ -97,3 +97,16 @@
     </section>
   </div>
 </ion-content>
+@if (pendingLogoutAccount; as account) {
+  <div class="logout-confirm-backdrop" role="presentation" (click)="cancelLogout()">
+    <section class="logout-confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="logout-confirm-title" (click)="$event.stopPropagation()">
+      <h2 id="logout-confirm-title">Save your password?</h2>
+      <p>Save the password for {{ account.name }} on this device for next time?</p>
+      <div class="logout-confirm-actions">
+        <button type="button" class="logout-cancel-button" (click)="cancelLogout()">Cancel</button>
+        <button type="button" (click)="finishLogout(false)">Don’t Save</button>
+        <button type="button" class="logout-save-button" (click)="finishLogout(true)">Save Password</button>
+      </div>
+    </section>
+  </div>
+}
