@@ -21,7 +21,7 @@ export interface ChatMessage {
 }
 
 export interface ChatAttachment {
-  kind: 'photo' | 'video' | 'gif' | 'voice';
+  kind: 'photo' | 'video' | 'gif' | 'voice' | 'file';
   name: string;
   url: string;
   durationSeconds?: number;
@@ -30,13 +30,9 @@ export interface ChatAttachment {
 export type SharedItemsType = 'photos' | 'links' | 'files' | 'voice messages';
 
 export interface ChatSettings {
-  theme: 'default' | 'warm' | 'sage';
-  wallpaper: 'plain' | 'glow' | 'grid';
+  theme: 'light' | 'dark';
   nicknames: Record<string, string>;
   reactionEmoji: string;
-  disappearingAfterSeconds: number | null;
-  readReceipts: boolean;
-  typingIndicator: boolean;
   pinnedFor: number[];
   acceptedFor: number[];
   archivedFor: number[];
@@ -86,7 +82,7 @@ export class MessageService {
 
   createGroupConversation(accountIds: number[], groupName: string) {
     const members = [...new Set(accountIds)];
-    if (members.length < 5 || !groupName.trim()) return null;
+    if (members.length < 2 || !groupName.trim()) return null;
     return this.createConversation(members, groupName.trim());
   }
 
@@ -116,7 +112,7 @@ export class MessageService {
           const recipient = this.accountService.accounts().find((account) => account.id === recipientId);
           const acceptedFor = normalizeChatSettings(existingConversation.settings).acceptedFor;
           if (recipient && !recipient.followingIds.includes(senderId) && !acceptedFor.includes(senderId) && !acceptedFor.includes(recipientId)) {
-            const preview = text || (attachments[0]?.kind === 'voice' ? 'Voice message' : attachments[0]?.kind === 'video' ? 'Video' : attachments[0]?.kind === 'gif' ? 'GIF' : 'Photo');
+            const preview = text || (attachments[0]?.kind === 'voice' ? 'Voice message' : attachments[0]?.kind === 'video' ? 'Video' : attachments[0]?.kind === 'gif' ? 'GIF' : attachments[0]?.kind === 'file' ? 'File' : 'Photo');
             this.notificationService.notifyMessageRequest(actor, recipientId, conversationId, preview);
           }
         }
@@ -138,10 +134,7 @@ export class MessageService {
       const settings = normalizeChatSettings(conversation.settings);
       const unreadFor = new Set(settings.unreadFor.filter((id) => id !== senderId));
       for (const memberId of conversation.memberIds) if (memberId !== senderId) unreadFor.add(memberId);
-      const messages = [...conversation.messages, message].filter((item) =>
-        settings.disappearingAfterSeconds === null ||
-        Date.now() - new Date(item.createdAt).getTime() <= settings.disappearingAfterSeconds * 1000,
-      );
+      const messages = [...conversation.messages, message];
       return { ...conversation, settings: { ...settings, unreadFor: [...unreadFor] }, messages, updatedAt: message.createdAt };
     }));
     this.persistConversations();
@@ -162,7 +155,7 @@ export class MessageService {
         const readBy = message.readBy ?? [];
         const seenBy = message.seenBy ?? [];
         const needsRead = !readBy.includes(accountId);
-        const needsReceipt = settings.readReceipts && !seenBy.includes(accountId);
+        const needsReceipt = !seenBy.includes(accountId);
         if (!needsRead && !needsReceipt) return message;
         changed = true;
         return {
@@ -175,18 +168,6 @@ export class MessageService {
       return { ...conversation, settings: { ...settings, unreadFor }, messages };
     }));
     if (changed) this.persistConversations();
-  }
-
-  purgeExpiredMessages(conversationId: string) {
-    const conversation = this.conversations().find((item) => item.id === conversationId);
-    if (!conversation) return;
-    const expiry = normalizeChatSettings(conversation.settings).disappearingAfterSeconds;
-    if (expiry === null) return;
-    const messages = conversation.messages.filter((message) => Date.now() - new Date(message.createdAt).getTime() <= expiry * 1000);
-    if (messages.length !== conversation.messages.length) {
-      this.conversations.update((items) => items.map((item) => item.id === conversationId ? { ...item, messages } : item));
-      this.persistConversations();
-    }
   }
 
   updateSettings(conversationId: string, changes: Partial<ChatSettings>) {
@@ -308,13 +289,11 @@ function mergeConversations(saved: Conversation[], current: Conversation[]): Con
 
 function restoreConversationDates(conversation: Conversation): Conversation {
   const settings = normalizeChatSettings(conversation.settings);
-  const expiry = settings.disappearingAfterSeconds;
   return {
     ...conversation,
     updatedAt: new Date(conversation.updatedAt),
     settings,
     messages: conversation.messages
-      .filter((message) => expiry === null || Date.now() - new Date(message.createdAt).getTime() <= expiry * 1000)
       .map((message) => ({ ...message, createdAt: new Date(message.createdAt), reactions: normalizeReactions(message.reactions ?? {}), readBy: message.readBy ?? [] })),
   };
 }
@@ -333,13 +312,9 @@ function normalizeReactions(reactions: Record<string, number[]>) {
 
 export function normalizeChatSettings(settings?: Partial<ChatSettings>): ChatSettings {
   return {
-    theme: settings?.theme === 'warm' || settings?.theme === 'sage' ? settings.theme : 'default',
-    wallpaper: settings?.wallpaper === 'glow' || settings?.wallpaper === 'grid' ? settings.wallpaper : 'plain',
+    theme: settings?.theme === 'light' ? 'light' : 'dark',
     nicknames: settings?.nicknames ?? {},
     reactionEmoji: settings?.reactionEmoji ?? '❤️',
-    disappearingAfterSeconds: settings?.disappearingAfterSeconds ?? null,
-    readReceipts: settings?.readReceipts ?? true,
-    typingIndicator: settings?.typingIndicator ?? true,
     pinnedFor: settings?.pinnedFor ?? [],
     acceptedFor: settings?.acceptedFor ?? [],
     archivedFor: settings?.archivedFor ?? [],
