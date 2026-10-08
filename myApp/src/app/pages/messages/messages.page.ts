@@ -117,12 +117,10 @@ export class MessagesPage {
     if (acceptedFor.includes(accountId) || acceptedFor.includes(otherId)) return false;
 
     const firstMessage = conversation.messages[0];
-    if (!firstMessage) return false;
-    // Keep it pending until the recipient accepts or replies. If this account
-    // started the chat, a reply from the other account accepts that request.
-    return firstMessage.senderId === accountId
-      ? !conversation.messages.slice(1).some((message) => message.senderId === otherId)
-      : !conversation.messages.some((message) => message.senderId === accountId);
+    // Requests belong only to the recipient. The sender keeps their outgoing
+    // conversation in Inbox while it waits for the recipient to accept or reply.
+    return !!firstMessage && firstMessage.senderId !== accountId
+      && !conversation.messages.some((message) => message.senderId === accountId);
   }
 
   acceptConversationRequest(conversationId: string) {

@@ -55,6 +55,8 @@
 .profile-top ion-button { --color: var(--ion-color-primary); --border-color: var(--page-border); font-size: .76rem; }
 .profile-actions { display: flex; align-items: center; justify-content: center; gap: 9px; }
 .profile-actions ion-button { min-width: 104px; margin: 0; --border-radius: 11px; font-size: .78rem; }
+.profile-actions ion-button:not(.message-profile-button)::part(native) { color: #e6edfd !important; }
+:host-context(html:not(.app-light)) .profile-actions ion-button:not(.message-profile-button)::part(native) { color: #071039 !important; }
 .profile-actions .message-profile-button { --background: var(--ion-color-primary); --color: #e6edfd; --opacity: 1; --box-shadow: 0 5px 16px rgba(46,93,230,.24); }
 .profile-actions .message-profile-button::part(native) { color: #e6edfd !important; }
 .message-button-label { display: inline-block; color: #e6edfd !important; opacity: 1 !important; visibility: visible !important; font-size: .78rem; font-weight: 600; line-height: 1; }
@@ -163,6 +165,7 @@
 :host-context(html.app-web-shell) .profile-header h1 { color: var(--page-text) !important; }
 :host-context(html.app-web-shell) .profile-header ion-button,
 :host-context(html.app-web-shell) .profile-header ion-back-button { --color: var(--page-text) !important; }
+:host-context(html.app-light) .profile-header ion-back-button { --color: #e6edfd !important; color: #e6edfd !important; }
 :host-context(html.app-web-shell) .profile-content { --background: var(--page-bg) !important; --color: var(--page-text) !important; }
 
 @media (min-width: 768px) {

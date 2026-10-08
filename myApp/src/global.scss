@@ -1106,7 +1106,7 @@ html:not(.app-light) body ion-button:not([fill="clear"])::part(native) {
 }
 html:not(.app-light) body ion-button[fill="clear"] {
   --background: transparent !important;
-  --color: #ffffff !important;
+  --color: var(--page-text) !important;
 }
 html:not(.app-light) body button {
   border-color: #ffffff !important;
@@ -1340,6 +1340,8 @@ html:not(.app-light) body ion-content.auth-screen ion-item.login-field::part(nat
 html:not(.app-light) body ion-content.auth-screen ion-item.login-field ion-input {
   --background: transparent !important;
   --color: #e6edfd !important;
+  --placeholder-color: rgba(230, 237, 253, .62) !important;
+  color: #e6edfd !important;
   background: transparent !important;
 }
 html:not(.app-light) body ion-content.auth-screen ion-item.login-field ion-input::part(native) {
