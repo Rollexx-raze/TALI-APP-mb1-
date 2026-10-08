@@ -70,10 +70,10 @@
       @for (message of visibleMessages; track message.id) {
         <div class="message-row" [id]="'message-' + message.id" [class.own-message]="message.senderId === selectedAccount()?.id">
           @if (message.senderId !== selectedAccount()?.id) {
-            <span class="incoming-avatar">
+            <a class="incoming-avatar" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
               @if (messageAuthorImage(message); as image) { <img [src]="image" [alt]="messageAuthorName(message)" /> }
               @else { <ion-icon name="person-circle-outline"></ion-icon> }
-            </span>
+            </a>
           }
           <div class="message-content">
             @if (message.senderId !== selectedAccount()?.id) { <strong class="message-sender">{{ messageAuthorName(message) }}</strong> }
@@ -164,8 +164,12 @@
               @if (conversationIsUnread(conversation)) { <span class="conversation-unread-count" [attr.aria-label]="unreadMessageCount(conversation) + ' unread messages'">{{ unreadMessageCount(conversation) }}</span> }
             </button>
             <button type="button" class="conversation-more" [attr.aria-label]="'Conversation options for ' + conversationTitle(conversation)" [attr.aria-expanded]="openConversationMenuId === conversation.id" (click)="toggleConversationMenu(conversation.id, $event)"><ion-icon name="ellipsis-horizontal"></ion-icon></button>
-            @if (messageService.settingsFor(conversation.id).pinnedFor.includes(selectedAccount()?.id ?? -1)) { <ion-icon class="conversation-pin-indicator" name="pin-outline" aria-label="Pinned chat"></ion-icon> }
-            @if (messageService.settingsFor(conversation.id).mutedFor.includes(selectedAccount()?.id ?? -1)) { <ion-icon class="conversation-mute-indicator" name="notifications-off-outline" aria-label="Muted chat"></ion-icon> }
+            @if (messageService.settingsFor(conversation.id).pinnedFor.includes(selectedAccount()?.id ?? -1)) {
+              <button type="button" class="conversation-indicator-button conversation-pin-indicator" aria-label="Unpin chat" title="Unpin chat" (click)="conversationAction(conversation, 'pinnedFor')"><ion-icon name="pin-outline" aria-hidden="true"></ion-icon></button>
+            }
+            @if (messageService.settingsFor(conversation.id).mutedFor.includes(selectedAccount()?.id ?? -1)) {
+              <button type="button" class="conversation-indicator-button conversation-mute-indicator" aria-label="Unmute chat" title="Unmute chat" (click)="conversationAction(conversation, 'mutedFor')"><ion-icon name="notifications-off-outline" aria-hidden="true"></ion-icon></button>
+            }
             @if (openConversationMenuId === conversation.id) {
               <div class="conversation-action-menu" role="menu" [attr.aria-label]="'Options for ' + conversationTitle(conversation)">
                 <button type="button" role="menuitem" (click)="conversationAction(conversation, 'unreadFor')">{{ conversationIsUnread(conversation) ? 'Read' : 'Unread' }}</button>
@@ -413,9 +417,9 @@
           <div class="voice-recording-bar" role="group" aria-label="Voice recording controls">
             <button type="button" class="voice-recording-delete" aria-label="Discard voice recording" (click)="cancelVoiceRecording()"><ion-icon name="trash-outline"></ion-icon></button>
             <button type="button" class="voice-recording-toggle" [attr.aria-label]="voiceRecordingPaused ? 'Resume recording' : 'Pause recording'" (click)="pauseVoiceRecording()"><ion-icon [name]="voiceRecordingPaused ? 'play-outline' : 'pause-outline'"></ion-icon></button>
-            <span class="voice-waveform recording-waveform" aria-hidden="true">@for (bar of voiceWaveBars; track bar) { <i [style.height.%]="voiceBarHeight(bar)"></i> }</span>
+            <span class="voice-waveform recording-waveform" [class.recording-active]="!voiceRecordingPaused" [class.recording-paused]="voiceRecordingPaused" aria-label="{{ voiceRecordingPaused ? 'Recording paused' : 'Recording in progress' }}">@for (bar of voiceWaveBars; track bar) { <i [style.height.%]="voiceBarHeight(bar)" [style.animation-delay.ms]="(bar % 9) * 75"></i> }</span>
             <span class="voice-duration">{{ formatVoiceDuration(voiceDuration) }}</span>
-            <button type="button" class="voice-recording-send" aria-label="Send voice message" (click)="sendVoiceRecording()"><ion-icon name="arrow-up-outline"></ion-icon></button>
+            <button type="button" class="voice-recording-send" aria-label="Send voice message now" (pointerdown)="sendVoiceRecording()" (click)="sendVoiceRecording()"><ion-icon name="paper-plane-outline"></ion-icon></button>
           </div>
         } @else {
         <div class="chat-attachment-actions" aria-label="Message attachments">
