@@ -720,12 +720,16 @@ export class MessagesPage {
         reader.onload = () => {
           if (typeof reader.result === 'string') {
             this.pendingAttachments = [...this.pendingAttachments, { kind: 'voice', name: 'Voice message', url: reader.result, durationSeconds }];
-            if (shouldSend) this.sendMessage();
+            if (shouldSend) {
+              this.sendMessage();
+              this.callNotice = '';
+            }
           }
         };
+        reader.onerror = () => { this.callNotice = 'The voice message could not be prepared. Please try again.'; };
         reader.readAsDataURL(recording);
       };
-      recorder.start();
+      recorder.start(250);
       this.recordingVoice = true;
       this.voiceTimerInterval = setInterval(() => {
         if (!this.voiceRecordingPaused) this.voiceDuration = Math.floor((Date.now() - this.voiceRecordingStartedAt) / 1000);
@@ -750,9 +754,11 @@ export class MessagesPage {
   }
 
   sendVoiceRecording() {
-    if (!this.voiceRecorder || !this.recordingVoice) return;
+    if (!this.voiceRecorder || !this.recordingVoice || this.sendVoiceAfterStop) return;
+    if (this.voiceRecorder.state === 'inactive') return;
     if (!this.voiceRecordingPaused) this.voiceDuration = Math.floor((Date.now() - this.voiceRecordingStartedAt) / 1000);
     this.sendVoiceAfterStop = true;
+    this.callNotice = 'Sending voice message…';
     this.voiceRecorder.stop();
   }
 

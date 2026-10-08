@@ -1113,6 +1113,17 @@ html:not(.app-light) body button {
   background: #ffffff !important;
   color: #071039 !important;
 }
+html:not(.app-light) body button.conversation-indicator-button {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html:not(.app-light) body button.conversation-pin-indicator {
+  color: #ffca32 !important;
+}
+html:not(.app-light) body button.conversation-mute-indicator {
+  color: #ff817a !important;
+}
 /* Conversation rows are clickable content, not form controls. Keep the row transparent in dark mode. */
 html:not(.app-light) body button.conversation-row,
 html:not(.app-light) body button.account-choice {

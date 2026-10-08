@@ -59,7 +59,7 @@
 .request-decision-buttons .request-delete-button { background:color-mix(in srgb, var(--page-surface) 85%, #d94b55); }
 .thread-empty { flex: 1; min-height: 52vh; padding-bottom: 24px; }
 .message-row { display: flex; align-items: flex-end; justify-content: flex-start; gap: 8px; }
-.incoming-avatar { display: grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; overflow: hidden; border-radius: 50%; background: var(--page-surface); color: var(--ion-color-primary); }
+.incoming-avatar { display: grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; overflow: hidden; border-radius: 50%; background: var(--page-surface); color: var(--ion-color-primary); text-decoration: none; cursor: pointer; }
 .incoming-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .incoming-avatar ion-icon { width: 24px; height: 24px; }
 .message-content { position: relative; display: flex; max-width: min(78%, 440px); flex-direction: column; align-items: flex-start; gap: 4px; }
@@ -119,7 +119,8 @@
 .voice-recording-bar button { display:grid;width:38px;height:38px;flex:0 0 38px;place-items:center;border:0;border-radius:50%;background:transparent;color:inherit;font-size:1.2rem;cursor:pointer; }
 .voice-recording-bar .voice-recording-toggle { background:rgba(255,255,255,.2); }
 .voice-recording-bar .voice-recording-send { background:rgba(255,255,255,.17);font-size:1.3rem; }
-.recording-waveform { animation:recording-wave 1s ease-in-out infinite alternate; }
+.recording-waveform.recording-active i { transform-origin:center;animation:recording-wave .58s ease-in-out infinite alternate; }
+.recording-waveform.recording-paused i { animation-play-state:paused; }
 .chat-composer:has(.reply-composer-preview) { flex-wrap: wrap; }
 .reply-composer-preview { position: relative; display: grid; width: 100%; flex: 0 0 100%; gap: 3px; padding: 7px 38px 8px 12px; border-bottom: 1px solid var(--page-border); color: var(--page-text); }
 .reply-composer-preview strong { font-size: .8rem; }
@@ -377,8 +378,10 @@
 .conversation-entry { position: relative; }
 .conversation-marker { display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;padding:5px 8px;border:1px solid;border-radius:999px;font-size:.68rem;font-weight:800;line-height:1;white-space:nowrap; }
 .conversation-marker ion-icon { font-size:1rem; }
-.conversation-pin-indicator { flex:0 0 auto;margin-right:14px;color:#ffca32;font-size:1.35rem;filter:drop-shadow(0 1px 5px #ffca3288); }
-.conversation-mute-indicator { flex:0 0 auto;margin-right:14px;color:#ff817a;font-size:1.35rem;filter:drop-shadow(0 1px 5px #ff817a99); }
+.conversation-indicator-button { display:grid;flex:0 0 auto;place-items:center;padding:0;border:0;background:transparent;line-height:normal;cursor:pointer; }
+.conversation-pin-indicator { margin-right:14px;color:#ffca32;font-size:1.35rem;filter:drop-shadow(0 1px 5px #ffca3288); }
+.conversation-mute-indicator { margin-right:14px;color:#ff817a;font-size:1.35rem;filter:drop-shadow(0 1px 5px #ff817a99); }
+.conversation-indicator-button:focus-visible { border-radius:9px;outline:2px solid var(--ion-color-primary);outline-offset:1px; }
 .mute-marker { border-color:#b34b35;background:#ffe0d8;color:#702415;box-shadow:0 2px 9px #d95d4744; }
 .conversation-more { display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;margin:0 10px 0 2px;border:0;border-radius:12px;background:transparent;color:var(--page-muted);font-size:1.25rem;cursor:pointer; }
 .conversation-more:hover,.conversation-more[aria-expanded="true"] { background:var(--page-hover);color:var(--ion-color-primary); }
@@ -399,7 +402,7 @@
 .typing-dots { display:inline-block;padding-left:3px;font-weight:800;animation:typing-pulse 1s steps(3,end) infinite; }
 .group-member-requirement { margin:12px 0 4px;color:var(--page-muted);font-size:.82rem;text-align:center; }
 @keyframes typing-pulse { to { opacity:.25; } }
-@keyframes recording-wave { from { opacity:.68; } to { opacity:1; } }
+@keyframes recording-wave { from { opacity:.58;transform:scaleY(.35); } to { opacity:1;transform:scaleY(1); } }
 
 /* Make the send action visually distinct from the transparent composer tools. */
 .chat-composer > ion-button[type="submit"] {
