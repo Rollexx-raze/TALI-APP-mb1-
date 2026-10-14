@@ -1,4 +1,5 @@
 ﻿import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { effect, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
@@ -26,6 +27,7 @@ export class MessagesPage {
   readonly messageService = inject(MessageService);
   readonly notificationService = inject(NotificationService);
   readonly selectedAccount = this.accountService.selectedAccount;
+  @ViewChild(IonContent) private chatContent?: IonContent;
   readonly accounts = computed(() => {
     const accounts = this.accountService.accounts();
     const selected = this.selectedAccount();
@@ -51,6 +53,7 @@ export class MessagesPage {
   conversationSearch = '';
   showChatSettings = false;
   showSharedItems = false;
+  showAllGroupMembers = false;
   sharedItemsType: SharedItemsType = 'photos';
   nicknameDraft = '';
   callNotice = '';
@@ -197,6 +200,11 @@ export class MessagesPage {
 
   constructor() {
     addIcons({ addCircle, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
+    effect(() => {
+      const conversations = this.conversations();
+      const activeId = this.activeConversationId;
+      if (activeId && !this.showChatSettings && conversations.some((item) => item.id === activeId)) this.scrollToLatest();
+    });
     const saved = this.viewState.read<Partial<{ activeTab: 'inbox' | 'requests'; activeFilter: string; searchQuery: string; activeConversationId: string | null; messageDraft: string; conversationSearch: string; showChatSettings: boolean; showSharedItems: boolean; sharedItemsType: SharedItemsType; showFilters: boolean; composeMode: 'menu' | 'direct' | 'group' | null; groupName: string; selectedMemberIds: number[] }>>(this.viewStateKey, {});
     if (saved.activeTab) this.activeTab = saved.activeTab;
     if (saved.activeFilter && this.filters.includes(saved.activeFilter)) this.activeFilter = saved.activeFilter;
@@ -311,6 +319,22 @@ export class MessagesPage {
     return nickname?.trim() || otherAccount?.name || otherAccount?.username || 'Account unavailable';
   }
 
+  groupMembers(conversation: Conversation, showAll = false) {
+    const members = conversation.memberIds.map((id) => this.accounts().find((account) => account.id === id))
+      .filter((account): account is Account => !!account);
+    return showAll ? members : members.slice(0, 7);
+  }
+
+  presenceLabel(_account: Account) { return 'Last seen unavailable'; }
+
+  formatMessageTime(date: Date) {
+    return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
+  }
+
+  private scrollToLatest() {
+    requestAnimationFrame(() => { void this.chatContent?.scrollToBottom(180); });
+  }
+
   conversationProfileImage(conversation: Conversation) {
     const otherId = conversation.memberIds.find((id) => id !== this.selectedAccount()?.id);
     const account = this.accounts().find((item) => item.id === otherId);
@@ -373,6 +397,7 @@ export class MessagesPage {
     this.saveViewState();
     const accountId = this.selectedAccount()?.id;
     if (accountId !== undefined) this.messageService.markRead(conversationId, accountId);
+    this.scrollToLatest();
   }
 
   toggleConversationMenu(id: string, event: Event) {
@@ -453,6 +478,7 @@ export class MessagesPage {
     this.nicknameDraft = this.messageService.settingsFor(conversation.id).nicknames[String(otherId)] ?? '';
     this.settingsNotice = '';
     this.showSharedItems = false;
+    this.showAllGroupMembers = false;
     this.showChatSettings = true;
     this.saveViewState();
   }
@@ -806,6 +832,7 @@ export class MessagesPage {
       body: this.replyToMessage.body,
     } : undefined;
     this.messageService.sendMessage(conversation.id, account.id, body, this.pendingAttachments, replyTo ? { replyTo } : {});
+    this.scrollToLatest();
     this.clearTyping();
     this.messageDraft = '';
     this.replyToMessage = null;
