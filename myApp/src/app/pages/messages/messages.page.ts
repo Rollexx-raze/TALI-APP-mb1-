@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
-import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { ChatAttachment, ChatMessage, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
@@ -52,6 +52,7 @@ export class MessagesPage {
   searchQuery = '';
   conversationSearch = '';
   showChatSettings = false;
+  showGroupInfo = false;
   showSharedItems = false;
   showAllGroupMembers = false;
   sharedItemsType: SharedItemsType = 'photos';
@@ -66,18 +67,26 @@ export class MessagesPage {
   messageDraft = '';
   isComposerExpanded = false;
   pendingAttachments: ChatAttachment[] = [];
+  isReadingPhotoAttachments = false;
   recordingVoice = false;
   voiceRecordingPaused = false;
   voiceDuration = 0;
   voicePlayingUrl: string | null = null;
   readonly voiceWaveBars = Array.from({ length: 34 }, (_, index) => index);
   reactionPickerMessageId: string | null = null;
+  reactionDetailsKey: string | null = null;
   messageActionsId: string | null = null;
+  pendingDeleteMessage: ChatMessage | null = null;
+  imageLoadStates: Record<string, 'loading' | 'loaded' | 'error'> = {};
+  activeImageViewer: ChatAttachment | null = null;
   replyToMessage: ChatMessage | null = null;
   forwardMessage: ChatMessage | null = null;
   forwardSearch = '';
   showComposerEmojiPicker = false;
   openConversationMenuId: string | null = null;
+  isThreadAtBottom = true;
+  newMessagesWhileAway = 0;
+  private readonly observedMessageCounts = new Map<string, number>();
   private reactionPressTimer: ReturnType<typeof setTimeout> | null = null;
   private voiceRecorder: MediaRecorder | null = null;
   private voiceTimerInterval: ReturnType<typeof setInterval> | null = null;
@@ -199,13 +208,25 @@ export class MessagesPage {
   }
 
   constructor() {
-    addIcons({ addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
+    addIcons({ addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
     effect(() => {
       const conversations = this.conversations();
       const activeId = this.activeConversationId;
-      if (activeId && !this.showChatSettings && conversations.some((item) => item.id === activeId)) this.scrollToLatest();
+      const conversation = conversations.find((item) => item.id === activeId);
+      if (!conversation || this.showChatSettings || this.showGroupInfo) return;
+      const previousCount = this.observedMessageCounts.get(activeId!);
+      this.observedMessageCounts.set(activeId!, conversation.messages.length);
+      if (previousCount === undefined) {
+        this.scrollToLatest();
+        return;
+      }
+      if (conversation.messages.length <= previousCount) return;
+      const newIncomingCount = conversation.messages.slice(previousCount)
+        .filter((message) => message.senderId !== this.selectedAccount()?.id).length;
+      if (this.isThreadAtBottom) this.scrollToLatest();
+      else this.newMessagesWhileAway += newIncomingCount;
     });
-    const saved = this.viewState.read<Partial<{ activeTab: 'inbox' | 'requests'; activeFilter: string; searchQuery: string; activeConversationId: string | null; messageDraft: string; conversationSearch: string; showChatSettings: boolean; showSharedItems: boolean; sharedItemsType: SharedItemsType; showFilters: boolean; composeMode: 'menu' | 'direct' | 'group' | null; groupName: string; selectedMemberIds: number[] }>>(this.viewStateKey, {});
+    const saved = this.viewState.read<Partial<{ activeTab: 'inbox' | 'requests'; activeFilter: string; searchQuery: string; activeConversationId: string | null; messageDraft: string; conversationSearch: string; showChatSettings: boolean; showGroupInfo: boolean; showSharedItems: boolean; sharedItemsType: SharedItemsType; showFilters: boolean; composeMode: 'menu' | 'direct' | 'group' | null; groupName: string; selectedMemberIds: number[] }>>(this.viewStateKey, {});
     if (saved.activeTab) this.activeTab = saved.activeTab;
     if (saved.activeFilter && this.filters.includes(saved.activeFilter)) this.activeFilter = saved.activeFilter;
     this.searchQuery = saved.searchQuery ?? '';
@@ -213,6 +234,7 @@ export class MessagesPage {
     this.messageDraft = saved.messageDraft ?? '';
     this.conversationSearch = saved.conversationSearch ?? '';
     this.showChatSettings = saved.showChatSettings ?? false;
+    this.showGroupInfo = saved.showGroupInfo ?? false;
     this.showSharedItems = saved.showSharedItems ?? false;
     this.sharedItemsType = saved.sharedItemsType ?? 'photos';
     this.showFilters = saved.showFilters ?? false;
@@ -224,6 +246,9 @@ export class MessagesPage {
       const conversation = conversationId && this.conversations().find((item) => item.id === conversationId);
       if (!conversation || !conversation.memberIds.includes(this.selectedAccount()?.id ?? -1)) return;
       this.activeConversationId = conversation.id;
+      this.observedMessageCounts.set(conversation.id, conversation.messages.length);
+      this.newMessagesWhileAway = 0;
+      this.scrollToLatest();
       this.activeTab = this.isConversationRequest(conversation, this.selectedAccount()?.id ?? -1) ? 'requests' : 'inbox';
       this.composeMode = null;
       this.saveViewState();
@@ -234,7 +259,7 @@ export class MessagesPage {
     this.viewState.write(this.viewStateKey, {
       activeTab: this.activeTab, activeFilter: this.activeFilter, searchQuery: this.searchQuery,
       activeConversationId: this.activeConversationId, messageDraft: this.messageDraft,
-      conversationSearch: this.conversationSearch, showChatSettings: this.showChatSettings,
+      conversationSearch: this.conversationSearch, showChatSettings: this.showChatSettings, showGroupInfo: this.showGroupInfo,
       showSharedItems: this.showSharedItems, sharedItemsType: this.sharedItemsType,
       showFilters: this.showFilters, composeMode: this.composeMode, groupName: this.groupName,
       selectedMemberIds: this.selectedMemberIds,
@@ -331,8 +356,19 @@ export class MessagesPage {
     return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
   }
 
-  private scrollToLatest() {
+  scrollToLatest() {
+    this.isThreadAtBottom = true;
+    this.newMessagesWhileAway = 0;
     requestAnimationFrame(() => { void this.chatContent?.scrollToBottom(180); });
+  }
+
+  onThreadScroll(_event: Event) {
+    if (!this.activeConversation || this.showChatSettings || this.showGroupInfo) return;
+    void this.chatContent?.getScrollElement().then((scrollElement) => {
+      const isAtBottom = scrollElement.scrollHeight - scrollElement.clientHeight - scrollElement.scrollTop < 88;
+      this.isThreadAtBottom = isAtBottom;
+      if (isAtBottom) this.newMessagesWhileAway = 0;
+    });
   }
 
   conversationProfileImage(conversation: Conversation) {
@@ -379,6 +415,26 @@ export class MessagesPage {
     if (conversation) await this.messageService.retryMessage(conversation.id, message.id);
   }
 
+  imageLoadState(url: string) { return this.imageLoadStates[url] ?? 'loading'; }
+
+  hasPhotoAttachment(message: ChatMessage) {
+    return (message.attachments ?? []).some((item) => item.kind === 'photo' || item.kind === 'gif');
+  }
+
+  isFirstImageAttachment(message: ChatMessage, attachment: ChatAttachment) {
+    return (message.attachments ?? []).find((item) => item.kind === 'photo' || item.kind === 'gif')?.url === attachment.url;
+  }
+
+  setImageLoadState(url: string, state: 'loaded' | 'error') {
+    this.imageLoadStates = { ...this.imageLoadStates, [url]: state };
+  }
+
+  retryInlineImage(url: string) {
+    this.imageLoadStates = { ...this.imageLoadStates, [url]: 'loading' };
+  }
+
+  openImageViewer(attachment: ChatAttachment) { this.activeImageViewer = attachment; }
+
   shouldShowDateSeparator(index: number) {
     if (index === 0) return true;
     const messages = this.visibleMessages;
@@ -423,6 +479,8 @@ export class MessagesPage {
   openConversation(conversationId: string) {
     this.openConversationMenuId = null;
     this.activeConversationId = conversationId;
+    const openedConversation = this.conversations().find((item) => item.id === conversationId);
+    this.observedMessageCounts.set(conversationId, openedConversation?.messages.length ?? 0);
     this.conversationSearch = '';
     this.reactionPickerMessageId = null;
     this.saveViewState();
@@ -485,6 +543,7 @@ export class MessagesPage {
     this.showBlockConfirmation = false;
     this.pendingBlockConversationId = null;
     this.showChatSettings = false;
+    this.showGroupInfo = false;
     this.settingsNotice = andReport ? 'This person was blocked and reported.' : '';
   }
 
@@ -493,12 +552,22 @@ export class MessagesPage {
     this.activeConversationId = null;
     this.messageDraft = '';
     this.showChatSettings = false;
+    this.showGroupInfo = false;
     this.showSharedItems = false;
     this.saveViewState();
   }
 
   closeChatSettings() {
     this.showChatSettings = false;
+    this.showGroupInfo = false;
+    this.saveViewState();
+  }
+
+  openGroupInfo() {
+    if (!this.activeConversation?.groupName) return;
+    this.showChatSettings = false;
+    this.showGroupInfo = true;
+    this.showAllGroupMembers = false;
     this.saveViewState();
   }
 
@@ -510,6 +579,7 @@ export class MessagesPage {
     this.settingsNotice = '';
     this.showSharedItems = false;
     this.showAllGroupMembers = false;
+    this.showGroupInfo = false;
     this.showChatSettings = true;
     this.saveViewState();
   }
@@ -569,6 +639,7 @@ export class MessagesPage {
 
   openSearchResult(messageId: string) {
     this.showChatSettings = false;
+    this.showGroupInfo = false;
     this.saveViewState();
     requestAnimationFrame(() => document.getElementById(`message-${messageId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
   }
@@ -585,12 +656,72 @@ export class MessagesPage {
     this.reactionPickerMessageId = null;
   }
 
+  isMyReaction(message: ChatMessage, emoji: string) {
+    const accountId = this.selectedAccount()?.id;
+    return accountId !== undefined && (message.reactions?.[emoji] ?? []).includes(accountId);
+  }
+
+  onReactionChipClick(message: ChatMessage, emoji: string) {
+    const key = `${message.id}:${emoji}`;
+    if (this.isMyReaction(message, emoji)) {
+      const accountId = this.selectedAccount()?.id;
+      if (accountId !== undefined && this.activeConversation) {
+        this.messageService.toggleReaction(this.activeConversation.id, message.id, accountId, emoji);
+      }
+      this.reactionDetailsKey = null;
+      return;
+    }
+    this.reactionDetailsKey = this.reactionDetailsKey === key ? null : key;
+  }
+
+  reactionAccounts(message: ChatMessage, emoji: string) {
+    const reactedIds = message.reactions?.[emoji] ?? [];
+    return this.accounts().filter((account) => reactedIds.includes(account.id));
+  }
+
   startReactionPress(message: ChatMessage) {
     this.clearReactionPress();
     this.reactionPressTimer = setTimeout(() => {
-      this.reactionPickerMessageId = message.id;
+      this.openMessageActions(message);
       this.reactionPressTimer = null;
     }, 450);
+  }
+
+  openMessageActions(message: ChatMessage) {
+    this.clearReactionPress();
+    this.reactionPickerMessageId = null;
+    this.messageActionsId = message.id;
+  }
+
+  openReactionPicker(message: ChatMessage) {
+    this.messageActionsId = null;
+    this.reactionPickerMessageId = message.id;
+  }
+
+  async copyMessage(message: ChatMessage) {
+    this.messageActionsId = null;
+    const content = message.body || (message.attachments ?? []).map((item) => item.name).join('\n');
+    try {
+      await navigator.clipboard.writeText(content);
+      this.callNotice = 'Message copied.';
+    } catch {
+      this.callNotice = 'Could not copy this message on this device.';
+    }
+  }
+
+  requestMessageDelete(message: ChatMessage) {
+    if (message.senderId !== this.selectedAccount()?.id) return;
+    this.messageActionsId = null;
+    this.pendingDeleteMessage = message;
+  }
+
+  confirmMessageDelete() {
+    const message = this.pendingDeleteMessage;
+    const conversation = this.activeConversation;
+    if (message && conversation && message.senderId === this.selectedAccount()?.id) {
+      this.messageService.deleteMessage(conversation.id, message.id);
+    }
+    this.pendingDeleteMessage = null;
   }
 
   clearReactionPress() {
@@ -644,7 +775,7 @@ export class MessagesPage {
     if (!conversation) return;
     this.messageActionsId = null;
     if (action === 'delete') {
-      this.messageService.deleteMessage(conversation.id, message.id);
+      this.requestMessageDelete(message);
     } else if (action === 'reply') {
       this.replyToMessage = message;
     } else if (action === 'forward') {
@@ -719,22 +850,57 @@ export class MessagesPage {
 
   attachSelectedFile(event: Event, kind: 'photo' | 'video' | 'gif' | 'file') {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const selectedFiles = Array.from(input.files ?? []);
     input.value = '';
-    if (!file) return;
+    if (!selectedFiles.length) return;
+    if (kind === 'photo') {
+      const remaining = Math.max(0, 15 - this.pendingAttachments.filter((attachment) => attachment.kind === 'photo').length);
+      if (!remaining) {
+        this.callNotice = 'You can send up to 15 photos in one message.';
+        return;
+      }
+      const files = selectedFiles.slice(0, remaining);
+      const exceededLimit = selectedFiles.length > remaining;
+      const validFiles = files.filter((file) => file.size <= 15 * 1024 * 1024);
+      const rejectedSize = validFiles.length !== files.length;
+      this.isReadingPhotoAttachments = true;
+      if (exceededLimit) this.callNotice = `Only ${remaining} more photo${remaining === 1 ? '' : 's'} can be sent in one message.`;
+      else if (rejectedSize) this.callNotice = 'Photos must be smaller than 15 MB each.';
+      void Promise.all(validFiles.map((file) => this.readAttachment(file, 'photo'))).then((attachments) => {
+        const loaded = attachments.filter((attachment): attachment is ChatAttachment => attachment !== null);
+        if (loaded.length) {
+          this.pendingAttachments = [...this.pendingAttachments, ...loaded];
+          this.sendMessage();
+        }
+        if (loaded.length !== validFiles.length) this.callNotice = 'Some photos could not be loaded.';
+        else if (!loaded.length && !this.callNotice) this.callNotice = 'No photos could be loaded.';
+      }).finally(() => { this.isReadingPhotoAttachments = false; });
+      return;
+    }
+    const file = selectedFiles[0];
     if (file.size > 15 * 1024 * 1024) {
       this.callNotice = 'Choose a file smaller than 15 MB.';
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        this.pendingAttachments = [...this.pendingAttachments, { kind, name: file.name, url: reader.result }];
-        this.sendMessage();
+    void this.readAttachment(file, kind).then((attachment) => {
+      if (!attachment) {
+        this.callNotice = 'This file could not be loaded.';
+        return;
       }
-    };
-    reader.onerror = () => this.callNotice = 'This file could not be loaded.';
-    reader.readAsDataURL(file);
+      this.pendingAttachments = [...this.pendingAttachments, attachment];
+      this.sendMessage();
+    });
+  }
+
+  private readAttachment(file: File, kind: ChatAttachment['kind']): Promise<ChatAttachment | null> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === 'string'
+        ? { kind, name: file.name, url: reader.result }
+        : null);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
   }
 
   async toggleVoiceRecording() {
