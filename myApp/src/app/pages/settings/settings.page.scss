@@ -140,7 +140,8 @@ main
 @media (max-width: 680px) {
   .settings-home { display:block; }
   .settings-layout.mobile-detail-open .settings-home { display:none; }
-  .settings-detail { display:block; }
+  .settings-detail { display:none; }
+  .settings-layout.mobile-detail-open .settings-detail { display:block; }
   .edit-photo-card { flex-wrap:wrap; }
   .settings-messages-button { right:12px;bottom:12px; }
 }

@@ -2,6 +2,7 @@
 .auth-header { --background: transparent; position: absolute; z-index: 5; width: 100%; }
 .auth-header ion-toolbar { --background: transparent !important; --color: var(--auth-paper); }
 .auth-header ion-back-button { --color: var(--auth-paper); }
+.create-account-header-logo { display: none; }
 .create-account-content { --background: #1a3bb0; --color: var(--auth-paper); }
 .create-account-content::part(background) { background: linear-gradient(145deg, rgba(0,0,0,.58), rgba(15,34,112,.42)), url('/assets/bgdesign2.svg') center / cover fixed; }
 .create-account-wrapper { box-sizing: border-box; display: flex; min-height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 52px 18px 28px; }
@@ -22,6 +23,9 @@
 .create-account-footer { margin: 4px 0 0; color: var(--auth-paper); font-size: .85rem; }
 .create-account-footer a { margin-left: 4px; color: #d0bda9; cursor: pointer; }
 @media (max-width: 560px) {
+  .create-account-header-logo { position: absolute; top: 50%; left: 50%; display: block; width: 54px; height: 54px; object-fit: contain; transform: translate(-50%, -50%); }
+  .create-account-logo { display: none; }
+  .create-account-wrapper { justify-content: center; gap: 10px; padding: 60px 18px 24px; }
   .create-account-heading h1 { font-size: 1.32rem; }
   .create-account-heading p, .create-account-footer { font-size: .82rem; }
   .create-account-eyebrow { font-size: .66rem; }

@@ -625,6 +625,7 @@ ion-content.home-content {
 body .page-nav ion-button {
 	pointer-events: auto !important;
 	position: relative;
+	top: -10px;
 	display: grid;
 	width: 44px !important;
 	min-width: 44px !important;
