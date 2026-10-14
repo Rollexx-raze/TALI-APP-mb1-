@@ -23,6 +23,7 @@ export interface PostComment {
 export interface Post {
   id: string;
   authorId: number | null;
+  groupId?: string;
   authorName: string;
   authorUsername: string;
   body: string;
@@ -48,6 +49,9 @@ const trashRetentionMs = 30 * 24 * 60 * 60 * 1000;
 export class PostService {
   private readonly notificationService = optionalNotificationService();
   readonly posts = signal<Post[]>([]);
+  readonly loading = signal(true);
+  readonly loadError = signal<string | null>(null);
+  private localLoadError: unknown;
   private nextId = 0;
   private nextCommentId = 0;
   private changedBeforeHydration = false;
@@ -57,7 +61,11 @@ export class PostService {
   constructor() {
     const posts = this.loadPosts();
     this.posts.set(posts);
-    void loadBrowserData(postsStorageKey, posts, isStoredPostList).then((savedRecords) => {
+    let browserLoadError: unknown;
+    void loadBrowserData(postsStorageKey, posts, isStoredPostList, (error) => {
+      browserLoadError = error;
+      console.error('Could not load saved posts from browser storage.', error);
+    }).then((savedRecords) => {
       const indexedPosts = savedRecords.filter(isStoredPost).map(restorePostDates);
       // Merge the synchronous backup with IndexedDB so a partial/failed
       // browser database write cannot make older valid posts disappear.
@@ -66,12 +74,34 @@ export class PostService {
         ? mergePosts(savedPosts, this.posts())
         : savedPosts;
       this.posts.set(this.removeExpiredTrash(mergedPosts));
+      this.loading.set(false);
+      if ((browserLoadError ?? this.localLoadError) !== undefined && this.posts().length === 0) {
+        this.loadError.set('Posts could not be loaded. Check your browser storage and try again.');
+      }
       if (this.changedBeforeHydration || this.posts().length !== mergedPosts.length) this.persistPosts();
       this.scheduleTrashCleanup();
+    }, (error: unknown) => {
+      console.error('Could not load saved posts.', error);
+      this.loading.set(false);
+      this.loadError.set('Posts could not be loaded. Check your browser storage and try again.');
     });
   }
 
   addPost(post: NewPost, actor?: Pick<Account, 'id' | 'name' | 'username'>, accounts: Account[] = []) {
+    return this.publishPost(post, actor, accounts, false);
+  }
+
+  addGroupPost(post: NewPost, actor: Pick<Account, 'id' | 'name' | 'username'>, accounts: Account[] = []) {
+    return this.publishPost(post, actor, accounts, true);
+  }
+
+  private publishPost(
+    post: NewPost,
+    actor: Pick<Account, 'id' | 'name' | 'username'> | undefined,
+    accounts: Account[],
+    requirePersistence: boolean,
+  ) {
+    const previousPosts = this.posts();
     const publishedPost: Post = {
       ...post,
       id: `${Date.now()}-${++this.nextId}`,
@@ -86,8 +116,11 @@ export class PostService {
     };
 
     this.posts.update((posts) => [publishedPost, ...posts]);
-    this.persistPosts();
-    if (actor) this.notificationService?.notifyMentions(actor, publishedPost.body, accounts, publishedPost.id);
+    if (!this.persistPosts() && requirePersistence) {
+      this.posts.set(previousPosts);
+      throw new Error('The group post could not be saved in this browser.');
+    }
+    if (actor) this.notificationService?.notifyMentions(actor, publishedPost.body, accounts, publishedPost.id, publishedPost.groupId);
     return publishedPost;
   }
 
@@ -105,7 +138,7 @@ export class PostService {
     }));
     this.persistPosts();
     if (post && actor && !alreadyLiked && !post.notificationsDisabled) {
-      this.notificationService?.notifyPostAction('like', actor, post.authorId, post.id, post.body);
+      this.notificationService?.notifyPostAction('like', actor, post.authorId, post.id, post.body, post.groupId);
     }
   }
 
@@ -129,8 +162,8 @@ export class PostService {
     ));
     this.persistPosts();
     if (post && !post.notificationsDisabled) {
-      this.notificationService?.notifyPostAction('comment', account, post.authorId, post.id, body);
-      this.notificationService?.notifyMentions(account, body, accounts, post.id);
+      this.notificationService?.notifyPostAction('comment', account, post.authorId, post.id, body, post.groupId);
+      this.notificationService?.notifyMentions(account, body, accounts, post.id, post.groupId);
     }
     return comment;
   }
@@ -150,14 +183,14 @@ export class PostService {
     }));
     this.persistPosts();
     if (post && actor && !alreadyReposted && !post.notificationsDisabled) {
-      this.notificationService?.notifyPostAction('repost', actor, post.authorId, post.id, post.body);
+      this.notificationService?.notifyPostAction('repost', actor, post.authorId, post.id, post.body, post.groupId);
     }
   }
 
   recordShare(postId: string, actor: Pick<Account, 'id' | 'name' | 'username'>) {
     if (!isSettingEnabled('sharingEnabled', true)) return;
     const post = this.posts().find((item) => item.id === postId);
-    if (post && !post.notificationsDisabled) this.notificationService?.notifyPostAction('share', actor, post.authorId, post.id, post.body);
+    if (post && !post.notificationsDisabled) this.notificationService?.notifyPostAction('share', actor, post.authorId, post.id, post.body, post.groupId);
   }
 
   canViewPost(post: Post, viewer: Account | null, accounts: Account[]) {
@@ -267,30 +300,53 @@ export class PostService {
     this.scheduleTrashCleanup();
   }
 
+  removeGroupPosts(groupId: string) {
+    const existingPosts = this.posts();
+    const remainingPosts = existingPosts.filter((post) => post.groupId !== groupId);
+    if (remainingPosts.length === existingPosts.length) return true;
+    this.posts.set(remainingPosts);
+    if (!this.persistPosts(false)) {
+      this.posts.set(existingPosts);
+      return false;
+    }
+    return true;
+  }
+
   private loadPosts(): Post[] {
     if (typeof localStorage === 'undefined') return [];
     try {
       const stored = JSON.parse(localStorage.getItem(postsStorageKey) ?? '[]') as unknown;
-      if (!Array.isArray(stored)) return [];
+      if (!Array.isArray(stored)) {
+        this.localLoadError = new Error('Saved post data in local storage is not a list.');
+        console.error('Could not read saved posts from local storage.', this.localLoadError);
+        return [];
+      }
       return this.removeExpiredTrash(stored.filter(isStoredPost).map(restorePostDates));
-    } catch {
+    } catch (error) {
+      this.localLoadError = error;
+      console.error('Could not read saved posts from local storage.', error);
       return [];
     }
   }
 
-  private persistPosts() {
+  private persistPosts(updateTimestamps = true) {
     this.changedBeforeHydration = true;
     const updatedAt = new Date();
-    const updatedPosts = this.posts().map((post) => ({ ...post, updatedAt }));
+    const updatedPosts = updateTimestamps
+      ? this.posts().map((post) => ({ ...post, updatedAt }))
+      : this.posts();
     this.posts.set(updatedPosts);
     const snapshot = updatedPosts.map((post) => ({ ...post, attachments: [...post.attachments], likes: [...post.likes], comments: [...post.comments], reposts: [...post.reposts] }));
-    this.persistenceQueue = this.persistenceQueue.then(() => saveBrowserData(postsStorageKey, snapshot));
-    if (typeof localStorage === 'undefined') return;
-    try {
-      localStorage.setItem(postsStorageKey, JSON.stringify(snapshot));
-    } catch {
-      return;
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(postsStorageKey, JSON.stringify(snapshot));
+      } catch (error) {
+        console.error('Could not save posts to local storage.', error);
+        return false;
+      }
     }
+    this.persistenceQueue = this.persistenceQueue.then(() => saveBrowserData(postsStorageKey, snapshot));
+    return true;
   }
 
   private removeExpiredTrash(posts: Post[]) {

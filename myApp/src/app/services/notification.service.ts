@@ -8,10 +8,12 @@ export interface AppNotification {
   id: string;
   recipientId: number;
   actorId: number;
+  userId?: number;
   actorName: string;
   actorUsername: string;
   type: NotificationType;
   postId: string | null;
+  groupId?: string;
   conversationId?: string;
   postPreview: string;
   createdAt: Date;
@@ -64,8 +66,9 @@ export class NotificationService {
     recipientId: number | null,
     postId: string,
     postPreview: string,
+    groupId?: string,
   ) {
-    if (recipientId !== null) this.add(type, actor, recipientId, postId, postPreview);
+    if (recipientId !== null) this.add(type, actor, recipientId, postId, postPreview, undefined, groupId);
   }
 
   notifyMentions(
@@ -73,6 +76,7 @@ export class NotificationService {
     text: string,
     accounts: Account[],
     postId: string,
+    groupId?: string,
   ) {
     if (!isSettingEnabled('tagsAndMentions', true)) return;
     const mentionedUsernames = new Set(
@@ -81,7 +85,7 @@ export class NotificationService {
     for (const account of accounts) {
       const username = account.username.replace(/^@/, '').toLowerCase();
       if (account.id !== actor.id && mentionedUsernames.has(username)) {
-        this.add('mention', actor, account.id, postId, text.trim().slice(0, 120));
+        this.add('mention', actor, account.id, postId, text.trim().slice(0, 120), undefined, groupId);
       }
     }
   }
@@ -113,6 +117,7 @@ export class NotificationService {
     postId: string | null,
     postPreview: string,
     conversationId?: string,
+    groupId?: string,
   ) {
     if (!isSettingEnabled('notifications', true)) return;
     if (actor.id === recipientId) return;
@@ -120,10 +125,12 @@ export class NotificationService {
       id: `${Date.now()}-${++this.nextId}`,
       recipientId,
       actorId: actor.id,
+      userId: actor.id,
       actorName: actor.name,
       actorUsername: actor.username,
       type,
       postId,
+      ...(groupId ? { groupId } : {}),
       ...(conversationId ? { conversationId } : {}),
       postPreview,
       createdAt: new Date(),
@@ -168,8 +175,10 @@ function isStoredNotificationList(value: unknown): value is AppNotification[] {
     return typeof notification.id === 'string' && Number.isSafeInteger(notification.recipientId) &&
       Number.isSafeInteger(notification.actorId) && typeof notification.actorName === 'string' &&
       typeof notification.actorUsername === 'string' &&
+      (notification.userId === undefined || Number.isSafeInteger(notification.userId)) &&
       ['like', 'comment', 'follow', 'share', 'repost', 'mention', 'message_request'].includes(String(notification.type)) &&
       (typeof notification.postId === 'string' || notification.postId === null) &&
+      (notification.groupId === undefined || typeof notification.groupId === 'string') &&
       (notification.conversationId === undefined || typeof notification.conversationId === 'string') &&
       typeof notification.postPreview === 'string' &&
       (typeof notification.createdAt === 'string' || notification.createdAt instanceof Date) &&
@@ -186,5 +195,5 @@ function mergeNotifications(saved: AppNotification[], current: AppNotification[]
 }
 
 function restoreNotificationDate(notification: AppNotification): AppNotification {
-  return { ...notification, createdAt: new Date(notification.createdAt) };
+  return { ...notification, userId: notification.userId ?? notification.actorId, createdAt: new Date(notification.createdAt) };
 }

@@ -42,7 +42,7 @@
 .conversation-unread-count { display: grid; min-width: 25px; height: 25px; flex: 0 0 auto; place-items: center; padding: 0 5px; border: 2px solid #e6edfd; border-radius: 999px; outline: 1px solid #6e92f2; background: #1a3bb0; color: #e6edfd; font-size: .72rem; font-weight: 750; line-height: 1; }
 .chat-thread { display: flex; min-height: 100%; flex-direction: column; gap: 12px; padding: 18px 16px 24px; }
 .request-sender-intro { display:flex;min-height:min(58vh,620px);flex-direction:column;align-items:center;justify-content:center;padding:34px 22px 22px;text-align:center; }
-.request-profile-avatar { display:grid;width:126px;height:126px;place-items:center;overflow:hidden;border-radius:50%;background:#e4e6eb;color:#777;font-size:7rem; }
+.request-profile-avatar { display:grid;width:126px;height:126px;place-items:center;overflow:hidden;border:1px solid var(--app-avatar-outline);border-radius:50%;background:var(--app-avatar-fill);color:var(--app-text-muted);font-size:7rem; }
 .request-profile-avatar img { width:100%;height:100%;object-fit:cover; }
 .request-sender-intro h2 { margin:18px 0 5px;color:var(--page-text);font-size:1.55rem;font-weight:750; }
 .request-connection-status,.request-mutual-count { margin:4px 0;color:var(--page-muted);font-size:1rem; }
@@ -235,13 +235,13 @@
 .settings-notice { margin: 8px 0; color: var(--ion-color-primary); font-size: .82rem; }
 
 .block-confirm-backdrop { position: fixed; z-index: 100; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: rgba(0,0,0,.64); }
-.block-confirm-sheet { display: grid; width: min(100%, 540px); justify-items: center; gap: 18px; padding: 12px 24px calc(22px + env(safe-area-inset-bottom, 0px)); border-radius: 28px 28px 0 0; background: #252525; color: #f5f5f5; text-align: center; box-shadow: 0 -12px 40px rgba(0,0,0,.28); }
-.block-sheet-handle { width: 56px; height: 5px; margin: 0 0 4px; border-radius: 8px; background: #858585; }
-.block-confirm-avatar { display: grid; width: 94px; height: 94px; place-items: center; overflow: hidden; border-radius: 50%; background: #e4e6eb; color: #777; }
+.block-confirm-sheet { display: grid; width: min(100%, 540px); justify-items: center; gap: 18px; padding: 12px 24px calc(22px + env(safe-area-inset-bottom, 0px)); border: 1px solid var(--app-border); border-radius: 28px 28px 0 0; background: var(--app-surface); color: var(--app-text); text-align: center; box-shadow: 0 -12px 40px rgba(0,0,0,.28); }
+.block-sheet-handle { width: 56px; height: 5px; margin: 0 0 4px; border-radius: 8px; background: var(--app-surface-alt); }
+.block-confirm-avatar { display: grid; width: 94px; height: 94px; place-items: center; overflow: hidden; border: 1px solid var(--app-avatar-outline); border-radius: 50%; background: var(--app-avatar-fill); color: var(--app-text-muted); }
 .block-confirm-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .block-confirm-avatar ion-icon { width: 100%; height: 100%; }
 .block-confirm-sheet h2 { margin: 0; font-size: 1.45rem; }
-.block-confirm-sheet > p:not(.block-learn-link) { margin: 0; color: #d0d0d0; font-size: .94rem; line-height: 1.45; }
+.block-confirm-sheet > p:not(.block-learn-link) { margin: 0; color: var(--app-text-muted); font-size: .94rem; line-height: 1.45; }
 .block-learn-link { margin: 2px 0 6px; color: #69aaff; font-weight: 650; }
 .confirm-block-button,.confirm-block-report-button,.cancel-block-button { width: 100%; min-height: 58px; border: 0; border-radius: 16px; font: inherit; font-size: 1rem; font-weight: 650; cursor: pointer; }
 .confirm-block-button { background: #0866ff; color: white; }
@@ -345,8 +345,8 @@
 .incoming-avatar ion-icon { width: 32px; height: 32px; }
 .message-content { max-width: min(78%, 440px); gap: 6px; }
 .message-sender { color: var(--page-muted); }
-.message-bubble { padding: 14px 18px; border-radius: 24px 24px 24px 8px; background: color-mix(in srgb, var(--page-surface) 78%, #1a3bb0); color: var(--page-text); line-height: 1.45; box-shadow: 0 8px 20px rgba(0,0,0,.16); }
-.message-row.own-message .message-bubble { border-radius: 24px 24px 8px 24px; background: #1a3bb0; color: #e6edfd; box-shadow: 0 8px 20px rgba(0,0,0,.22); }
+.message-bubble { padding: 14px 18px; border-radius: 24px 24px 24px 8px; background: var(--app-surface-alt); color: var(--app-text); line-height: 1.45; box-shadow: 0 8px 20px rgba(0,0,0,.16); }
+.message-row.own-message .message-bubble { border-radius: 24px 24px 8px 24px; background: var(--app-primary); color: var(--app-text); box-shadow: 0 8px 20px rgba(0,0,0,.22); }
 .message-row.own-message .message-seen { color: var(--page-muted); }
 .chat-footer ion-toolbar { padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 0px)); }
 .chat-composer { gap: 5px; }

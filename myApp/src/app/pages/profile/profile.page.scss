@@ -262,6 +262,10 @@
 .trash-explanation { margin: 8px 0 0; color: var(--page-muted); font-size: .78rem; }
 .profile-gallery { display: flex; flex-direction: column; align-items: center; gap: 12px; overflow: visible; padding: 14px 0 24px; }
 .profile-gallery img, .profile-gallery video { display: block; width: min(100%, 700px); max-width: calc(100vw - 40px); height: auto; flex: 0 0 auto; max-height: min(80vh, 720px); border: 1px solid rgba(255,255,255,.13); border-radius: 12px; background: #000000; object-fit: contain; }
+.profile-gallery { display: flex; flex-direction: column; align-items: center; gap: 14px; overflow: visible; padding: 16px 22px 24px; }
+.profile-gallery img, .profile-gallery video { display: block; width: min(100%, 700px); max-width: calc(100vw - 40px); height: auto; flex: 0 0 auto; max-height: min(80vh, 720px); border: 1px solid var(--app-border); border-radius: 16px; background: var(--app-surface-alt); object-fit: contain; }
+.profile-photo-gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: 12px; }
+.profile-photo-gallery img { width: 100%; max-width: none; height: auto; aspect-ratio: 1 / 1; max-height: none; object-fit: contain; }
 .profile-video-gallery video { object-fit: contain; }
 .profile-gallery .empty-profile { width: 100%; }
 .empty-profile { display: grid; justify-items: center; padding: 48px 10px; color: #ffffff; text-align: center; }
@@ -271,12 +275,42 @@
 
 .edit-backdrop { position: fixed; z-index: 20; inset: 0; display: grid; align-items: center; padding: 20px; background: rgba(3, 3, 25, .68); }
 .edit-dialog { width: min(100%, 440px); max-height: calc(100dvh - 40px); margin: auto; overflow-y: auto; overscroll-behavior: contain; padding: 20px; border: 1px solid #383838; border-radius: 22px; background: #111111; color: #ffffff; box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
+.edit-dialog { width: min(100%, 440px); max-height: calc(100dvh - 40px); margin: auto; overflow-y: auto; overscroll-behavior: contain; padding: 20px; border: 1px solid var(--page-border); border-radius: 22px; background: var(--page-surface); color: var(--page-text); box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
+.profile-editor-dialog { scrollbar-width: none; -ms-overflow-style: none; }
+.profile-editor-dialog::-webkit-scrollbar { display: none; }
+:host-context(html:not(.app-light)) .profile-editor-dialog {
+	--page-text: var(--app-text);
+	--page-muted: var(--app-text-muted);
+	--page-border: var(--app-border);
+	background: var(--app-surface);
+	border-color: var(--app-border);
+	color: var(--app-text);
+}
 .edit-dialog h2 { margin: 0 0 18px; color: var(--page-text); font-size: 1.05rem; }
 .profile-photo-input { display: none; }
 .profile-photo-error { margin: 0 0 12px; color: #ffffff; font-size: .78rem; text-align: center; }
 .profile-photo-viewer { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(0,0,0,.88); }
 .profile-photo-viewer img { display: block; max-width: min(90vw, 720px); max-height: 85vh; border-radius: 12px; object-fit: contain; }
 .profile-photo-viewer-close { position: absolute; top: 18px; right: 22px; width: 42px; height: 42px; border: 0; border-radius: 50%; background: rgba(255,255,255,.12); color: #ffffff; font-size: 1.7rem; cursor: pointer; }
+.profile-photo-actions { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
+.profile-photo-error { margin: 0 0 12px; color: #a93343; font-size: .78rem; text-align: center; }
+.edit-dialog ion-input, .edit-dialog ion-textarea { margin-bottom: 12px; --color: var(--page-text); --highlight-color-focused: var(--ion-color-primary); }
+.profile-editor-dialog ion-input,
+.profile-editor-dialog ion-textarea {
+	--background: var(--app-surface-alt);
+	--color: var(--app-text);
+	--placeholder-color: var(--app-placeholder);
+	--padding-start: 14px;
+	--padding-end: 14px;
+	--padding-top: 10px;
+	--padding-bottom: 10px;
+	min-height: 58px;
+	border: 1px solid var(--app-border);
+	border-radius: 12px;
+	overflow: hidden;
+}
+.profile-editor-dialog ion-input::part(native),
+.profile-editor-dialog ion-textarea::part(native) { border-radius: 12px; }
 .edit-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
 .unfollow-backdrop { z-index: 40; background: rgba(25, 0, 25, .62); backdrop-filter: blur(4px); }
 .unfollow-dialog { width: min(100%, 390px); padding: 24px; border-color: color-mix(in srgb, var(--ion-color-primary) 30%, var(--page-border)); }
@@ -372,5 +406,19 @@
 	.stats-row strong { font-size: .78rem; }
 	.stats-row span { font-size: .6rem; }
 }
+main
+.profile-privacy-settings { display:grid;gap:12px;margin:18px 0;padding:16px;border:1px solid var(--app-border);border-radius:16px;background:var(--app-surface); }
+.profile-privacy-settings h3 { margin:0;color:var(--app-text);font-size:1rem; }
+.profile-privacy-settings label { display:grid;gap:7px;color:var(--app-text);font-size:.84rem;font-weight:700; }
+.profile-privacy-settings select { min-height:42px;padding:8px 10px;border:1px solid var(--app-border);border-radius:10px;background:var(--app-surface-alt);color:var(--app-text);font:inherit; }
+.profile-privacy-settings p { margin:0;color:var(--app-text-muted);font-size:.8rem;line-height:1.45; }
+.profile-photo-visibility { margin: 12px 0; }
+.crop-backdrop { z-index: 30; }
+.crop-dialog { display: grid; gap: 14px; }
+.crop-dialog h2 { margin-bottom: 0; }
+.profile-photo-crop-preview { width: min(72vw, 280px); aspect-ratio: 1; margin: 0 auto; overflow: hidden; border: 3px solid var(--ion-color-primary); border-radius: 50%; background: var(--page-bg); }
+.profile-photo-crop-preview img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .08s ease-out; }
+.crop-control { display: grid; gap: 6px; color: var(--page-text); font-size: .82rem; }
+.crop-control input { width: 100%; accent-color: var(--ion-color-primary); }
+.crop-control select { min-height: 42px; padding: 8px 10px; border: 1px solid var(--page-border); border-radius: 10px; background: var(--page-bg); color: var(--page-text); font: inherit; }
 
-.page-footer img.navigation-icon { display: block; width: 24px; height: 24px; object-fit: contain; }

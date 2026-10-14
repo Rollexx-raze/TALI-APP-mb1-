@@ -41,6 +41,8 @@ export const routes: Routes = [
     path: 'activity',
     loadComponent: () => import('./pages/suggestions/suggestions.page').then((m) => m.SuggestionsPage),
   },
+  { path: 'groups/create', loadComponent: () => import('./pages/groups/create-group.page').then((m) => m.CreateGroupPage) },
+  { path: 'groups/:groupId', loadComponent: () => import('./pages/groups/group-detail.page').then((m) => m.GroupDetailPage) },
   { path: 'groups', loadComponent: () => import('./pages/groups/groups.page').then((m) => m.GroupsPage) },
   { path: 'suggestions', redirectTo: 'activity', pathMatch: 'full' },
   {

@@ -1,0 +1,79 @@
+<ion-header class="page-header ion-no-border">
+  <ion-toolbar>
+    <ion-back-button slot="start" defaultHref="/groups" text=""></ion-back-button>
+    <ion-title class="group-page-title group-list-title">Groups</ion-title>
+    <ion-button slot="end" class="create-group-button" routerLink="/groups/create" aria-label="Create community group">
+      <span aria-hidden="true">+</span>
+      <span class="create-label">Create community group</span>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="groups-page">
+  <main class="groups-content">
+    <section class="groups-hero">
+      <p class="eyebrow">YOUR COMMUNITY</p>
+      <h2>Find your people</h2>
+      <p>Bring people together around something you love.</p>
+    </section>
+
+    <section class="created-groups" aria-labelledby="groups-list-heading">
+      <nav class="groups-tabs" aria-label="Group lists">
+        <button type="button" [class.active]="activeTab === 'discover'" (click)="setTab('discover')">Discover</button>
+        <button type="button" [class.active]="activeTab === 'mine'" (click)="setTab('mine')">My groups</button>
+      </nav>
+      <ion-searchbar
+        [value]="query"
+        (ionInput)="updateQuery($any($event).detail.value)"
+        [debounce]="250"
+        placeholder="Search groups"
+        aria-label="Search groups by name or description"
+      ></ion-searchbar>
+      @if (groupService.loading()) {
+        <p class="groups-state" role="status">Loading groups...</p>
+      } @else if (groupService.loadError()) {
+        <p class="groups-state" role="alert">{{ groupService.loadError() }}</p>
+      } @else if (!accountService.selectedAccount()) {
+        <p class="groups-state" role="status">Select an account to browse groups.</p>
+      } @else {
+        @for (group of visibleGroups; track group.id) {
+          <article class="group-card">
+            <a class="group-card-link" [routerLink]="['/groups', group.id]">
+              @if (group.photo) {
+                <img class="group-photo" [src]="group.photo" alt="" />
+              } @else {
+                <span class="group-photo group-photo-placeholder">{{ group.name.slice(0, 1).toUpperCase() || 'G' }}</span>
+              }
+              <span class="group-details">
+                <strong>{{ group.name }}</strong>
+                <span class="group-description">{{ group.description || 'A new community group.' }}</span>
+                <small>{{ group.memberIds.length }} member{{ group.memberIds.length === 1 ? '' : 's' }} · {{ group.privacy === 'private' ? 'Private' : 'Public' }}</small>
+              </span>
+            </a>
+            @if (isGroupAdmin(group)) {
+              <ion-button class="delete-group-button" fill="clear" color="danger" aria-label="Delete group" (click)="confirmDeleteGroup(group)">
+                <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
+              </ion-button>
+            }
+            @if (isGroupMember(group)) {
+              <ion-button class="group-membership-button" fill="outline" disabled>Joined</ion-button>
+            } @else if (isJoinRequested(group)) {
+              <ion-button class="group-membership-button" fill="outline" disabled>Requested</ion-button>
+            } @else {
+              <ion-button class="group-membership-button" fill="outline" (click)="handleGroupAction(group)">
+                {{ group.privacy === 'private' ? 'Request' : 'Join' }}
+              </ion-button>
+            }
+          </article>
+        } @empty {
+          <div class="groups-empty-state">
+            <p>{{ query.trim() ? 'No groups found.' : (activeTab === 'discover' ? 'No groups found.' : 'You have not joined any groups yet.') }}</p>
+            @if (activeTab === 'mine') {
+              <ion-button class="empty-create-button" routerLink="/groups/create">Create community group</ion-button>
+            }
+          </div>
+        }
+      }
+    </section>
+  </main>
+</ion-content>

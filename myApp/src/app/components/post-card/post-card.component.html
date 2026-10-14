@@ -38,12 +38,24 @@
     }
   </div>
 
+  @if (groupName; as name) {
+    <a class="post-group-link" [routerLink]="['/groups', post.groupId]">Posted in {{ name }}</a>
+  }
+
   @if (editingPost) {
     <div class="post-edit-form">
       <textarea [value]="editBody" (input)="editBody = $any($event.target).value" maxlength="500" aria-label="Edit post text"></textarea>
       <div><button type="button" (click)="editingPost = false">Cancel</button><button type="button" (click)="saveEditedPost()">Save changes</button></div>
     </div>
-  } @else if (post.body) { <p class="post-body">{{ post.body }}</p> }
+  } @else if (post.body) {
+    <p class="post-body">
+      @for (segment of bodySegments; track $index) {
+        @if (segment.url) {
+          <a [href]="segment.url" target="_blank" rel="noopener noreferrer">{{ segment.text }}</a>
+        } @else { {{ segment.text }} }
+      }
+    </p>
+  }
 
   @if (post.attachments.length) {
     <div class="post-media-carousel">

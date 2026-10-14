@@ -1,6 +1,7 @@
 import { Component, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { IonButton, IonContent, IonIcon, IonTextarea, ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { chevronBackOutline, chevronForwardOutline, closeOutline, imageOutline, personCircleOutline } from 'ionicons/icons';
@@ -12,7 +13,7 @@ import { Post, PostAttachment, PostService } from '../../services/post.service';
   standalone: true,
   templateUrl: './comments.page.html',
   styleUrls: ['./comments.page.scss'],
-  imports: [CommonModule, FormsModule, IonButton, IonContent, IonIcon, IonTextarea],
+  imports: [CommonModule, FormsModule, RouterLink, IonButton, IonContent, IonIcon, IonTextarea],
 })
 export class CommentsPage implements OnChanges {
   @Input({ required: true }) postId!: string;

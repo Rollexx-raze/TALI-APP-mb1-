@@ -7,6 +7,7 @@ import { addIcons } from 'ionicons';
 import { addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, micOutline, notificationsOutline, personCircleOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
 import { AccountService } from '../../services/account.service';
 import { PostAttachment, PostAudience, PostService } from '../../services/post.service';
+import { MediaAttachmentService } from '../../services/media-attachment.service';
 import { loadBrowserData, saveBrowserData, deleteBrowserData } from '../../services/browser-data.store';
 import { ViewStateService } from '../../services/view-state.service';
 
@@ -38,12 +39,15 @@ function isPostDraft(value: unknown): value is PostDraft {
 export class AddPostPage {
   readonly accountService = inject(AccountService);
   private readonly postService = inject(PostService);
+  private readonly mediaAttachmentService = inject(MediaAttachmentService);
   private readonly router = inject(Router);
   readonly viewState = inject(ViewStateService);
   message = '';
   publishError = '';
   pendingAttachments: PostAttachment[] = [];
   mediaError = '';
+  mediaUploading = false;
+  mediaUploadProgress = 0;
   showAudienceMenu = false;
   showAudiencePicker = false;
   audience: PostAudience = 'public';
@@ -146,11 +150,23 @@ export class AddPostPage {
     this.mediaError = '';
     this.publishError = '';
 
-    const results = await Promise.all(files.map((file) => this.readFile(file).catch(() => null)));
-    const attachments = results.filter((result): result is PostAttachment => result !== null);
-    this.pendingAttachments = [...this.pendingAttachments, ...attachments];
-    this.persistDraft();
-    if (attachments.length !== files.length) this.mediaError = 'Some files could not be added. Please try again.';
+    if (files.length === 0) return;
+    this.mediaUploading = true;
+    this.mediaUploadProgress = 0;
+    try {
+      const { attachments, errors } = await this.mediaAttachmentService.readAttachments(files, (progress) => {
+        this.mediaUploadProgress = progress;
+      });
+      this.pendingAttachments = [...this.pendingAttachments, ...attachments];
+      this.persistDraft();
+      this.mediaError = errors.join(' ');
+    } catch (error) {
+      console.error('Could not add post attachments.', error);
+      this.mediaError = 'Attachments could not be uploaded. Please try again.';
+    } finally {
+      this.mediaUploading = false;
+      this.mediaUploadProgress = 0;
+    }
   }
 
   removeAttachment(index: number) {
@@ -160,6 +176,7 @@ export class AddPostPage {
   }
 
   publish() {
+    if (this.mediaUploading) return;
     const account = this.accountService.selectedAccount();
     if (!account) {
       this.publishError = 'Select an account before publishing.';
@@ -194,16 +211,4 @@ export class AddPostPage {
     void this.router.navigateByUrl('/home');
   }
 
-  private readFile(file: File): Promise<PostAttachment> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve({
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        dataUrl: String(reader.result),
-      });
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(file);
-    });
-  }
 }

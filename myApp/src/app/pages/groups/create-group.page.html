@@ -1,0 +1,58 @@
+<ion-header class="page-header ion-no-border">
+  <ion-toolbar>
+    <ion-back-button slot="start" defaultHref="/groups" text=""></ion-back-button>
+    <ion-title class="group-page-title">Create group</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="create-group-page">
+  <main class="create-group-content">
+    <section class="create-group-card">
+      <p class="eyebrow">NEW COMMUNITY</p>
+      <h2>Bring people together</h2>
+      <p class="form-intro">Start a group around a shared interest, place, or idea.</p>
+
+      <form (ngSubmit)="submit()" novalidate>
+        <label class="group-field">
+          <span>Group name <b aria-hidden="true">*</b></span>
+          <input name="groupName" [(ngModel)]="name" maxlength="60" placeholder="e.g. Weekend hikers" [attr.aria-invalid]="nameError" aria-describedby="group-name-error" />
+          @if (nameError) { <small id="group-name-error" class="form-error" role="alert">Enter a group name.</small> }
+        </label>
+        <label class="group-field">
+          <span>Description <small>(optional)</small></span>
+          <textarea name="groupDescription" [(ngModel)]="description" maxlength="240" placeholder="What is this group about?"></textarea>
+        </label>
+
+        <div class="group-field">
+          <span>Group photo <small>(optional)</small></span>
+          <input #photoInput class="photo-input" type="file" accept="image/*" (change)="onPhotoSelected($event)" aria-label="Choose a group photo" />
+          @if (photo) {
+            <div class="photo-preview">
+              <img [src]="photo" alt="Group photo preview" />
+              <button type="button" class="remove-photo" (click)="removePhoto()">Remove photo</button>
+            </div>
+          } @else {
+            <button class="photo-picker" type="button" (click)="photoInput.click()">
+              <ion-icon name="image-outline" aria-hidden="true"></ion-icon>
+              <span>Choose a photo</span>
+            </button>
+          }
+          @if (photoError) { <p class="form-error" role="alert">{{ photoError }}</p> }
+        </div>
+
+        @if (accountError) { <p class="form-error" role="alert">Select an account before creating a group.</p> }
+        <footer class="group-form-actions">
+          <ion-button type="button" fill="clear" routerLink="/groups">Cancel</ion-button>
+          <ion-button type="submit" [disabled]="saving || !accountService.selectedAccount()">
+            @if (saving) {
+              <ion-spinner name="crescent" aria-label="Saving group"></ion-spinner>
+              <span>Creating...</span>
+            } @else {
+              <span>Create group</span>
+            }
+          </ion-button>
+        </footer>
+      </form>
+    </section>
+  </main>
+</ion-content>

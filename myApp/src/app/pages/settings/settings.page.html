@@ -86,7 +86,6 @@
             <ion-button type="button" class="change-photo-button" (click)="settingsPhotoInput.click()">Change photo</ion-button>
           </div>
           @if (profilePhotoError) { <p class="profile-photo-error" role="alert">{{ profilePhotoError }}</p> }
-          <label class="profile-field"><strong>Website</strong><input type="url" placeholder="Website" [(ngModel)]="profileWebsite" name="website"></label>
           <label class="profile-field"><strong>Bio</strong><textarea maxlength="150" [(ngModel)]="profileBio" name="bio" placeholder="Bio"></textarea><small>{{ profileBio.length }} / 150</small></label>
           <div class="profile-field gender-field"><strong>Gender</strong>
             <div class="gender-picker">
@@ -272,7 +271,6 @@
       @if (activeSection === 'about') { <h2>About</h2><section class="settings-info-card"><p class="detail-copy">Tali · Version 0.0.1</p><p class="detail-copy">A space for people and communities to connect.</p></section> }
     </section>
   </div>
-  <ion-button class="settings-messages-button" routerLink="/messages" aria-label="Messages"><img class="send-horizontal-icon" slot="start" src="assets/send-horizontal.png" alt="">Messages</ion-button>
 </ion-content>
 @if (pendingLogoutAccount; as account) {
   <div class="logout-confirm-backdrop" role="presentation" (click)="cancelLogout()">

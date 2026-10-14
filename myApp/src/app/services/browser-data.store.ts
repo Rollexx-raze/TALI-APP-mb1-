@@ -14,15 +14,21 @@ export async function loadBrowserData<T>(
   key: string,
   fallback: T,
   isValid: (value: unknown) => value is T,
+  onLoadError?: (error: unknown) => void,
 ): Promise<T> {
+  let loadError: unknown;
   const database = await openDatabase();
   if (database) {
     try {
       const record = await readRecord<T>(database, key);
       if (record !== undefined && isValid(record)) return record;
+      if (record !== undefined) loadError = new Error(`Saved ${key} data has an invalid shape.`);
     } catch (error) {
       console.error(`Could not read saved ${key} from IndexedDB.`, error);
+      loadError = error;
     }
+  } else if (typeof indexedDB !== 'undefined') {
+    loadError = new Error(`Could not open IndexedDB to load ${key}.`);
   }
 
   // Migrate data saved by earlier versions of the app.
@@ -34,11 +40,14 @@ export async function loadBrowserData<T>(
         if (database) await writeRecord(database, key, parsed);
         return parsed;
       }
+      loadError = new Error(`Saved ${key} data in local storage has an invalid shape.`);
     }
   } catch (error) {
     console.error(`Could not migrate saved ${key}.`, error);
+    loadError = error;
   }
 
+  if (loadError !== undefined) onLoadError?.(loadError);
   return fallback;
 }
 

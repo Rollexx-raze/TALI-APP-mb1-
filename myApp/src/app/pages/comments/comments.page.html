@@ -15,13 +15,17 @@
           }
         } @else {
           <article class="comments-text-post">
-            <div class="comment-avatar">
+            <a class="comment-avatar-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()" [attr.aria-label]="'View ' + currentPost.authorName + ' profile'">
+              <div class="comment-avatar">
               @if (authorImage; as image) { <img [src]="image" alt="" /> }
               @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
-            </div>
+              </div>
+            </a>
             <div class="comments-text-post-copy">
-              <strong>{{ currentPost.authorName }}</strong>
-              <span>{{ currentPost.authorUsername }}</span>
+              <a class="comment-profile-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()">
+                <strong>{{ currentPost.authorName }}</strong>
+                <span>{{ currentPost.authorUsername }}</span>
+              </a>
               @if (currentPost.body) { <p>{{ currentPost.body }}</p> }
               <time>{{ currentPost.createdAt | date:'short' }}</time>
             </div>
@@ -31,11 +35,17 @@
 
       <section class="comments-panel" aria-label="Comments">
         <header class="comments-author">
-          <div class="comment-avatar">
+          <a class="comment-avatar-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()" [attr.aria-label]="'View ' + currentPost.authorName + ' profile'">
+            <div class="comment-avatar">
             @if (authorImage; as image) { <img [src]="image" alt="" /> }
             @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
+            </div>
+          </a>
+          <div class="comments-author-copy">
+            <a class="comment-profile-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()">
+              <strong>{{ currentPost.authorName }}</strong><span>{{ currentPost.authorUsername }}</span>
+            </a>
           </div>
-          <div class="comments-author-copy"><strong>{{ currentPost.authorName }}</strong><span>{{ currentPost.authorUsername }}</span></div>
           <button type="button" class="comments-close" aria-label="Close comments" (click)="close()"><ion-icon name="close-outline"></ion-icon></button>
         </header>
 
@@ -43,11 +53,13 @@
         <div class="comments-scroll">
           @if (currentPost.body && mediaAttachments.length) {
             <article class="comment-entry post-caption">
-              <div class="comment-avatar">
+              <a class="comment-avatar-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()" [attr.aria-label]="'View ' + currentPost.authorName + ' profile'">
+                <div class="comment-avatar">
                 @if (authorImage; as image) { <img [src]="image" alt="" /> }
                 @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
-              </div>
-              <div><strong>{{ currentPost.authorName }}</strong><p>{{ currentPost.body }}</p><time>{{ currentPost.createdAt | date:'short' }}</time></div>
+                </div>
+              </a>
+              <div><a class="comment-profile-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()"><strong>{{ currentPost.authorName }}</strong></a><p>{{ currentPost.body }}</p><time>{{ currentPost.createdAt | date:'short' }}</time></div>
             </article>
           }
 
@@ -56,11 +68,18 @@
           }
           @for (comment of visibleComments; track comment.id) {
             <article class="comment-entry">
-              <div class="comment-avatar">
+              <a class="comment-avatar-link" [routerLink]="['/profile', comment.authorId]" (click)="close()" [attr.aria-label]="'View ' + comment.authorName + ' profile'">
+                <div class="comment-avatar">
                 @if (commentAuthorImage(comment.authorId); as image) { <img [src]="image" alt="" /> }
                 @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
+                </div>
+              </a>
+              <div class="comment-copy">
+                <a class="comment-profile-link" [routerLink]="['/profile', comment.authorId]" (click)="close()">
+                  <strong>{{ comment.authorName }}</strong><span>{{ comment.authorUsername }}</span>
+                </a>
+                <p>{{ comment.body }}</p><time>{{ comment.createdAt | date:'short' }}</time>
               </div>
-              <div class="comment-copy"><strong>{{ comment.authorName }}</strong><span>{{ comment.authorUsername }}</span><p>{{ comment.body }}</p><time>{{ comment.createdAt | date:'short' }}</time></div>
             </article>
           }
         </div>
