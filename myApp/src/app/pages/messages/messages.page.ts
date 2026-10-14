@@ -441,6 +441,11 @@ export class MessagesPage {
     this.saveViewState();
   }
 
+  closeChatSettings() {
+    this.showChatSettings = false;
+    this.saveViewState();
+  }
+
   openChatSettings() {
     const conversation = this.activeConversation;
     if (!conversation) return;

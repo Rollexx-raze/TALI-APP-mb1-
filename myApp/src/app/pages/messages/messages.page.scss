@@ -129,6 +129,7 @@
 .call-notice button { border: 0; background: transparent; color: var(--page-muted); }
 .blocked-notice { color: #efadad; }
 .chat-footer { --background: var(--page-bg); --border-color: var(--page-border); }
+.chat-footer.chat-settings-open { display: none !important; }
 .chat-footer ion-toolbar { --background: var(--page-bg); padding: 6px 12px calc(6px + env(safe-area-inset-bottom, 0px)); }
 .chat-footer.emoji-picker-open { transition: transform .18s ease; }
 .chat-composer { display: flex; width: 100%; min-width: 0; align-items: center; gap: 6px; }
