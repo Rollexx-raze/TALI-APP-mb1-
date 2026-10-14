@@ -30,8 +30,8 @@
 
 .home-brand-mark {
   display: grid;
-  width: 72px;
-  height: 72px;
+  width: 60px;
+  height: 60px;
   place-items: center;
   justify-self: center;
 }
@@ -45,17 +45,26 @@
 
 .search-button {
 	--color: var(--page-text);
-  width: 40px;
-  height: 40px;
+  display: grid;
+  width: 44px;
+  height: 44px;
   margin: 0;
-  font-size: 1.2rem;
+  padding: 0;
+  font-size: 1.3rem;
+  --background: transparent;
+  --background-activated: transparent;
+  --color: #e6edfd;
+  --border-radius: 50%;
 }
 
-:host-context(html) ::ng-deep ion-header.home-header ion-button.search-button {
-  --background: var(--app-surface) !important;
-  --background-activated: var(--app-surface-hover) !important;
-  --color: var(--app-text-dark) !important;
-  --border-radius: 50% !important;
+:host-context(html) ::ng-deep ion-header.home-header ion-button.search-button::part(native) {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #e6edfd;
+  box-shadow: none;
 }
 
 .screen-shell {
@@ -153,7 +162,8 @@ app-post-card { display: block; margin: 0 12px 12px; }
 .feed-empty p {
   margin: 0;
 	color: var(--page-muted);
-  font-size: 0.8rem;
+  font-size: .9rem;
+  line-height: 1.5;
 }
 
 .feed-empty ion-button {
@@ -188,10 +198,10 @@ app-post-card { display: block; margin: 0 12px 12px; }
 }
 
 @media (max-width: 560px) {
-	.home-account-copy strong { font-size: .8rem; font-weight: 600; }
-	.home-account-copy span { font-size: .68rem; }
-	.feed-empty h3 { font-size: .94rem; }
-	.feed-empty p { font-size: .74rem; }
+	.home-account-copy strong { font-size: .9rem; font-weight: 600; }
+	.home-account-copy span { font-size: .75rem; }
+	.feed-empty h3 { font-size: 1rem; }
+	.feed-empty p { font-size: .9rem; }
 	.feed-empty ion-button { font-size: .8rem; text-transform: none; }
 }
 .screen-shell {
@@ -280,6 +290,11 @@ ion-header.home-header {
 
 .home-toolbar-row {
   grid-template-columns: minmax(0, 1fr) 44px;
+  align-items: center;
+}
+
+.home-brand-mark {
+  justify-self: center;
 }
 
 .home-title {
@@ -294,14 +309,23 @@ ion-header.home-header {
 }
 
 .search-button {
-  --background: var(--app-surface);
-  --background-activated: #e8edff;
-  --color: var(--app-text-dark);
-  --border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  box-shadow: 0 4px 14px rgba(2, 6, 23, .18);
+  --background: transparent !important;
+  --background-activated: transparent !important;
+  --background-focused: transparent !important;
+  --background-hover: transparent !important;
+  --color: #e6edfd !important;
+  --border-radius: 0;
+  --box-shadow: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.search-button::part(native) {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .home-account-row {

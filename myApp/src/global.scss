@@ -622,53 +622,123 @@ ion-content.home-content {
 .page-nav.profile-nav::before { left: calc(90% - 35px); }
 
 .page-nav > ion-button { position: relative; z-index: 1; }
-.page-nav img.navigation-icon {
-	display: block;
-	width: 24px;
-	height: 24px;
-	object-fit: contain;
-	filter: brightness(0) invert(1);
-}
-.page-nav ion-button.active-tab img.navigation-icon {
-	filter: brightness(0) saturate(100%) invert(18%) sepia(96%) saturate(2555%) hue-rotate(222deg) brightness(88%) contrast(110%);
-}
-
 body .page-nav ion-button {
 	pointer-events: auto !important;
-	width: 40px !important;
-	height: 40px !important;
+	position: relative;
+	display: grid;
+	width: 44px !important;
+	min-width: 44px !important;
+	height: 44px !important;
 	margin: 0 !important;
+	padding: 0 !important;
+	place-items: center;
 	--padding-start: 0;
 	--padding-end: 0;
-	--background: transparent;
-	--color: var(--page-muted);
+	--padding-top: 0;
+	--padding-bottom: 0;
+	--background: transparent !important;
+	--background-activated: transparent !important;
+	--background-focused: transparent !important;
+	--background-hover: transparent !important;
+	--color: rgba(255, 255, 255, .88) !important;
 	--border-radius: 50%;
-	font-size: 1.1rem;
+	--box-shadow: none;
+	font-size: 1rem;
 }
-
-body .page-nav ion-button.active-tab,
-body .page-nav ion-button.is-active {
-	position: relative;
-	z-index: 1;
-	width: 40px !important;
-	height: 40px !important;
-	transform: none;
-	border-radius: 50% !important;
+body .page-nav ion-button::part(native) {
+	display: grid;
+	opacity: 1;
+	width: 44px;
+	height: 44px;
+	min-height: 44px;
+	padding: 0;
+	place-items: center;
+	border: 0;
+	border-radius: 50%;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+body .page-nav svg.nav-icon {
+	display: block !important;
+	visibility: visible !important;
+	width: 24px !important;
+	height: 24px !important;
+	fill: none !important;
+	stroke: #ffffff !important;
+	stroke-width: 1.9 !important;
+	stroke-linecap: round !important;
+	stroke-linejoin: round !important;
+	color: #ffffff !important;
+	opacity: .88;
+	flex: 0 0 24px;
+}
+body .page-nav ion-button:not(.compose-button) svg.nav-icon,
+body .page-nav ion-button:not(.compose-button):active svg.nav-icon,
+body .page-nav ion-button:not(.compose-button):focus-visible svg.nav-icon,
+body .page-nav ion-button:not(.compose-button).active-tab svg.nav-icon {
+	visibility: visible !important;
+	stroke: #ffffff !important;
+	color: #ffffff !important;
+	opacity: 1 !important;
+}
+body .page-nav ion-button:not(.compose-button) svg.nav-icon path,
+body .page-nav ion-button:not(.compose-button) svg.nav-icon circle {
+	fill: none !important;
+	stroke: #ffffff !important;
+	stroke-width: 1.9 !important;
+	stroke-linecap: round !important;
+	stroke-linejoin: round !important;
+}
+body .page-nav ion-button:not(.compose-button)::part(native) {
+	background: transparent !important;
+	color: #ffffff !important;
+	-webkit-text-fill-color: #ffffff !important;
+}
+body .page-nav ion-button.active-tab:not(.compose-button) {
 	--background: #ffffff !important;
-	--background-activated: #f0f0f0 !important;
-	--color: var(--ion-color-primary) !important;
-	--border-radius: 50%;
-	z-index: 1;
+	--background-activated: #ffffff !important;
+	--color: #111111 !important;
+}
+body .page-nav ion-button.active-tab:not(.compose-button)::part(native) {
+	background: #ffffff !important;
+	color: #111111 !important;
+	-webkit-text-fill-color: #111111 !important;
+	outline: none;
+}
+body .page-nav ion-button.active-tab:not(.compose-button) svg.nav-icon,
+body .page-nav ion-button.active-tab:not(.compose-button) svg.nav-icon path,
+body .page-nav ion-button.active-tab:not(.compose-button) svg.nav-icon circle {
+	stroke: #111111 !important;
+	color: #111111 !important;
+	opacity: 1 !important;
+}
+body .page-nav ion-button.compose-button { --color: #ffffff !important; }
+body .page-nav .nav-plus-circle {
+	display: grid;
+	width: 40px;
+	height: 40px;
+	place-items: center;
+	border-radius: 50%;
+	background: #ffffff;
+	color: var(--app-primary, #1d3fbf);
+}
+body .page-nav .nav-plus-icon {
+	display: block;
+	width: 20px;
+	height: 20px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.25;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
-body .page-nav ion-button.active-tab.compose-button {
-	font-size: 1.45rem;
+body .page-nav ion-button.compose-button:active .nav-plus-circle,
+body .page-nav ion-button.compose-button:focus-visible .nav-plus-circle {
+	outline: 2px solid rgba(255, 255, 255, .88);
+	outline-offset: 2px;
 }
-
-body .page-nav ion-button.compose-button:not(.active-tab) {
-	color: var(--ion-color-primary);
-	font-size: 1.55rem;
-}
+.page-nav .notification-badge { z-index: 2; }
 
 .composer-tools { position: relative; }
 .audience-menu { position: absolute; z-index: 10; bottom: calc(100% + 10px); left: 0; width: min(260px, calc(100vw - 64px)); padding: 6px; border: 1px solid var(--page-border); border-radius: 8px; background: var(--page-surface); box-shadow: 0 10px 28px rgba(0, 0, 0, .18); }

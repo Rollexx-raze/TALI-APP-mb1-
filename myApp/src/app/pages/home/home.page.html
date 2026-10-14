@@ -1,10 +1,7 @@
 <ion-header class="home-header ion-no-border">
   <ion-toolbar>
     <div class="home-toolbar-row">
-
-      <span aria-hidden="true"></span>
       <div class="home-brand-mark"><img class="logo-on-dark" src="assets/Logo%20%E2%80%93%20dark@1x.png" alt="Tali" /><img class="logo-on-light" src="assets/Logo%20%E2%80%93%20light@1x.png" alt="" aria-hidden="true" /></div>
-main
       <ion-button fill="clear" class="search-button" aria-label="Search" routerLink="/search">
         <ion-icon slot="icon-only" name="search-outline"></ion-icon>
       </ion-button>
@@ -72,11 +69,11 @@ main
 <ion-footer class="home-footer ion-no-border">
   <ion-toolbar>
     <nav class="page-nav home-nav" aria-label="Main navigation">
-      <ion-button fill="solid" class="active-tab" routerLink="/home" (click)="viewState.handleTabTap('/home', 'tali-view-home')" aria-label="Home"><img class="navigation-icon house-navigation-icon" slot="icon-only" src="assets/house.png" alt="" aria-hidden="true"></ion-button>
-      <ion-button fill="clear" routerLink="/messages" (click)="viewState.handleTabTap('/messages', 'tali-view-messages')" aria-label="Messages"><img class="navigation-icon send-navigation-icon" slot="icon-only" src="assets/send-horizontal.png" alt="" aria-hidden="true"></ion-button>
-      <ion-button fill="clear" class="compose-button" routerLink="/add-post" (click)="viewState.handleTabTap('/add-post', 'tali-post-draft')" aria-label="Create post"><ion-icon slot="icon-only" name="add-circle"></ion-icon></ion-button>
-      <ion-button fill="clear" class="notification-nav-button" routerLink="/activity" (click)="viewState.handleTabTap('/activity', 'tali-view-activity')" aria-label="Activity"><ion-icon slot="icon-only" name="notifications-outline"></ion-icon>@if (unreadNotifications) { <span class="notification-badge">{{ unreadNotifications }}</span> }</ion-button>
-      <ion-button fill="clear" routerLink="/profile" (click)="viewState.handleTabTap('/profile', 'tali-view-profile:current')" aria-label="Profile"><ion-icon slot="icon-only" name="person-circle-outline"></ion-icon></ion-button>
+      <ion-button fill="solid" class="active-tab" routerLink="/home" (click)="viewState.handleTabTap('/home', 'tali-view-home')" aria-label="Home"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></ion-button>
+      <ion-button fill="clear" routerLink="/messages" (click)="viewState.handleTabTap('/messages', 'tali-view-messages')" aria-label="Messages"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></ion-button>
+      <ion-button fill="clear" class="compose-button" routerLink="/add-post" (click)="viewState.handleTabTap('/add-post', 'tali-post-draft')" aria-label="Create post"><span class="nav-plus-circle"><svg class="nav-plus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></ion-button>
+      <ion-button fill="clear" class="notification-nav-button" routerLink="/activity" (click)="viewState.handleTabTap('/activity', 'tali-view-activity')" aria-label="Activity"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>@if (unreadNotifications) { <span class="notification-badge">{{ unreadNotifications }}</span> }</ion-button>
+      <ion-button fill="clear" routerLink="/profile" (click)="viewState.handleTabTap('/profile', 'tali-view-profile:current')" aria-label="Profile"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="9" r="3"/><path d="M7 20a5 5 0 0 1 10 0"/></svg></ion-button>
     </nav>
   </ion-toolbar>
 </ion-footer>

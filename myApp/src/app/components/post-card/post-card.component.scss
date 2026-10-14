@@ -64,11 +64,11 @@
 
 .post-user-details { flex: 1; min-width: 0; }
 .identity-row { gap: 8px; }
-.identity-row strong { overflow: hidden; color: var(--app-text); font-size: .82rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.identity-row strong { overflow: hidden; color: var(--app-text); font-size: .875rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .post-time,
-.post-handle { color: var(--app-text-muted); font-size: .7rem; }
+.post-handle { color: var(--app-text-muted); font-size: .75rem; }
 .post-handle { display: block; margin-top: 3px; }
-.post-group-link { display: inline-block; margin-top: 8px; color: var(--app-text-muted); font-size: .72rem; text-decoration: none; }
+.post-group-link { display: inline-block; margin-top: 8px; color: var(--app-text-muted); font-size: .75rem; text-decoration: none; }
 .post-group-link:hover, .post-group-link:focus-visible { color: var(--app-primary); text-decoration: underline; }
 
 .post-more {
@@ -95,7 +95,7 @@
 .post-edit-form button { min-height: 34px; padding: 0 12px; border: 1px solid var(--app-border); border-radius: 9px; background: var(--app-surface); color: var(--app-text); cursor: pointer; }
 .post-edit-form button:last-child { border-color: var(--ion-color-primary); background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); }
 .post-trash-note { margin: 10px 0 0; color: var(--page-muted); font-size: .75rem; }
-.post-body { margin: 10px 0 0; color: var(--app-text); font-size: .86rem; line-height: 1.5; overflow-wrap: anywhere; }
+.post-body { margin: 10px 0 0; color: var(--app-text); font-size: .9375rem; line-height: 1.5; overflow-wrap: anywhere; }
 .post-body a { color: var(--app-text-muted); text-decoration: underline; text-underline-offset: 2px; }
 
 .post-media-carousel {
@@ -184,8 +184,8 @@
   .post-card { width: 100%; margin: 0; padding: 12px; }
   .post-attachments { gap: 12px; }
   .post-media { max-height: min(38vh, 320px); }
-  .identity-row strong { font-size: .76rem; font-weight: 600; }
-  .post-time, .post-handle { font-size: .7rem; }
-  .post-body { font-size: .78rem; line-height: 1.45; }
-  .post-trash-note, .action-message { font-size: .7rem; }
+  .identity-row strong { font-size: .875rem; font-weight: 600; }
+  .post-time, .post-handle { font-size: .75rem; }
+  .post-body { font-size: .9rem; line-height: 1.5; }
+  .post-trash-note, .action-message { font-size: .75rem; }
 }
