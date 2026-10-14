@@ -16,6 +16,10 @@ export interface Account {
   verified?: boolean;
   followersIds: number[];
   followingIds: number[];
+  mutedAccountIds?: number[];
+  blockedAccountIds?: number[];
+  isOnline?: boolean;
+  lastSeenAt?: string;
 }
 
 const accountsStorageKey = 'tali-accounts';
@@ -213,6 +217,26 @@ export class AccountService {
     this.persistActiveAccount();
   }
 
+  toggleMutedAccount(targetId: number) {
+    this.updateSelectedAccountList('mutedAccountIds', targetId);
+  }
+
+  toggleBlockedAccount(targetId: number) {
+    this.updateSelectedAccountList('blockedAccountIds', targetId);
+  }
+
+  private updateSelectedAccountList(key: 'mutedAccountIds' | 'blockedAccountIds', targetId: number) {
+    const selected = this.selectedAccount();
+    if (!selected || selected.id === targetId || !this.accounts().some((account) => account.id === targetId)) return;
+    const current = selected[key] ?? [];
+    const updated = { ...selected, [key]: current.includes(targetId) ? current.filter((id) => id !== targetId) : [...current, targetId] };
+    this.accounts.update((items) => items.map((item) => item.id === selected.id ? updated : item));
+    this.selectedAccount.set(updated);
+    this.selectionChanged = true;
+    this.persistAccounts();
+    this.persistActiveAccount();
+  }
+
   getFollowers(accountId: number) {
     return this.accounts().filter((account) => account.followingIds.includes(accountId));
   }
@@ -315,5 +339,9 @@ function isStoredAccount(value: unknown): value is Account {
     (account.profileImage === undefined || typeof account.profileImage === 'string') &&
     (account.verified === undefined || typeof account.verified === 'boolean') &&
     Array.isArray(account.followersIds) && account.followersIds.every(Number.isSafeInteger) &&
-    Array.isArray(account.followingIds) && account.followingIds.every(Number.isSafeInteger);
+    Array.isArray(account.followingIds) && account.followingIds.every(Number.isSafeInteger) &&
+    (account.mutedAccountIds === undefined || Array.isArray(account.mutedAccountIds) && account.mutedAccountIds.every(Number.isSafeInteger)) &&
+    (account.blockedAccountIds === undefined || Array.isArray(account.blockedAccountIds) && account.blockedAccountIds.every(Number.isSafeInteger)) &&
+    (account.isOnline === undefined || typeof account.isOnline === 'boolean') &&
+    (account.lastSeenAt === undefined || typeof account.lastSeenAt === 'string');
 }

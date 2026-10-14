@@ -1415,3 +1415,79 @@ html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button 
   opacity: 1 !important;
   visibility: visible !important;
 }
+
+.message-date-separator { display: flex; align-items: center; gap: 10px; margin: 8px 0; color: var(--page-muted); font-size: .7rem; font-weight: 650; }
+.message-date-separator::before, .message-date-separator::after { height: 1px; flex: 1; background: var(--page-border); content: ''; }
+.message-date-separator span { padding: 5px 10px; border: 1px solid var(--page-border); border-radius: 999px; background: var(--page-surface); }
+.message-meta { display: flex; align-items: center; gap: 7px; min-height: 15px; }
+.message-row.own-message .message-meta { justify-content: flex-end; }
+.message-delivery-status { color: var(--page-muted); font-size: .68rem; line-height: 1; }
+.message-delivery-status.is-seen { color: #3588ff; font-weight: 800; }
+.message-send-failed { display: inline-flex; align-items: center; gap: 3px; padding: 0; border: 0; background: transparent; color: #e14d5b; font: inherit; font-size: .68rem; cursor: pointer; }
+.message-send-failed ion-icon { font-size: .9rem; }
+html:not(.app-light) body .chat-thread .message-send-failed { border-color: transparent !important; background: transparent !important; color: #ff7b84 !important; box-shadow: none !important; }
+.chat-composer { align-items: flex-end; gap: 7px; }
+html body ion-footer.chat-footer .chat-input-wrap { align-items: flex-end; flex: 1 1 0%; }
+html body ion-footer.chat-footer textarea.chat-text-input { box-sizing: border-box; display: block; width: 100%; min-width: 0; min-height: 44px; max-height: 132px; height: 44px; flex: 1 1 auto; overflow-y: hidden; padding: 10px 12px; border-radius: 18px; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; resize: none; }
+html body ion-footer.chat-footer textarea.chat-text-input::placeholder { overflow: visible; white-space: nowrap; }
+html body ion-footer.chat-footer .chat-composer > ion-button.composer-attachment-toggle,
+html body ion-footer.chat-footer .chat-composer > ion-button:not(.composer-collapse):not([type="submit"]),
+html body ion-footer.chat-footer .chat-composer > ion-button[type="submit"] { width: 42px; min-width: 42px; height: 44px; flex: 0 0 42px; margin: 0; }
+.chat-composer .composer-emoji-control { flex: 0 0 40px; }
+ion-action-sheet.chat-attachment-action-sheet { --background: var(--page-surface); --button-background: var(--page-surface); --button-background-activated: var(--page-hover); --button-color: var(--page-text); --color: var(--page-text); --title-color: var(--page-muted); --backdrop-opacity: .45; }
+
+/* Polished message composer controls and attachment sheet. */
+ion-footer.chat-footer { border-top: 1px solid color-mix(in srgb, var(--page-border) 72%, transparent); background: color-mix(in srgb, var(--page-bg) 88%, transparent); box-shadow: 0 -8px 28px rgba(9, 17, 35, .08); }
+ion-footer.chat-footer ion-toolbar { --background: color-mix(in srgb, var(--page-bg) 92%, transparent); backdrop-filter: blur(18px); }
+html body ion-footer.chat-footer .chat-composer { gap: 8px; padding: 5px; border: 1px solid color-mix(in srgb, var(--page-border) 82%, transparent); border-radius: 28px; background: color-mix(in srgb, var(--page-surface) 92%, var(--page-bg)); box-shadow: 0 5px 20px rgba(9, 17, 35, .12), inset 0 1px rgba(255, 255, 255, .035); transition: border-color .18s ease, box-shadow .18s ease; }
+html body ion-footer.chat-footer .chat-composer:has(textarea.chat-text-input:focus) { border-color: color-mix(in srgb, var(--ion-color-primary) 54%, var(--page-border)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ion-color-primary) 12%, transparent), 0 7px 22px rgba(9, 17, 35, .14); }
+html body ion-footer.chat-footer textarea.chat-text-input { min-height: 42px; padding: 11px 7px; border: 0; border-radius: 18px; outline: 0; background: transparent; box-shadow: none; font-size: .94rem; }
+html body ion-footer.chat-footer textarea.chat-text-input:focus-visible { border: 0; outline: 0; box-shadow: none; }
+html body ion-footer.chat-footer .chat-composer > ion-button.composer-attachment-toggle { --background: var(--ion-color-primary); --background-activated: color-mix(in srgb, var(--ion-color-primary) 82%, #000); --background-hover: color-mix(in srgb, var(--ion-color-primary) 90%, #fff); --color: #fff; --border-radius: 50%; --box-shadow: 0 4px 12px color-mix(in srgb, var(--ion-color-primary) 28%, transparent); }
+html body ion-footer.chat-footer .chat-composer > ion-button.composer-attachment-toggle::part(native) { padding: 0; border: 0; border-radius: 50%; }
+html body ion-footer.chat-footer .chat-composer > ion-button.composer-attachment-toggle ion-icon { width: 22px; height: 22px; }
+html body ion-footer.chat-footer .chat-composer .composer-emoji-control ion-button { width: 40px; height: 42px; --color: var(--page-muted); --border-radius: 50%; }
+html body ion-footer.chat-footer .chat-composer .composer-emoji-control ion-button[aria-expanded="true"] { --background: color-mix(in srgb, var(--ion-color-primary) 12%, var(--page-surface)); --color: var(--ion-color-primary); }
+ion-action-sheet.chat-attachment-action-sheet { --background: var(--page-surface); --button-background: var(--page-surface); --button-background-activated: color-mix(in srgb, var(--ion-color-primary) 10%, var(--page-surface)); --button-background-hover: color-mix(in srgb, var(--ion-color-primary) 7%, var(--page-surface)); --button-color: var(--page-text); --button-color-activated: var(--page-text); --button-color-hover: var(--page-text); --color: var(--page-text); --backdrop-opacity: .48; --width: min(100%, 520px); --max-width: 520px; }
+
+html body .chat-thread .message-action-buttons { opacity: 0; }
+@media (hover: hover) and (pointer: fine) {
+  html body .chat-thread .message-row:hover .message-action-buttons,
+  html body .chat-thread .message-row:focus-within .message-action-buttons { opacity: 1; }
+}
+@media (hover: none), (pointer: coarse) {
+  html body .chat-thread .message-row:not(.message-actions-open) .message-action-buttons { opacity: 0 !important; }
+  html body .chat-thread .message-row.message-actions-open .message-action-buttons,
+  html body .chat-thread .message-action-buttons:has(+ .message-action-menu) { opacity: 1; }
+}
+.chat-thread .message-bubble { touch-action: pan-y; -webkit-touch-callout: none; }
+.chat-thread .message-delivery-status { display: inline-flex; min-width: 24px; min-height: 20px; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent !important; color: var(--page-muted); cursor: default; }
+.chat-thread button.message-delivery-status { cursor: pointer; }
+.chat-thread .message-delivery-status ion-icon { font-size: .9rem; }
+.chat-thread .message-delivery-status.is-seen { color: #3588ff; }
+.chat-thread .message-delivery-status:not(.is-seen) span { color: var(--page-muted); }
+.message-confirm-backdrop { position: fixed; z-index: 12000; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(4, 8, 20, .62); backdrop-filter: blur(7px); }
+.message-confirm-dialog, .message-receipt-dialog { width: min(100%, 420px); overflow: hidden; padding: 22px; border: 1px solid color-mix(in srgb, var(--page-border) 82%, transparent); border-radius: 24px; background: color-mix(in srgb, var(--page-surface) 96%, var(--page-bg)); color: var(--page-text); box-shadow: 0 24px 70px rgba(0,0,0,.36); }
+.message-confirm-dialog { text-align: center; }
+.message-confirm-icon { display: grid; width: 52px; height: 52px; margin: 0 auto 14px; place-items: center; border-radius: 17px; background: rgba(231, 82, 101, .12); color: #e75265; font-size: 1.5rem; }
+.message-confirm-dialog h2, .message-receipt-dialog h2 { margin: 0; font-size: 1.1rem; letter-spacing: -.015em; }
+.message-confirm-dialog > p { margin: 9px 0 20px; color: var(--page-muted); font-size: .88rem; line-height: 1.45; }
+.message-confirm-actions { display: flex; gap: 10px; }
+.message-confirm-actions button { min-height: 44px; flex: 1; border: 1px solid var(--page-border); border-radius: 13px; background: var(--page-bg); color: var(--page-text); font: inherit; font-weight: 650; cursor: pointer; }
+.message-confirm-actions .confirm-delete-message { border-color: transparent; background: #d94458; color: #fff; }
+.message-receipt-dialog { max-height: min(76dvh, 620px); overflow-y: auto; padding: 0; }
+.message-receipt-dialog > header { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 16px; border-bottom: 1px solid var(--page-border); background: var(--page-surface); }
+.message-receipt-dialog > header > div { display: grid; gap: 5px; }
+.message-receipt-dialog > header button { display: grid; width: 36px; height: 36px; place-items: center; border: 0; border-radius: 50%; background: var(--page-bg); color: var(--page-muted); font-size: 1.15rem; cursor: pointer; }
+.receipt-eyebrow { color: var(--ion-color-primary); font-size: .62rem; font-weight: 800; letter-spacing: .13em; }
+.receipt-message-preview { overflow: hidden; margin: 15px 20px 5px; padding: 11px 13px; border-radius: 13px; background: var(--page-bg); color: var(--page-muted); font-size: .84rem; text-overflow: ellipsis; white-space: nowrap; }
+.receipt-list { padding: 12px 20px 8px; }
+.receipt-list + .receipt-list { border-top: 1px solid var(--page-border); }
+.receipt-list h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: .86rem; }
+.receipt-list h3 ion-icon { color: var(--ion-color-primary); }
+.receipt-person { display: flex; min-height: 46px; align-items: center; gap: 10px; color: var(--page-text); font-size: .86rem; }
+.receipt-avatar { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; overflow: hidden; border-radius: 50%; background: color-mix(in srgb, var(--ion-color-primary) 12%, var(--page-bg)); color: var(--ion-color-primary); font-size: 1.7rem; }
+.receipt-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.receipt-person > span:nth-child(2) { flex: 1; }
+.receipt-person .receipt-check { color: #3588ff; font-size: 1rem; }
+.receipt-empty { margin: 0 0 9px; color: var(--page-muted); font-size: .8rem; }

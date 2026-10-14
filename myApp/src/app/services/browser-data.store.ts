@@ -42,17 +42,19 @@ export async function loadBrowserData<T>(
   return fallback;
 }
 
-export async function saveBrowserData<T>(key: string, value: T): Promise<void> {
+export async function saveBrowserData<T>(key: string, value: T): Promise<boolean> {
   const database = await openDatabase();
   if (!database) {
     console.error(`IndexedDB is unavailable; ${key} could not be saved.`);
-    return;
+    return false;
   }
 
   try {
     await writeRecord(database, key, value);
+    return true;
   } catch (error) {
     console.error(`Could not save ${key} to IndexedDB.`, error);
+    return false;
   }
 }
 

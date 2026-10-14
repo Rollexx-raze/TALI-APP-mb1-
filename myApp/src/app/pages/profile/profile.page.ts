@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonAvatar, IonBackButton, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonTextarea, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircle, archiveOutline, chatbubbleOutline, createOutline, homeOutline, imageOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trashOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, archiveOutline, chatbubbleOutline, createOutline, ellipsisHorizontal, homeOutline, imageOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trashOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { Account, AccountService } from '../../services/account.service';
 import { PostService } from '../../services/post.service';
@@ -44,6 +44,7 @@ export class ProfilePage {
   profileImageError = '';
   connectionsView: 'followers' | 'following' | null = null;
   confirmingUnfollow = false;
+  showProfileMenu = false;
 
   get unreadNotifications() {
     const accountId = this.accountService.selectedAccount()?.id;
@@ -51,7 +52,7 @@ export class ProfilePage {
   }
 
   constructor() {
-    addIcons({ addCircle, archiveOutline, chatbubbleOutline, createOutline, homeOutline, imageOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trashOutline, trendingUpOutline, videocamOutline });
+    addIcons({ addCircle, archiveOutline, chatbubbleOutline, createOutline, ellipsisHorizontal, homeOutline, imageOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trashOutline, trendingUpOutline, videocamOutline });
     const saved = this.viewState.read<Partial<{ activeSection: 'posts' | 'photos' | 'videos' | 'reposts' | 'archive' | 'trash'; connectionsView: 'followers' | 'following' | null }>>(this.profileStateKey, {});
     if (saved.activeSection) this.activeSection = saved.activeSection;
     this.connectionsView = saved.connectionsView ?? null;
@@ -158,6 +159,24 @@ export class ProfilePage {
   get isFollowingProfile() {
     const profileId = this.profileAccount?.id;
     return profileId !== undefined && (this.accountService.selectedAccount()?.followingIds.includes(profileId) ?? false);
+  }
+
+  get isMutedProfile() {
+    const profileId = this.profileAccount?.id;
+    return profileId !== undefined && (this.accountService.selectedAccount()?.mutedAccountIds?.includes(profileId) ?? false);
+  }
+
+  get isBlockedProfile() {
+    const profileId = this.profileAccount?.id;
+    return profileId !== undefined && (this.accountService.selectedAccount()?.blockedAccountIds?.includes(profileId) ?? false);
+  }
+
+  toggleProfileSafety(action: 'mutedAccountIds' | 'blockedAccountIds') {
+    const profileId = this.profileAccount?.id;
+    if (profileId === undefined || this.isOwnProfile) return;
+    if (action === 'mutedAccountIds') this.accountService.toggleMutedAccount(profileId);
+    else this.accountService.toggleBlockedAccount(profileId);
+    this.showProfileMenu = false;
   }
 
   toggleFollowProfile() {

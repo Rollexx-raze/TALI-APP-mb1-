@@ -28,26 +28,27 @@
 }
 .profile-hero {
 	position: relative;
-	padding: 14px 28px 52px;
+	padding: 0 28px 52px;
 	border-radius: 0 0 96px 0;
 	background: var(--page-surface);
 	color: var(--page-text);
 }
+.profile-cover { height: 142px; margin: 0 -28px; background: radial-gradient(ellipse at 78% 22%, rgba(255,255,255,.32), transparent 28%), linear-gradient(125deg, #192a68 0%, #526de0 48%, #b074aa 100%); }
 .profile-top { display: flex; flex-direction: column; align-items: center; padding: 0 0 18px; text-align: center; }
 .profile-top ion-avatar {
 	display: grid;
-	width: 82px;
-	height: 82px;
+	width: 108px;
+	height: 108px;
 	place-items: center;
-	margin: 0 0 12px;
-	border: 2px solid rgba(255, 255, 255, .2);
+	margin: -54px 0 12px;
+	border: 4px solid var(--page-surface);
 	border-radius: 50%;
 	overflow: hidden;
 	background: #1a3bb0;
 	color: #e6edfd;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, .32);
 }
-.profile-top ion-avatar ion-icon { width: 62px; height: 62px; }
+.profile-top ion-avatar ion-icon { width: 80px; height: 80px; }
 .profile-top ion-avatar img, .edit-profile-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 .profile-top h2 { margin: 0 0 4px; color: var(--page-text); font-size: 1.12rem; font-weight: 700; }
 .profile-top p { margin: 0 0 8px; color: var(--page-muted); font-size: .82rem; }
@@ -60,6 +61,10 @@
 .profile-actions .message-profile-button { --background: var(--ion-color-primary); --color: #e6edfd; --opacity: 1; --box-shadow: 0 5px 16px rgba(46,93,230,.24); }
 .profile-actions .message-profile-button::part(native) { color: #e6edfd !important; }
 .message-button-label { display: inline-block; color: #e6edfd !important; opacity: 1 !important; visibility: visible !important; font-size: .78rem; font-weight: 600; line-height: 1; }
+.profile-more-wrap { position: relative; }
+.profile-more-menu { position: absolute; z-index: 8; top: calc(100% + 6px); right: 0; display: grid; min-width: 140px; padding: 6px; border: 1px solid var(--page-border); border-radius: 12px; background: var(--page-surface); box-shadow: 0 10px 28px #0003; }
+.profile-more-menu button { padding: 10px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--page-text); font: inherit; text-align: left; cursor: pointer; }
+.profile-more-menu button:hover { background: var(--page-hover); }
 
 .stats-row { display: flex; justify-content: space-evenly; padding: 8px 0 0; border: 0; }
 .stats-row div, .stats-row button { display: grid; min-width: 76px; gap: 4px; text-align: center; }

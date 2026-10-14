@@ -7,6 +7,7 @@
   @if (profileAccount; as profile) {
     <div class="profile-page-shell">
       <section class="profile-hero">
+        <div class="profile-cover" aria-label="Profile cover"></div>
         <div class="profile-top">
           <ion-avatar>
             @if (canViewProfileImage(profile)) {
@@ -24,6 +25,15 @@
             <div class="profile-actions">
               <ion-button fill="outline" size="small" [class.is-following]="isFollowingProfile" (click)="toggleFollowProfile()">{{ isFollowingProfile ? 'Following' : 'Follow' }}</ion-button>
               <ion-button fill="solid" size="small" class="message-profile-button" (click)="messageProfile()"><ion-icon slot="start" name="chatbubble-outline"></ion-icon><span class="message-button-label">Message</span></ion-button>
+              <div class="profile-more-wrap">
+                <ion-button fill="outline" size="small" aria-label="More profile actions" [attr.aria-expanded]="showProfileMenu" (click)="showProfileMenu = !showProfileMenu"><ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon></ion-button>
+                @if (showProfileMenu) {
+                  <div class="profile-more-menu" role="menu" aria-label="Profile actions">
+                    <button type="button" role="menuitem" (click)="toggleProfileSafety('mutedAccountIds')">{{ isMutedProfile ? 'Unmute' : 'Mute' }}</button>
+                    <button type="button" role="menuitem" (click)="toggleProfileSafety('blockedAccountIds')">{{ isBlockedProfile ? 'Unblock' : 'Block' }}</button>
+                  </div>
+                }
+              </div>
             </div>
           }
         </div>

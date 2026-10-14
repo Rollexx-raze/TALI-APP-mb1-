@@ -1,10 +1,11 @@
-﻿import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+﻿import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject } from '@angular/core';
+import { effect, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
+import { ActionSheetController, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
-import { addCircle, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkCircle, checkmarkOutline, chevronBackOutline, closeCircleOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, eyeOutline, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, timeOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { ChatAttachment, ChatMessage, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
@@ -19,10 +20,14 @@ import { ViewStateService } from '../../services/view-state.service';
   imports: [FormsModule, RouterLink, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar],
 })
 export class MessagesPage {
+  @ViewChild(IonContent) private chatContent?: IonContent;
+  @ViewChild('composerInput') private composerInput?: ElementRef<HTMLTextAreaElement>;
   readonly viewState = inject(ViewStateService);
   private readonly viewStateKey = 'tali-view-messages';
   private readonly accountService = inject(AccountService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly actionSheetController = inject(ActionSheetController);
   readonly messageService = inject(MessageService);
   readonly notificationService = inject(NotificationService);
   readonly selectedAccount = this.accountService.selectedAccount;
@@ -50,7 +55,9 @@ export class MessagesPage {
   searchQuery = '';
   conversationSearch = '';
   showChatSettings = false;
+  showGroupInfo = false;
   showSharedItems = false;
+  showDeletedMessages = false;
   sharedItemsType: SharedItemsType = 'photos';
   nicknameDraft = '';
   callNotice = '';
@@ -61,7 +68,6 @@ export class MessagesPage {
   groupMemberSearch = '';
   selectedMemberIds: number[] = [];
   messageDraft = '';
-  isComposerExpanded = false;
   pendingAttachments: ChatAttachment[] = [];
   recordingVoice = false;
   voiceRecordingPaused = false;
@@ -70,6 +76,8 @@ export class MessagesPage {
   readonly voiceWaveBars = Array.from({ length: 34 }, (_, index) => index);
   reactionPickerMessageId: string | null = null;
   messageActionsId: string | null = null;
+  pendingDeleteMessage: ChatMessage | null = null;
+  receiptMessage: ChatMessage | null = null;
   replyToMessage: ChatMessage | null = null;
   forwardMessage: ChatMessage | null = null;
   forwardSearch = '';
@@ -163,6 +171,29 @@ export class MessagesPage {
     return this.activeConversation ? this.messageService.settingsFor(this.activeConversation.id) : null;
   }
 
+  get groupMembers() {
+    return (this.activeConversation?.memberIds ?? [])
+      .map((id) => this.accounts().find((account) => account.id === id))
+      .filter((account): account is Account => !!account);
+  }
+
+  get activeGroupConversation() {
+    const conversation = this.activeConversation;
+    return conversation?.groupName ? conversation : null;
+  }
+
+  openGroupInfo() {
+    if (!this.activeConversation?.groupName) return;
+    this.showChatSettings = false;
+    this.showGroupInfo = true;
+    this.saveViewState();
+  }
+
+  closeGroupInfo() {
+    this.showGroupInfo = false;
+    this.saveViewState();
+  }
+
   get isActiveConversationRequest() {
     const conversation = this.activeConversation;
     const accountId = this.selectedAccount()?.id;
@@ -184,6 +215,20 @@ export class MessagesPage {
     return query ? messages.filter((message) => message.body.toLowerCase().includes(query)) : messages;
   }
 
+  get deletedMessages() {
+    return this.activeConversation?.deletedMessages ?? [];
+  }
+
+  restoreDeletedMessage(messageId: string) {
+    if (!this.activeConversation) return;
+    this.messageService.restoreDeletedMessage(this.activeConversation.id, messageId);
+  }
+
+  permanentlyDeleteMessage(messageId: string) {
+    if (!this.activeConversation) return;
+    this.messageService.permanentlyDeleteMessage(this.activeConversation.id, messageId);
+  }
+
   get forwardAccounts() {
     const query = this.forwardSearch.trim().toLowerCase();
     return this.otherAccounts().filter((account) => !query || account.name.toLowerCase().includes(query) || account.username.toLowerCase().includes(query));
@@ -196,8 +241,12 @@ export class MessagesPage {
   }
 
   constructor() {
-    addIcons({ addCircle, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
-    const saved = this.viewState.read<Partial<{ activeTab: 'inbox' | 'requests'; activeFilter: string; searchQuery: string; activeConversationId: string | null; messageDraft: string; conversationSearch: string; showChatSettings: boolean; showSharedItems: boolean; sharedItemsType: SharedItemsType; showFilters: boolean; composeMode: 'menu' | 'direct' | 'group' | null; groupName: string; selectedMemberIds: number[] }>>(this.viewStateKey, {});
+    addIcons({ addCircle, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkCircle, checkmarkOutline, chevronBackOutline, closeCircleOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, eyeOutline, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, timeOutline, trashOutline, videocamOutline });
+    effect(() => {
+      const conversation = this.activeConversation;
+      if (conversation) this.scrollToLatest();
+    });
+    const saved = this.viewState.read<Partial<{ activeTab: 'inbox' | 'requests'; activeFilter: string; searchQuery: string; activeConversationId: string | null; messageDraft: string; conversationSearch: string; showChatSettings: boolean; showGroupInfo: boolean; showSharedItems: boolean; sharedItemsType: SharedItemsType; showFilters: boolean; composeMode: 'menu' | 'direct' | 'group' | null; groupName: string; selectedMemberIds: number[] }>>(this.viewStateKey, {});
     if (saved.activeTab) this.activeTab = saved.activeTab;
     if (saved.activeFilter && this.filters.includes(saved.activeFilter)) this.activeFilter = saved.activeFilter;
     this.searchQuery = saved.searchQuery ?? '';
@@ -205,6 +254,7 @@ export class MessagesPage {
     this.messageDraft = saved.messageDraft ?? '';
     this.conversationSearch = saved.conversationSearch ?? '';
     this.showChatSettings = saved.showChatSettings ?? false;
+    this.showGroupInfo = saved.showGroupInfo ?? false;
     this.showSharedItems = saved.showSharedItems ?? false;
     this.sharedItemsType = saved.sharedItemsType ?? 'photos';
     this.showFilters = saved.showFilters ?? false;
@@ -216,9 +266,11 @@ export class MessagesPage {
       const conversation = conversationId && this.conversations().find((item) => item.id === conversationId);
       if (!conversation || !conversation.memberIds.includes(this.selectedAccount()?.id ?? -1)) return;
       this.activeConversationId = conversation.id;
+      this.showGroupInfo = false;
       this.activeTab = this.isConversationRequest(conversation, this.selectedAccount()?.id ?? -1) ? 'requests' : 'inbox';
       this.composeMode = null;
       this.saveViewState();
+      this.scrollToLatest();
     });
   }
 
@@ -227,6 +279,7 @@ export class MessagesPage {
       activeTab: this.activeTab, activeFilter: this.activeFilter, searchQuery: this.searchQuery,
       activeConversationId: this.activeConversationId, messageDraft: this.messageDraft,
       conversationSearch: this.conversationSearch, showChatSettings: this.showChatSettings,
+      showGroupInfo: this.showGroupInfo,
       showSharedItems: this.showSharedItems, sharedItemsType: this.sharedItemsType,
       showFilters: this.showFilters, composeMode: this.composeMode, groupName: this.groupName,
       selectedMemberIds: this.selectedMemberIds,
@@ -258,6 +311,7 @@ export class MessagesPage {
     this.closeCompose();
     this.activeConversationId = conversation.id;
     this.saveViewState();
+    this.scrollToLatest();
   }
 
   toggleGroupMember(accountId: number) {
@@ -301,6 +355,7 @@ export class MessagesPage {
     this.activeConversationId = conversation.id;
     this.activeTab = 'inbox';
     this.saveViewState();
+    this.scrollToLatest();
   }
 
   conversationTitle(conversation: Conversation) {
@@ -315,6 +370,13 @@ export class MessagesPage {
     const otherId = conversation.memberIds.find((id) => id !== this.selectedAccount()?.id);
     const account = this.accounts().find((item) => item.id === otherId);
     return account && this.accountService.canViewProfileImage(account, this.selectedAccount()) ? account.profileImage ?? null : null;
+  }
+
+  visitConversationProfile(event: Event, conversation: Conversation) {
+    const accountId = conversation.groupName ? undefined : conversation.memberIds.find((id) => id !== this.selectedAccount()?.id);
+    if (accountId === undefined || !this.accounts().some((account) => account.id === accountId)) return;
+    event.stopPropagation();
+    void this.router.navigate(['/profile', accountId]);
   }
 
   canViewProfileImage(account: Account) {
@@ -332,6 +394,63 @@ export class MessagesPage {
 
   messageAuthorName(message: ChatMessage) {
     return this.messageAuthor(message)?.name ?? 'Former account';
+  }
+
+  chatPresenceLabel(account: Account) {
+    if (account.isOnline) return 'Online';
+    if (!account.lastSeenAt) return 'Last seen recently';
+    const lastSeen = new Date(account.lastSeenAt);
+    if (Number.isNaN(lastSeen.getTime())) return 'Last seen recently';
+    return `Last seen ${new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(lastSeen)}`;
+  }
+
+  messageTime(createdAt: Date) {
+    return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(createdAt);
+  }
+
+  messageDateSeparator(messages: ChatMessage[], index: number) {
+    const message = messages[index];
+    if (!message) return null;
+    const current = new Date(message.createdAt);
+    const previous = index > 0 ? new Date(messages[index - 1].createdAt) : null;
+    if (previous && current.getFullYear() === previous.getFullYear() && current.getMonth() === previous.getMonth() && current.getDate() === previous.getDate()) return null;
+    const today = new Date();
+    if (current.toDateString() === today.toDateString()) return 'Today';
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    if (current.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(current);
+  }
+
+  messageDeliveryState(message: ChatMessage): 'sending' | 'sent' | 'delivered' | 'seen' | 'failed' {
+    if (message.deliveryStatus === 'failed' || message.deliveryStatus === 'sending') return message.deliveryStatus;
+    const recipients = (message.seenBy ?? message.readBy ?? []).filter((accountId) => accountId !== message.senderId);
+    if (recipients.length) return 'seen';
+    return (message.deliveredTo ?? []).some((accountId) => accountId !== message.senderId) ? 'delivered' : 'sent';
+  }
+
+  openReceiptDetails(message: ChatMessage, event: Event) {
+    event.stopPropagation();
+    if (this.activeConversation?.groupName && message.senderId === this.selectedAccount()?.id && !['sending', 'failed'].includes(this.messageDeliveryState(message))) {
+      this.receiptMessage = message;
+    }
+  }
+
+  receiptAccounts(message: ChatMessage, kind: 'seen' | 'delivered') {
+    const seenIds = (message.seenBy ?? message.readBy ?? []).filter((id) => id !== message.senderId);
+    const ids = kind === 'seen'
+      ? seenIds
+      : [...new Set([...(message.deliveredTo ?? []), ...seenIds])].filter((id) => id !== message.senderId);
+    return ids.map((id) => this.accounts().find((account) => account.id === id)).filter((account): account is Account => !!account);
+  }
+
+  retryMessage(message: ChatMessage) {
+    if (message.deliveryStatus !== 'failed' || !this.activeConversation) return;
+    this.messageService.retryMessage(this.activeConversation.id, message.id);
+  }
+
+  private scrollToLatest() {
+    requestAnimationFrame(() => void this.chatContent?.scrollToBottom(220));
   }
 
   accountName(accountId: number) {
@@ -371,6 +490,7 @@ export class MessagesPage {
     this.conversationSearch = '';
     this.reactionPickerMessageId = null;
     this.saveViewState();
+    this.scrollToLatest();
     const accountId = this.selectedAccount()?.id;
     if (accountId !== undefined) this.messageService.markRead(conversationId, accountId);
   }
@@ -433,11 +553,24 @@ export class MessagesPage {
   }
 
   closeConversation() {
+    if (this.showChatSettings || this.showGroupInfo) {
+      this.closeChatDetails();
+      return;
+    }
     this.clearTyping();
     this.activeConversationId = null;
     this.messageDraft = '';
     this.showChatSettings = false;
+    this.showGroupInfo = false;
     this.showSharedItems = false;
+    this.saveViewState();
+  }
+
+  closeChatDetails() {
+    this.showChatSettings = false;
+    this.showGroupInfo = false;
+    this.showSharedItems = false;
+    this.showComposerEmojiPicker = false;
     this.saveViewState();
   }
 
@@ -448,6 +581,8 @@ export class MessagesPage {
     this.nicknameDraft = this.messageService.settingsFor(conversation.id).nicknames[String(otherId)] ?? '';
     this.settingsNotice = '';
     this.showSharedItems = false;
+    this.showDeletedMessages = false;
+    this.showGroupInfo = false;
     this.showChatSettings = true;
     this.saveViewState();
   }
@@ -523,12 +658,24 @@ export class MessagesPage {
     this.reactionPickerMessageId = null;
   }
 
-  startReactionPress(message: ChatMessage) {
+  startReactionPress(message: ChatMessage, event: PointerEvent) {
     this.clearReactionPress();
+    if (event.pointerType === 'mouse') return;
     this.reactionPressTimer = setTimeout(() => {
-      this.reactionPickerMessageId = message.id;
+      this.reactionPickerMessageId = null;
+      this.messageActionsId = message.id;
       this.reactionPressTimer = null;
     }, 450);
+  }
+
+  openMessageActions(message: ChatMessage) {
+    this.clearReactionPress();
+    this.reactionPickerMessageId = null;
+    this.messageActionsId = message.id;
+  }
+
+  toggleMessageActions(message: ChatMessage) {
+    this.messageActionsId = this.messageActionsId === message.id ? null : message.id;
   }
 
   clearReactionPress() {
@@ -551,6 +698,19 @@ export class MessagesPage {
     const conversation = this.activeConversation;
     if (accountId !== undefined && conversation) this.messageService.setTyping(conversation.id, accountId, !!value.trim());
     this.saveViewState();
+    requestAnimationFrame(() => this.resizeComposer());
+  }
+
+  resizeComposer(event?: Event) {
+    const textarea = event?.target instanceof HTMLTextAreaElement ? event.target : this.composerInput?.nativeElement;
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    const style = getComputedStyle(textarea);
+    const lineHeight = Number.parseFloat(style.lineHeight) || 20;
+    const verticalPadding = (Number.parseFloat(style.paddingTop) || 0) + (Number.parseFloat(style.paddingBottom) || 0);
+    const maxHeight = lineHeight * 4 + verticalPadding;
+    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+    textarea.style.overflowY = textarea.scrollHeight > maxHeight ? 'auto' : 'hidden';
   }
 
   get mentionQuery() {
@@ -577,26 +737,38 @@ export class MessagesPage {
     this.updateDraftTyping(this.messageDraft);
   }
 
-  messageAction(message: ChatMessage, action: 'reply' | 'forward' | 'delete' | 'pin' | 'report') {
+  messageAction(message: ChatMessage, action: 'reply' | 'copy' | 'react' | 'delete') {
     const conversation = this.activeConversation;
     if (!conversation) return;
     this.messageActionsId = null;
     if (action === 'delete') {
-      this.messageService.deleteMessage(conversation.id, message.id);
+      if (message.senderId === this.selectedAccount()?.id) this.pendingDeleteMessage = message;
     } else if (action === 'reply') {
       this.replyToMessage = message;
-    } else if (action === 'forward') {
-      this.forwardMessage = message;
-      this.forwardSearch = '';
-    } else if (action === 'pin' || action === 'report') {
-      const accountId = this.selectedAccount()?.id;
-      if (accountId === undefined) return;
-      const flag = action === 'pin' ? 'pinnedFor' : 'reportedFor';
-      this.messageService.toggleMessageFlag(conversation.id, message.id, accountId, flag);
-      this.callNotice = action === 'pin'
-        ? (message.pinnedFor ?? []).includes(accountId) ? 'You unpinned a message.' : 'You pinned a message.'
-        : 'Message reported.';
+    } else if (action === 'copy') {
+      void this.copyMessage(message);
+    } else if (action === 'react') {
+      this.reactionPickerMessageId = message.id;
     }
+  }
+
+  async copyMessage(message: ChatMessage) {
+    try {
+      const text = message.body || message.attachments?.map((attachment) => attachment.name).join(', ') || '';
+      await navigator.clipboard.writeText(text);
+      this.callNotice = 'Message copied.';
+    } catch {
+      this.callNotice = 'Could not copy this message on this device.';
+    }
+  }
+
+  confirmDeleteMessage() {
+    const conversation = this.activeConversation;
+    const message = this.pendingDeleteMessage;
+    if (conversation && message && message.senderId === this.selectedAccount()?.id) {
+      this.messageService.deleteMessage(conversation.id, message.id);
+    }
+    this.pendingDeleteMessage = null;
   }
 
   closeForward() { this.forwardMessage = null; this.forwardSearch = ''; }
@@ -645,6 +817,43 @@ export class MessagesPage {
     if (emoji) this.updateDraftTyping(this.messageDraft + emoji);
     this.showComposerEmojiPicker = false;
   }
+
+  async openAttachmentActions(photo: HTMLInputElement, camera: HTMLInputElement, gif: HTMLInputElement, video: HTMLInputElement, file: HTMLInputElement) {
+    this.showComposerEmojiPicker = false;
+    const sheet = await this.actionSheetController.create({
+      mode: 'ios',
+      header: 'Add to message',
+      subHeader: 'Share something in this chat',
+      keyboardClose: true,
+      cssClass: 'chat-attachment-action-sheet',
+      buttons: [
+        { text: 'Photo', icon: 'image-outline', handler: () => photo.click() },
+        { text: 'Camera', icon: 'camera-outline', handler: () => camera.click() },
+        { text: 'GIF', icon: 'image-outline', handler: () => gif.click() },
+        { text: 'Video', icon: 'videocam-outline', handler: () => video.click() },
+        { text: 'File', icon: 'document-outline', handler: () => file.click() },
+        { text: 'Cancel', role: 'cancel' },
+      ],
+    });
+    const isLightTheme = this.activeChatSettings?.theme
+      ? this.activeChatSettings.theme === 'light'
+      : document.documentElement.classList.contains('app-light');
+    const sheetSurface = isLightTheme ? '#f7f8fc' : '#111827';
+    const sheetText = isLightTheme ? '#172033' : '#edf2ff';
+    const sheetMuted = isLightTheme ? '#64718a' : '#aab7cc';
+    sheet.style.setProperty('--background', sheetSurface);
+    sheet.style.setProperty('--button-background', sheetSurface);
+    sheet.style.setProperty('--button-background-activated', isLightTheme ? 'rgba(54, 92, 75, .12)' : 'rgba(110, 146, 242, .2)');
+    sheet.style.setProperty('--button-background-hover', isLightTheme ? 'rgba(54, 92, 75, .08)' : 'rgba(110, 146, 242, .12)');
+    sheet.style.setProperty('--button-background-focused', isLightTheme ? 'rgba(54, 92, 75, .12)' : 'rgba(110, 146, 242, .2)');
+    sheet.style.setProperty('--button-color', sheetText);
+    sheet.style.setProperty('--button-color-activated', sheetText);
+    sheet.style.setProperty('--button-color-hover', sheetText);
+    sheet.style.setProperty('--button-color-focused', sheetText);
+    sheet.style.setProperty('--color', sheetMuted);
+    await sheet.present();
+  }
+
   messageReactionList(message: ChatMessage) {
     return Object.entries(message.reactions ?? {})
       .filter(([, users]) => users.length > 0)

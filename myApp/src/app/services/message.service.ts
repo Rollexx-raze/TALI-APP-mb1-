@@ -13,6 +13,8 @@ export interface ChatMessage {
   reactions?: Record<string, number[]>;
   readBy?: number[];
   seenBy?: number[];
+  deliveredTo?: number[];
+  deliveryStatus?: 'sending' | 'sent' | 'failed';
   attachments?: ChatAttachment[];
   pinnedFor?: number[];
   reportedFor?: number[];
@@ -48,6 +50,7 @@ export interface Conversation {
   memberIds: number[];
   groupName: string | null;
   messages: ChatMessage[];
+  deletedMessages?: ChatMessage[];
   updatedAt: Date;
   settings?: ChatSettings;
 }
@@ -127,6 +130,8 @@ export class MessageService {
       createdAt: new Date(),
       readBy: [senderId],
       seenBy: [senderId],
+      deliveredTo: [],
+      deliveryStatus: 'sending',
       ...metadata,
     };
     this.conversations.update((conversations) => conversations.map((conversation) => {
@@ -137,7 +142,25 @@ export class MessageService {
       const messages = [...conversation.messages, message];
       return { ...conversation, settings: { ...settings, unreadFor: [...unreadFor] }, messages, updatedAt: message.createdAt };
     }));
-    this.persistConversations();
+    void this.persistConversations().then((saved) => this.setMessageDeliveryStatus(conversationId, message.id, saved ? 'sent' : 'failed'));
+  }
+
+  retryMessage(conversationId: string, messageId: string) {
+    const message = this.conversations().find((item) => item.id === conversationId)?.messages.find((item) => item.id === messageId);
+    if (!message || message.deliveryStatus !== 'failed') return;
+    this.setMessageDeliveryStatus(conversationId, messageId, 'sending');
+    void this.persistConversations().then((saved) => this.setMessageDeliveryStatus(conversationId, messageId, saved ? 'sent' : 'failed'));
+  }
+
+  private setMessageDeliveryStatus(conversationId: string, messageId: string, status: NonNullable<ChatMessage['deliveryStatus']>) {
+    this.conversations.update((items) => items.map((conversation) => conversation.id === conversationId
+      ? { ...conversation, messages: conversation.messages.map((message) => message.id === messageId ? {
+        ...message,
+        deliveryStatus: status,
+        ...(status === 'sent' ? { deliveredTo: conversation.memberIds.filter((memberId) => memberId !== message.senderId) } : {}),
+      } : message) }
+      : conversation));
+    void this.persistConversations();
   }
 
   settingsFor(conversationId: string) {
@@ -154,14 +177,17 @@ export class MessageService {
         if (message.senderId === accountId) return message;
         const readBy = message.readBy ?? [];
         const seenBy = message.seenBy ?? [];
+        const deliveredTo = message.deliveredTo ?? [];
         const needsRead = !readBy.includes(accountId);
         const needsReceipt = !seenBy.includes(accountId);
-        if (!needsRead && !needsReceipt) return message;
+        const needsDelivery = message.senderId !== accountId && !deliveredTo.includes(accountId);
+        if (!needsRead && !needsReceipt && !needsDelivery) return message;
         changed = true;
         return {
           ...message,
           readBy: needsRead ? [...readBy, accountId] : readBy,
           seenBy: needsReceipt ? [...seenBy, accountId] : seenBy,
+          deliveredTo: needsDelivery ? [...deliveredTo, accountId] : deliveredTo,
         };
       });
       if (unreadFor.length !== settings.unreadFor.length) changed = true;
@@ -220,8 +246,36 @@ export class MessageService {
   }
 
   deleteMessage(conversationId: string, messageId: string) {
+    this.conversations.update((items) => items.map((conversation) => {
+      if (conversation.id !== conversationId) return conversation;
+      const message = conversation.messages.find((item) => item.id === messageId);
+      if (!message) return conversation;
+      return {
+        ...conversation,
+        messages: conversation.messages.filter((item) => item.id !== messageId),
+        deletedMessages: [...(conversation.deletedMessages ?? []), message],
+      };
+    }));
+    this.persistConversations();
+  }
+
+  restoreDeletedMessage(conversationId: string, messageId: string) {
+    this.conversations.update((items) => items.map((conversation) => {
+      if (conversation.id !== conversationId) return conversation;
+      const message = conversation.deletedMessages?.find((item) => item.id === messageId);
+      if (!message) return conversation;
+      return {
+        ...conversation,
+        messages: [...conversation.messages, message].sort((first, second) => new Date(first.createdAt).getTime() - new Date(second.createdAt).getTime()),
+        deletedMessages: conversation.deletedMessages?.filter((item) => item.id !== messageId) ?? [],
+      };
+    }));
+    this.persistConversations();
+  }
+
+  permanentlyDeleteMessage(conversationId: string, messageId: string) {
     this.conversations.update((items) => items.map((conversation) => conversation.id === conversationId
-      ? { ...conversation, messages: conversation.messages.filter((message) => message.id !== messageId) }
+      ? { ...conversation, deletedMessages: (conversation.deletedMessages ?? []).filter((item) => item.id !== messageId) }
       : conversation));
     this.persistConversations();
   }
@@ -251,14 +305,17 @@ export class MessageService {
     return conversation;
   }
 
-  private persistConversations() {
+  private persistConversations(): Promise<boolean> {
     this.changedBeforeHydration = true;
-    void saveBrowserData(conversationsStorageKey, this.conversations());
+    const indexedDbSaved = saveBrowserData(conversationsStorageKey, this.conversations());
+    let localStorageSaved = false;
     try {
       localStorage.setItem(conversationsStorageKey, JSON.stringify(this.conversations()));
+      localStorageSaved = true;
     } catch {
       // IndexedDB above holds the durable copy and supports larger app data.
     }
+    return localStorageSaved ? Promise.resolve(true) : indexedDbSaved;
   }
 }
 
@@ -270,6 +327,10 @@ function isStoredConversationList(value: unknown): value is Conversation[] {
       Array.isArray(conversation.memberIds) &&
       (typeof conversation.groupName === 'string' || conversation.groupName === null) &&
       Array.isArray(conversation.messages) &&
+      (conversation.deletedMessages === undefined || Array.isArray(conversation.deletedMessages) && conversation.deletedMessages.every((message) =>
+        typeof message.id === 'string' && Number.isSafeInteger(message.senderId) && typeof message.body === 'string' &&
+        (typeof message.createdAt === 'string' || message.createdAt instanceof Date),
+      )) &&
       (typeof conversation.updatedAt === 'string' || conversation.updatedAt instanceof Date) &&
       conversation.messages.every((message) =>
         typeof message.id === 'string' && Number.isSafeInteger(message.senderId) &&
@@ -294,7 +355,9 @@ function restoreConversationDates(conversation: Conversation): Conversation {
     updatedAt: new Date(conversation.updatedAt),
     settings,
     messages: conversation.messages
-      .map((message) => ({ ...message, createdAt: new Date(message.createdAt), reactions: normalizeReactions(message.reactions ?? {}), readBy: message.readBy ?? [] })),
+      .map((message) => ({ ...message, createdAt: new Date(message.createdAt), reactions: normalizeReactions(message.reactions ?? {}), readBy: message.readBy ?? [], seenBy: message.seenBy ?? message.readBy ?? [], deliveredTo: message.deliveredTo ?? [] })),
+    deletedMessages: (conversation.deletedMessages ?? [])
+      .map((message) => ({ ...message, createdAt: new Date(message.createdAt), reactions: normalizeReactions(message.reactions ?? {}), readBy: message.readBy ?? [], seenBy: message.seenBy ?? message.readBy ?? [], deliveredTo: message.deliveredTo ?? [] })),
   };
 }
 

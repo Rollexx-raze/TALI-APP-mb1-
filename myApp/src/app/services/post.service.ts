@@ -282,7 +282,7 @@ export class PostService {
     const updatedPosts = this.posts().map((post) => ({ ...post, updatedAt }));
     this.posts.set(updatedPosts);
     const snapshot = updatedPosts.map((post) => ({ ...post, attachments: [...post.attachments], likes: [...post.likes], comments: [...post.comments], reposts: [...post.reposts] }));
-    this.persistenceQueue = this.persistenceQueue.then(() => saveBrowserData(postsStorageKey, snapshot));
+    this.persistenceQueue = this.persistenceQueue.then(async () => { await saveBrowserData(postsStorageKey, snapshot); });
     if (typeof localStorage === 'undefined') return;
     try {
       localStorage.setItem(postsStorageKey, JSON.stringify(snapshot));

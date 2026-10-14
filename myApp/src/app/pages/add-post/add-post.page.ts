@@ -89,7 +89,7 @@ export class AddPostPage {
       audienceAccountIds: [...this.audienceAccountIds], showAudienceMenu: this.showAudienceMenu,
       showAudiencePicker: this.showAudiencePicker,
     };
-    this.draftSaveQueue = this.draftSaveQueue.then(() => saveBrowserData(postDraftKey, snapshot));
+    this.draftSaveQueue = this.draftSaveQueue.then(async () => { await saveBrowserData(postDraftKey, snapshot); });
   }
 
   private clearDraft() {
