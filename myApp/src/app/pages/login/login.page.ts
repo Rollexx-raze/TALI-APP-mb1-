@@ -33,8 +33,12 @@ export class LoginPage implements OnInit {
     if (account) {
       this.identifier = account.contact;
       this.password = this.accountService.isPasswordSaved(account.id) ? account.password : '';
-      this.submitted = false;
     }
+    else {
+      this.identifier = '';
+      this.password = '';
+    }
+    this.submitted = false;
   }
 
   get welcomeName() {
