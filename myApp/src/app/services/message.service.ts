@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { loadBrowserData, saveBrowserData } from './browser-data.store';
+import { loadBrowserData, saveBrowserData, saveBrowserDataResult } from './browser-data.store';
 import { AccountService } from './account.service';
 import { NotificationService } from './notification.service';
 
@@ -57,6 +57,7 @@ export class MessageService {
   private readonly accountService = inject(AccountService);
   private readonly notificationService = inject(NotificationService);
   readonly conversations = signal<Conversation[]>([]);
+  readonly sendStates = signal<Record<string, 'sending' | 'sent' | 'failed'>>({});
   private readonly typingByConversation = signal<Map<string, number[]>>(new Map());
   private nextId = 0;
   private changedBeforeHydration = false;
@@ -102,7 +103,7 @@ export class MessageService {
 
   sendMessage(conversationId: string, senderId: number, body: string, attachments: ChatAttachment[] = [], metadata: Pick<ChatMessage, 'forwarded' | 'replyTo'> = {}) {
     const text = body.trim();
-    if (!text && !attachments.length) return;
+    if ((!text && !attachments.length) || !this.conversations().some((item) => item.id === conversationId)) return null;
 
     const existingConversation = this.conversations().find((item) => item.id === conversationId);
     if (existingConversation && !existingConversation.groupName && existingConversation.messages.length === 0) {
@@ -137,7 +138,24 @@ export class MessageService {
       const messages = [...conversation.messages, message];
       return { ...conversation, settings: { ...settings, unreadFor: [...unreadFor] }, messages, updatedAt: message.createdAt };
     }));
-    this.persistConversations();
+    this.setSendState(message.id, 'sending');
+    void this.persistConversations().then((saved) => {
+      this.setSendState(message.id, saved ? 'sent' : 'failed');
+    });
+    return message;
+  }
+
+  async retryMessage(conversationId: string, messageId: string) {
+    const messageExists = this.conversations().some((conversation) => conversation.id === conversationId && conversation.messages.some((message) => message.id === messageId));
+    if (!messageExists) return false;
+    this.setSendState(messageId, 'sending');
+    const saved = await this.persistConversations();
+    this.setSendState(messageId, saved ? 'sent' : 'failed');
+    return saved;
+  }
+
+  private setSendState(messageId: string, state: 'sending' | 'sent' | 'failed') {
+    this.sendStates.update((states) => ({ ...states, [messageId]: state }));
   }
 
   settingsFor(conversationId: string) {
@@ -251,14 +269,16 @@ export class MessageService {
     return conversation;
   }
 
-  private persistConversations() {
+  private persistConversations(): Promise<boolean> {
     this.changedBeforeHydration = true;
-    void saveBrowserData(conversationsStorageKey, this.conversations());
+    let localStorageSaved = false;
     try {
       localStorage.setItem(conversationsStorageKey, JSON.stringify(this.conversations()));
+      localStorageSaved = true;
     } catch {
-      // IndexedDB above holds the durable copy and supports larger app data.
+      // IndexedDB may still save the conversation if localStorage is full.
     }
+    return saveBrowserDataResult(conversationsStorageKey, this.conversations()).then((saved) => saved || localStorageSaved);
   }
 }
 

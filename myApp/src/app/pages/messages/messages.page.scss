@@ -67,6 +67,9 @@
 .conversation-status-icon { flex: 0 0 auto; color: var(--ion-color-primary); font-size: .95rem; }
 .conversation-unread-count { display: grid; min-width: 25px; height: 25px; flex: 0 0 auto; place-items: center; padding: 0 5px; border: 2px solid #e6edfd; border-radius: 999px; outline: 1px solid #6e92f2; background: #1a3bb0; color: #e6edfd; font-size: .72rem; font-weight: 750; line-height: 1; }
 .chat-thread { display: flex; min-height: 100%; flex-direction: column; gap: 12px; padding: 18px 16px 24px; }
+.message-date-separator { display: flex; align-items: center; gap: 10px; margin: 4px 0; color: var(--page-muted); font-size: .7rem; }
+.message-date-separator::before, .message-date-separator::after { height: 1px; flex: 1; background: var(--page-border); content: ''; }
+.message-date-separator span { padding: 4px 9px; border: 1px solid var(--page-border); border-radius: 999px; background: var(--page-surface); }
 .request-sender-intro { display:flex;min-height:min(58vh,620px);flex-direction:column;align-items:center;justify-content:center;padding:34px 22px 22px;text-align:center; }
 .request-profile-avatar { display:grid;width:126px;height:126px;place-items:center;overflow:hidden;border:1px solid var(--app-avatar-outline);border-radius:50%;background:var(--app-avatar-fill);color:var(--app-text-muted);font-size:7rem; }
 .request-profile-avatar img { width:100%;height:100%;object-fit:cover; }
@@ -112,6 +115,12 @@
 .message-action-menu .delete-message-action { color: #df5263; }
 .message-bubble { max-width: 100%; margin: 0; padding: 10px 14px; border-radius: 18px 18px 18px 4px; background: var(--page-surface); color: var(--page-text); overflow-wrap: anywhere; }
 .message-time { padding: 0 7px; color: var(--page-muted); font-size: .65rem; line-height: 1; }
+.message-status { display: inline-flex; min-height: 15px; align-items: center; gap: 3px; padding: 0 7px; color: var(--page-muted); font-size: .64rem; line-height: 1; }
+.sent-status span { font-size: .95rem; }
+.seen-status { color: #4c83f3; }
+.seen-status span { font-size: .85rem; font-weight: 750; letter-spacing: -3px; padding-right: 3px; }
+.failed-status { border: 0; background: transparent; color: #dc4b59; font: inherit; cursor: pointer; }
+.failed-status ion-icon { font-size: .85rem; }
 .message-attachment { display: block; width: min(100%, 360px); max-height: 360px; border: 1px solid var(--page-border); border-radius: 14px; object-fit: contain; }
 .message-file-attachment,.shared-file-link { display:flex;max-width:min(100%,360px);align-items:center;gap:9px;padding:11px 13px;border:1px solid var(--page-border);border-radius:12px;background:var(--page-surface);color:var(--page-text);font-size:.82rem;text-decoration:none;overflow-wrap:anywhere; }
 .message-file-attachment ion-icon,.shared-file-link ion-icon { flex:0 0 auto;color:var(--ion-color-primary);font-size:1.15rem; }

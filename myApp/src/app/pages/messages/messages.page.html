@@ -69,6 +69,7 @@
         </div>
       }
       @for (message of visibleMessages; track message.id) {
+        @if (shouldShowDateSeparator($index)) { <div class="message-date-separator"><span>{{ messageDateLabel(message.createdAt) }}</span></div> }
         <div class="message-row" [id]="'message-' + message.id" [class.own-message]="message.senderId === selectedAccount()?.id">
           @if (message.senderId !== selectedAccount()?.id) {
             <a class="incoming-avatar" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
@@ -122,7 +123,14 @@
                 <emoji-picker class="message-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker>
               }
             </div>
-            @if (message.senderId === selectedAccount()?.id && messageWasReadByOther(message)) { <span class="message-seen">Seen</span> }
+            @if (message.senderId === selectedAccount()?.id) {
+              @switch (messageDeliveryStatus(message)) {
+                @case ('sending') { <span class="message-status sending-status">Sending…</span> }
+                @case ('failed') { <button type="button" class="message-status failed-status" (click)="retryMessage(message)"><ion-icon name="alert-circle-outline"></ion-icon> Failed · Tap to retry</button> }
+                @case ('seen') { <span class="message-status seen-status" aria-label="Seen"><span aria-hidden="true">✓✓</span></span> }
+                @default { <span class="message-status sent-status" aria-label="Sent"><span aria-hidden="true">✓</span></span> }
+              }
+            }
           </div>
         </div>
       } @empty {
