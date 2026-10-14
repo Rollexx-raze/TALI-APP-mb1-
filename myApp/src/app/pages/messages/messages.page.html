@@ -2,17 +2,18 @@
   <ion-toolbar>
     @if (activeConversation; as conversation) {
       <div class="chat-toolbar-row">
-        <ion-button fill="clear" class="chat-back-button" aria-label="Back to messages" (click)="closeConversation()"><ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon></ion-button>
+        <ion-button fill="clear" class="chat-back-button" [attr.aria-label]="showChatSettings ? 'Back to conversation' : 'Back to messages'" (click)="showChatSettings ? closeChatSettings() : closeConversation()"><ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon></ion-button>
         @if (activeChatAccount; as person) {
           <a class="chat-profile-link" [routerLink]="['/profile', person.id]">
             <span class="chat-profile-avatar">
               @if (canViewProfileImage(person) && person.profileImage) { <img [src]="person.profileImage" [alt]="person.name" /> }
               @else { <ion-icon name="person-circle-outline"></ion-icon> }
             </span>
-            <span class="chat-profile-name">{{ conversationTitle(conversation) }}</span>
+            <span class="chat-profile-copy"><strong class="chat-profile-name">{{ conversationTitle(conversation) }}</strong><small class="chat-presence"><i aria-hidden="true"></i>{{ presenceLabel(person) }}</small></span>
           </a>
         } @else {
-          <h1 class="chat-group-title">{{ conversationTitle(conversation) }}</h1>
+          <span class="chat-group-avatar"><ion-icon name="people-outline"></ion-icon></span>
+          <button type="button" class="chat-group-title" aria-label="Open group info" (click)="openChatSettings()"><span>{{ conversationTitle(conversation) }}</span><small>{{ conversation.memberIds.length }} members{{ showChatSettings ? ' · Group info' : '' }}</small></button>
         }
         <span class="chat-header-actions">
           <ion-button fill="clear" aria-label="Video call" (click)="startVideoCall()"><ion-icon slot="icon-only" name="videocam-outline"></ion-icon></ion-button>
@@ -68,6 +69,7 @@
         </div>
       }
       @for (message of visibleMessages; track message.id) {
+        @if (shouldShowDateSeparator($index)) { <div class="message-date-separator"><span>{{ messageDateLabel(message.createdAt) }}</span></div> }
         <div class="message-row" [id]="'message-' + message.id" [class.own-message]="message.senderId === selectedAccount()?.id">
           @if (message.senderId !== selectedAccount()?.id) {
             <a class="incoming-avatar" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
@@ -99,6 +101,7 @@
                 </div>
               }
             </div>
+            <time class="message-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time>
             @for (attachment of message.attachments ?? []; track attachment.url) {
               @if (attachment.kind === 'photo' || attachment.kind === 'gif') { <img class="message-attachment" [src]="attachment.url" [alt]="attachment.name" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); reactionPickerMessageId = message.id" /> }
               @if (attachment.kind === 'video') { <video class="message-attachment" [src]="attachment.url" controls playsinline (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); reactionPickerMessageId = message.id"></video> }
@@ -120,7 +123,14 @@
                 <emoji-picker class="message-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker>
               }
             </div>
-            @if (message.senderId === selectedAccount()?.id && messageWasReadByOther(message)) { <span class="message-seen">Seen</span> }
+            @if (message.senderId === selectedAccount()?.id) {
+              @switch (messageDeliveryStatus(message)) {
+                @case ('sending') { <span class="message-status sending-status">Sending…</span> }
+                @case ('failed') { <button type="button" class="message-status failed-status" (click)="retryMessage(message)"><ion-icon name="alert-circle-outline"></ion-icon> Failed · Tap to retry</button> }
+                @case ('seen') { <span class="message-status seen-status" aria-label="Seen"><span aria-hidden="true">✓✓</span></span> }
+                @default { <span class="message-status sent-status" aria-label="Sent"><span aria-hidden="true">✓</span></span> }
+              }
+            }
           </div>
         </div>
       } @empty {
@@ -278,12 +288,26 @@
   }
 
   @if (showChatSettings && activeConversation; as settingsConversation) {
-    <div class="chat-settings-backdrop" (click)="showChatSettings = false; saveViewState()">
-      <section class="chat-settings-panel" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" role="dialog" aria-modal="true" aria-labelledby="chat-settings-title" (click)="$event.stopPropagation()">
+    <div class="chat-settings-backdrop" [class.group-info-backdrop]="!!settingsConversation.groupName" (click)="showChatSettings = false; saveViewState()">
+      <section class="chat-settings-panel" [class.group-info-panel]="!!settingsConversation.groupName" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" role="dialog" aria-modal="true" aria-labelledby="chat-settings-title" (click)="$event.stopPropagation()">
         <header class="chat-settings-header">
-          <div><h2 id="chat-settings-title">Chat settings</h2><p>{{ conversationTitle(settingsConversation) }}</p></div>
+          <div><h2 id="chat-settings-title">{{ settingsConversation.groupName ? 'Group info' : 'Chat settings' }}</h2><p>{{ conversationTitle(settingsConversation) }}</p></div>
           <button type="button" aria-label="Close chat settings" (click)="showChatSettings = false; saveViewState()"><ion-icon name="close-outline"></ion-icon></button>
         </header>
+        @if (settingsConversation.groupName) {
+          <section class="settings-block group-members-block" aria-label="Group members">
+            @for (member of groupMembers(settingsConversation, showAllGroupMembers); track member.id) {
+              <a class="group-member-row" [routerLink]="['/profile', member.id]">
+                <span class="group-member-avatar">
+                  @if (canViewProfileImage(member) && member.profileImage) { <img [src]="member.profileImage" [alt]="''" /> }
+                  @else { <ion-icon name="person-circle-outline"></ion-icon> }
+                </span>
+                <span class="group-member-copy"><strong>{{ member.name }}</strong><small>{{ member.username }}</small></span>
+              </a>
+            }
+            @if (settingsConversation.memberIds.length > 7) { <button type="button" class="group-see-all" (click)="showAllGroupMembers = !showAllGroupMembers">{{ showAllGroupMembers ? 'See less' : 'See all' }}</button> }
+          </section>
+        }
         @if (activeChatSettings; as chatSettings) {
           <section class="settings-block">
             <h3>Search in conversation</h3>
@@ -384,7 +408,7 @@
 }
 
 @if (activeConversation; as conversation) {
-  <ion-footer class="chat-footer ion-no-border" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" [class.emoji-picker-open]="showComposerEmojiPicker">
+  <ion-footer class="chat-footer ion-no-border" [class.chat-settings-open]="showChatSettings" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" [class.emoji-picker-open]="showComposerEmojiPicker">
     @if (isActiveConversationRequest) {
       <section class="request-decision-panel" aria-label="Message request decision">
         <p>If you accept, {{ conversationTitle(conversation) }} will be able to call you and may see information like your active status and when you’ve read messages.</p>

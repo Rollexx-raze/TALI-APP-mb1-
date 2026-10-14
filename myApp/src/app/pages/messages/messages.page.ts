@@ -1,10 +1,11 @@
 ﻿import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { effect, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
-import { addCircle, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { ChatAttachment, ChatMessage, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
@@ -26,6 +27,7 @@ export class MessagesPage {
   readonly messageService = inject(MessageService);
   readonly notificationService = inject(NotificationService);
   readonly selectedAccount = this.accountService.selectedAccount;
+  @ViewChild(IonContent) private chatContent?: IonContent;
   readonly accounts = computed(() => {
     const accounts = this.accountService.accounts();
     const selected = this.selectedAccount();
@@ -51,6 +53,7 @@ export class MessagesPage {
   conversationSearch = '';
   showChatSettings = false;
   showSharedItems = false;
+  showAllGroupMembers = false;
   sharedItemsType: SharedItemsType = 'photos';
   nicknameDraft = '';
   callNotice = '';
@@ -196,7 +199,12 @@ export class MessagesPage {
   }
 
   constructor() {
-    addIcons({ addCircle, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
+    addIcons({ addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, closeOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
+    effect(() => {
+      const conversations = this.conversations();
+      const activeId = this.activeConversationId;
+      if (activeId && !this.showChatSettings && conversations.some((item) => item.id === activeId)) this.scrollToLatest();
+    });
     const saved = this.viewState.read<Partial<{ activeTab: 'inbox' | 'requests'; activeFilter: string; searchQuery: string; activeConversationId: string | null; messageDraft: string; conversationSearch: string; showChatSettings: boolean; showSharedItems: boolean; sharedItemsType: SharedItemsType; showFilters: boolean; composeMode: 'menu' | 'direct' | 'group' | null; groupName: string; selectedMemberIds: number[] }>>(this.viewStateKey, {});
     if (saved.activeTab) this.activeTab = saved.activeTab;
     if (saved.activeFilter && this.filters.includes(saved.activeFilter)) this.activeFilter = saved.activeFilter;
@@ -311,6 +319,22 @@ export class MessagesPage {
     return nickname?.trim() || otherAccount?.name || otherAccount?.username || 'Account unavailable';
   }
 
+  groupMembers(conversation: Conversation, showAll = false) {
+    const members = conversation.memberIds.map((id) => this.accounts().find((account) => account.id === id))
+      .filter((account): account is Account => !!account);
+    return showAll ? members : members.slice(0, 7);
+  }
+
+  presenceLabel(_account: Account) { return 'Last seen unavailable'; }
+
+  formatMessageTime(date: Date) {
+    return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
+  }
+
+  private scrollToLatest() {
+    requestAnimationFrame(() => { void this.chatContent?.scrollToBottom(180); });
+  }
+
   conversationProfileImage(conversation: Conversation) {
     const otherId = conversation.memberIds.find((id) => id !== this.selectedAccount()?.id);
     const account = this.accounts().find((item) => item.id === otherId);
@@ -343,6 +367,37 @@ export class MessagesPage {
     return accountId !== undefined && (message.seenBy ?? message.readBy ?? []).some((readerId) => readerId !== accountId);
   }
 
+  messageDeliveryStatus(message: ChatMessage): 'sending' | 'sent' | 'seen' | 'failed' {
+    const localState = this.messageService.sendStates()[message.id];
+    if (localState === 'sending' || localState === 'failed') return localState;
+    if (message.senderId === this.selectedAccount()?.id && this.messageWasReadByOther(message)) return 'seen';
+    return 'sent';
+  }
+
+  async retryMessage(message: ChatMessage) {
+    const conversation = this.activeConversation;
+    if (conversation) await this.messageService.retryMessage(conversation.id, message.id);
+  }
+
+  shouldShowDateSeparator(index: number) {
+    if (index === 0) return true;
+    const messages = this.visibleMessages;
+    return !this.sameCalendarDay(messages[index - 1].createdAt, messages[index].createdAt);
+  }
+
+  messageDateLabel(date: Date) {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    if (this.sameCalendarDay(date, today)) return 'Today';
+    if (this.sameCalendarDay(date, yesterday)) return 'Yesterday';
+    return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(date);
+  }
+
+  private sameCalendarDay(first: Date, second: Date) {
+    return first.getFullYear() === second.getFullYear() && first.getMonth() === second.getMonth() && first.getDate() === second.getDate();
+  }
+
   conversationIsUnread(conversation: Conversation) {
     return this.unreadMessageCount(conversation) > 0;
   }
@@ -373,6 +428,7 @@ export class MessagesPage {
     this.saveViewState();
     const accountId = this.selectedAccount()?.id;
     if (accountId !== undefined) this.messageService.markRead(conversationId, accountId);
+    this.scrollToLatest();
   }
 
   toggleConversationMenu(id: string, event: Event) {
@@ -441,6 +497,11 @@ export class MessagesPage {
     this.saveViewState();
   }
 
+  closeChatSettings() {
+    this.showChatSettings = false;
+    this.saveViewState();
+  }
+
   openChatSettings() {
     const conversation = this.activeConversation;
     if (!conversation) return;
@@ -448,6 +509,7 @@ export class MessagesPage {
     this.nicknameDraft = this.messageService.settingsFor(conversation.id).nicknames[String(otherId)] ?? '';
     this.settingsNotice = '';
     this.showSharedItems = false;
+    this.showAllGroupMembers = false;
     this.showChatSettings = true;
     this.saveViewState();
   }
@@ -801,6 +863,7 @@ export class MessagesPage {
       body: this.replyToMessage.body,
     } : undefined;
     this.messageService.sendMessage(conversation.id, account.id, body, this.pendingAttachments, replyTo ? { replyTo } : {});
+    this.scrollToLatest();
     this.clearTyping();
     this.messageDraft = '';
     this.replyToMessage = null;
