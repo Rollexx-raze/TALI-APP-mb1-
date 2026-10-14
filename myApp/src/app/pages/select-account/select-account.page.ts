@@ -49,6 +49,7 @@ export class SelectAccountPage {
 
   chooseAccount(account: ReturnType<typeof this.accountService.accounts>[number]) {
     this.accountService.selectAccount(account);
+    this.accountService.prepareAccountLogin(account);
     this.router.navigateByUrl('/login');
   }
 

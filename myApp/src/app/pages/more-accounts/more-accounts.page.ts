@@ -29,6 +29,7 @@ export class MoreAccountsPage {
 
   chooseAccount(account: Account) {
     this.accountService.selectAccount(account);
+    this.accountService.prepareAccountLogin(account);
     this.router.navigateByUrl('/login');
   }
 

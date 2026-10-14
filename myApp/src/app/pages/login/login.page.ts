@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { AccountService } from '../../services/account.service';
   styleUrls: ['./login.page.scss'],
   imports: [CommonModule, FormsModule, IonContent, IonItem, IonInput, IonButton],
 })
-export class LoginPage implements OnInit {
+export class LoginPage {
   identifier = '';
   password = '';
   submitted = false;
@@ -20,16 +20,12 @@ export class LoginPage implements OnInit {
   private readonly router = inject(Router);
   readonly accountService = inject(AccountService);
 
-  ngOnInit() {
-    this.prepareSelectedAccountLogin();
-  }
-
   ionViewWillEnter() {
     this.prepareSelectedAccountLogin();
   }
 
   private prepareSelectedAccountLogin() {
-    const account = this.accountService.selectedAccount();
+    const account = this.accountService.consumeAccountLoginPrefill();
     if (account) {
       this.identifier = account.contact;
       this.password = this.accountService.isPasswordSaved(account.id) ? account.password : '';
