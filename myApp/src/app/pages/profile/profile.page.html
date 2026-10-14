@@ -55,7 +55,7 @@
             </div>
             @if (!isOwnProfile) {
               <div class="profile-actions">
-                <ion-button fill="outline" size="small" [class.is-following]="isFollowingProfile" (click)="toggleFollowProfile()">{{ isFollowingProfile ? 'Following' : 'Follow' }}</ion-button>
+                <button type="button" class="follow-btn" [class.is-following]="isFollowingProfile" (click)="toggleFollowProfile()">{{ isFollowingProfile ? 'Following' : 'Follow' }}</button>
                 <ion-button fill="solid" size="small" class="message-profile-button" (click)="messageProfile()"><ion-icon slot="start" name="chatbubble-outline"></ion-icon><span class="message-button-label">Message</span></ion-button>
               </div>
             }

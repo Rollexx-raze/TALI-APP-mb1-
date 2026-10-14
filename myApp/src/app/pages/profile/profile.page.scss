@@ -198,11 +198,34 @@
 .profile-top h2 { margin: 0 0 8px; color: #ffffff; font-size: 1.5rem; font-weight: 700; }
 .profile-top p { margin: 0 0 10px; color: #ffffff; font-size: .9rem; }
 .profile-top .verified-badge { display: inline-block; width: 14px; height: 14px; margin-left: 3px; vertical-align: -2px; color: #ffffff; }
-.profile-top ion-button { --color: var(--ion-color-primary); --border-color: var(--page-border); font-size: .76rem; }
+.profile-top ion-button { --border-color: var(--page-border); font-size: .76rem; }
 .profile-actions { display: flex; align-items: center; justify-content: flex-start; gap: 8px; }
 .profile-actions ion-button { min-width: 92px; min-height: 36px; margin: 0; --border-radius: 999px; --border-width: 1px; font-size: .74rem; }
 .profile-actions ion-button:not(.message-profile-button) { --background: #171717; --color: #ffffff; --border-color: #ffffff; }
-.profile-actions ion-button:not(.message-profile-button)::part(native) { color: #ffffff !important; }
+.follow-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 16px;
+  border: 1px solid #ffffff;
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  font-size: .74rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-text-fill-color: #ffffff;
+  transition: background 0.16s ease, opacity 0.16s ease;
+}
+.follow-btn.is-following {
+  background: rgba(255,255,255,0.12);
+}
+.follow-btn:active { opacity: 0.7; }
+.profile-actions ion-button:not(.message-profile-button)::part(native) { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
 :host-context(html:not(.app-light)) .profile-actions ion-button:not(.message-profile-button) {
   --color: #ffffff !important;
   color: #ffffff !important;
