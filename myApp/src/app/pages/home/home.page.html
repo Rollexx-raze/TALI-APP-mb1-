@@ -1,8 +1,10 @@
 <ion-header class="home-header ion-no-border">
   <ion-toolbar>
     <div class="home-toolbar-row">
+
       <span aria-hidden="true"></span>
       <div class="home-brand-mark"><img class="logo-on-dark" src="assets/Logo%20%E2%80%93%20dark@1x.png" alt="Tali" /><img class="logo-on-light" src="assets/Logo%20%E2%80%93%20light@1x.png" alt="" aria-hidden="true" /></div>
+main
       <ion-button fill="clear" class="search-button" aria-label="Search" routerLink="/search">
         <ion-icon slot="icon-only" name="search-outline"></ion-icon>
       </ion-button>
@@ -33,7 +35,16 @@
       <button type="button" role="tab" class="feed-tab" [class.is-active]="activeFeed === 'following'" [attr.aria-selected]="activeFeed === 'following'" (click)="setFeed('following')">Following</button>
     </div>
 
-    @if (visiblePosts.length === 0) {
+    @if (postService.loading()) {
+      <section class="feed-empty" role="status">
+        <h3>Loading posts...</h3>
+      </section>
+    } @else if (postService.loadError()) {
+      <section class="feed-empty" role="alert">
+        <h3>Could not load posts</h3>
+        <p>{{ postService.loadError() }}</p>
+      </section>
+    } @else if (visiblePosts.length === 0) {
       <section class="feed-empty">
         <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
         @if (activeFeed === 'following') {
@@ -50,8 +61,10 @@
       </section>
     }
 
-    @for (post of visiblePosts; track post.id) {
-      <app-post-card [post]="post" [focusPostOnLoad]="post.id === focusedPostId" [openCommentsOnLoad]="post.id === focusedPostId && openCommentsForFocusedPost" [focusRequestId]="notificationFocusKey"></app-post-card>
+    @if (!postService.loading() && !postService.loadError()) {
+      @for (post of visiblePosts; track post.id) {
+        <app-post-card [post]="post" [focusPostOnLoad]="post.id === focusedPostId" [openCommentsOnLoad]="post.id === focusedPostId && openCommentsForFocusedPost" [focusRequestId]="notificationFocusKey"></app-post-card>
+      }
     }
   </div>
 </ion-content>

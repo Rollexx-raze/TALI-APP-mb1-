@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonToolbar, IonButton, IonIcon, IonAvatar, IonFooter } from '@ionic/angular';
+import { IonContent, IonHeader, IonToolbar, IonButton, IonIcon, IonAvatar, IonFooter, ToastController } from '@ionic/angular';
 import { AccountService } from '../../services/account.service';
 import { PostService } from '../../services/post.service';
 import { NotificationService } from '../../services/notification.service';
@@ -10,6 +10,7 @@ import { addIcons } from 'ionicons';
 import { addCircle, chatbubbleOutline, documentOutline, ellipsisHorizontal, heartOutline, homeSharp, notificationsOutline, personCircleOutline, personOutline, repeatOutline, searchOutline, shareOutline } from 'ionicons/icons';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { ViewStateService } from '../../services/view-state.service';
+import { GroupService } from '../../services/group.service';
 
 @Component({
   selector: 'app-home',
@@ -23,7 +24,9 @@ export class HomePage implements AfterViewInit {
   readonly accountService = inject(AccountService);
   readonly postService = inject(PostService);
   readonly notificationService = inject(NotificationService);
+  readonly groupService = inject(GroupService);
   readonly viewState = inject(ViewStateService);
+  private readonly toastController = inject(ToastController);
   private readonly viewStateKey = 'tali-view-home';
 
   activeFeed: 'for-you' | 'following' = 'for-you';
@@ -36,15 +39,24 @@ export class HomePage implements AfterViewInit {
   get feedPosts() {
     const viewer = this.accountService.selectedAccount();
     const accounts = this.accountService.accounts();
-    return this.postService.posts().filter((post) => !post.archivedAt && !post.trashedAt && this.postService.canViewPost(post, viewer, accounts));
+    return this.postService.posts().filter((post) =>
+      !post.archivedAt &&
+      !post.trashedAt &&
+      (post.groupId
+        ? this.groupService.canViewGroupPost(post.groupId, viewer?.id)
+        : this.postService.canViewPost(post, viewer, accounts)),
+    );
   }
 
   get visiblePosts() {
     const posts = this.feedPosts;
     if (this.activeFeed === 'for-you') return posts;
-    const viewer = this.accountService.selectedAccount() as unknown as { following?: unknown[] } | undefined;
-    const followingIds = viewer?.following ?? [];
-    return posts.filter((post) => followingIds.includes((post as unknown as { authorId?: unknown }).authorId));
+    const viewer = this.accountService.selectedAccount();
+    const followingIds = viewer?.followingIds ?? [];
+    return posts.filter((post) => post.groupId
+      ? this.groupService.getGroupById(post.groupId)?.memberIds.includes(viewer?.id ?? -1) ?? false
+      : post.authorId !== null && followingIds.includes(post.authorId),
+    );
   }
 
   get focusedPostId() {
@@ -66,6 +78,20 @@ export class HomePage implements AfterViewInit {
 
   constructor() {
     addIcons({ addCircle, chatbubbleOutline, documentOutline, ellipsisHorizontal, heartOutline, homeSharp, notificationsOutline, personCircleOutline, personOutline, repeatOutline, searchOutline, shareOutline });
+    effect(() => {
+      const error = this.postService.loadError();
+      if (error) void this.showToast(error);
+    });
+    effect(() => {
+      const viewerId = this.accountService.selectedAccount()?.id;
+      const posts = this.feedPosts;
+      console.log('Home feed query', {
+        viewerId,
+        loadedPostCount: this.postService.posts().length,
+        visiblePostCount: posts.length,
+        groupCount: this.groupService.groups().length,
+      });
+    });
   }
 
   setFeed(feed: 'for-you' | 'following') {
@@ -80,5 +106,10 @@ export class HomePage implements AfterViewInit {
 
   saveScroll(event: CustomEvent<{ scrollTop: number }>) {
     this.viewState.write(this.viewStateKey, event.detail.scrollTop);
+  }
+
+  private async showToast(message: string) {
+    const toast = await this.toastController.create({ message, duration: 2600, color: 'danger' });
+    await toast.present();
   }
 }

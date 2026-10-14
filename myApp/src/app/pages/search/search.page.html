@@ -2,8 +2,13 @@
   <ion-toolbar><h1>Search</h1></ion-toolbar>
 </ion-header>
 <ion-content class="page-content" [fullscreen]="true">
-  <ion-searchbar [value]="query" (ionInput)="setQuery($any($event).detail.value ?? '')" placeholder="Search people and topics" [debounce]="100" aria-label="Search people and topics"></ion-searchbar>
-  @if (!query.trim()) {
+  <ion-searchbar [value]="query" (ionInput)="setQuery($any($event).detail.value ?? '')" placeholder="Search people, groups, and topics" [debounce]="100" aria-label="Search people, groups, and topics"></ion-searchbar>
+  <nav class="search-filters" aria-label="Filter search results">
+    <button type="button" [class.active]="activeFilter === 'all'" [attr.aria-pressed]="activeFilter === 'all'" (click)="setFilter('all')">All</button>
+    <button type="button" [class.active]="activeFilter === 'people'" [attr.aria-pressed]="activeFilter === 'people'" (click)="setFilter('people')">People</button>
+    <button type="button" [class.active]="activeFilter === 'groups'" [attr.aria-pressed]="activeFilter === 'groups'" (click)="setFilter('groups')">Groups</button>
+  </nav>
+  @if (!query.trim() && activeFilter === 'all') {
     <section class="section-block">
       <h2>Trending topics</h2>
       @for (topic of topics; track topic) {
@@ -11,15 +16,46 @@
       }
     </section>
   }
-  <section class="section-block">
-    <h2>People</h2>
-    @for (person of filteredPeople; track person.username) {
-      <div class="person-row"><a class="person-profile-link" [routerLink]="['/profile', person.id]"><ion-avatar><ion-icon name="person-circle-outline"></ion-icon></ion-avatar><div><strong>{{ person.name }}</strong><span>{{ person.username }}</span></div></a><ion-button fill="outline" size="small" [routerLink]="['/profile', person.id]">View</ion-button></div>
-    } @empty {
-      <p class="empty-state">{{ query.trim() ? 'No people match your search.' : 'No people to show yet.' }}</p>
-    }
-  </section>
-  @if (query.trim()) {
+  @if (activeFilter !== 'groups') {
+    <section class="section-block">
+      <h2>People</h2>
+      @for (person of filteredPeople; track person.username) {
+        <a class="search-result person-row" [routerLink]="['/profile', person.id]">
+          <span class="result-type person-type"><ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>Person</span>
+          <ion-avatar>
+            @if (profileImageFor(person.id); as profileImage) { <img [src]="profileImage" alt="" /> }
+            @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
+          </ion-avatar>
+          <span class="result-copy"><strong>{{ person.name }}</strong><small>{{ person.username }}</small></span>
+        </a>
+      } @empty {
+        <p class="empty-state">{{ query.trim() ? 'No people match your search.' : 'No people to show yet.' }}</p>
+      }
+    </section>
+  }
+  @if (activeFilter !== 'people') {
+    <section class="section-block">
+      <h2>Groups</h2>
+      @if (groupService.loading()) {
+        <p class="empty-state">Loading groups...</p>
+      } @else {
+        @for (group of filteredGroups; track group.id) {
+          <a class="search-result group-result" [routerLink]="['/groups', group.id]">
+            <span class="result-type group-type"><ion-icon name="people-outline" aria-hidden="true"></ion-icon>Group</span>
+            @if (group.photo) {
+              <img class="search-group-photo" [src]="group.photo" alt="" />
+            } @else {
+              <span class="search-group-photo search-group-placeholder">{{ group.name.slice(0, 1).toUpperCase() || 'G' }}</span>
+            }
+            <span class="result-copy"><strong>{{ group.name }}</strong><small>{{ group.memberIds.length }} member{{ group.memberIds.length === 1 ? '' : 's' }} · {{ group.privacy === 'private' ? 'Private' : 'Public' }}</small></span>
+          </a>
+        } @empty {
+          <p class="empty-state">{{ query.trim() ? 'No groups found.' : 'No groups to show yet.' }}</p>
+        }
+      }
+    </section>
+  }
+  @if (query.trim() && activeFilter === 'all') {
     <section class="section-block">
       <h2>Topics</h2>
       @for (topic of filteredTopics; track topic) {

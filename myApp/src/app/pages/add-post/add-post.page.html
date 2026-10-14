@@ -31,6 +31,7 @@
       <ion-textarea [(ngModel)]="message" (ngModelChange)="onDraftTextChange()" placeholder="What's new?" [autoGrow]="true" [maxlength]="500" aria-label="Write your post"></ion-textarea>
 
       <input #mediaInput class="media-input" type="file" multiple [disabled]="!mediaPermissionEnabled" (change)="onFilesSelected($event)" aria-label="Choose photos, videos, or files" />
+      @if (mediaUploading) { <p class="media-error" role="status">Uploading attachments... {{ mediaUploadProgress }}%</p> }
       @if (pendingAttachments.length) {
         <div class="attachment-list">
           @for (attachment of pendingAttachments; track $index) {

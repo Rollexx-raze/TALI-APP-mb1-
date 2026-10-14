@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonAvatar, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar } from '@ionic/angular';
+import { IonAvatar, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addCircle, atOutline, chatbubbleOutline, heartOutline, homeOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, repeatOutline, shareOutline, trendingUpOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
@@ -9,6 +9,7 @@ import { AppNotification, NotificationService } from '../../services/notificatio
 import { PostService } from '../../services/post.service';
 import { Conversation, MessageService } from '../../services/message.service';
 import { ViewStateService } from '../../services/view-state.service';
+import { GroupService } from '../../services/group.service';
 
 @Component({
   selector: 'app-suggestions',
@@ -23,17 +24,16 @@ export class SuggestionsPage {
   readonly accountService = inject(AccountService);
   readonly postService = inject(PostService);
   readonly notificationService = inject(NotificationService);
+  readonly groupService = inject(GroupService);
   readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
+  private readonly toastController = inject(ToastController);
   selectedSection: 'suggestions' | 'notifications' = 'suggestions';
   selectedCategory: 'people' | 'posts' | 'groups' = 'people';
   pendingUnfollow: Account | null = null;
 
   get groups() {
-    try {
-      const value: unknown = JSON.parse(localStorage.getItem('tali-community-groups') ?? '[]');
-      return Array.isArray(value) ? value.filter((item) => !!item && typeof item.name === 'string') as { id: string; name: string; description: string }[] : [];
-    } catch { return []; }
+    return this.groupService.getGroups();
   }
 
   get groupChats() {
@@ -102,6 +102,7 @@ export class SuggestionsPage {
 
   setCategory(category: 'people' | 'posts' | 'groups') {
     this.selectedCategory = category;
+    this.selectedSection = 'suggestions';
     this.saveViewState();
   }
 
@@ -133,6 +134,17 @@ export class SuggestionsPage {
 
   markNotificationRead(notification: AppNotification) {
     this.notificationService.markRead(notification.id, notification.recipientId);
+    const groupId = notification.groupId ?? (notification.postId
+      ? this.postService.posts().find((post) => post.id === notification.postId)?.groupId
+      : undefined);
+    if (groupId) {
+      if (!this.groupService.getGroupById(groupId)) {
+        void this.showToast('This group no longer exists');
+        return;
+      }
+      void this.router.navigate(['/groups', groupId]);
+      return;
+    }
     if (notification.type === 'message_request' && notification.conversationId) {
       const messagesStateKey = 'tali-view-messages';
       const saved = this.viewState.read<Record<string, unknown>>(messagesStateKey, {});
@@ -141,7 +153,7 @@ export class SuggestionsPage {
       return;
     }
     if (notification.type === 'follow') {
-      void this.router.navigate(['/profile', notification.actorId]);
+      void this.router.navigate(['/profile', notification.userId ?? notification.actorId]);
       return;
     }
 
@@ -179,5 +191,18 @@ export class SuggestionsPage {
 
   isFollowing(person: Account) {
     return this.accountService.selectedAccount()?.followingIds.includes(person.id) ?? false;
+  }
+
+  openCommunityGroup(groupId: string) {
+    if (!this.groupService.getGroupById(groupId)) {
+      void this.showToast('This group no longer exists');
+      return;
+    }
+    void this.router.navigate(['/groups', groupId]);
+  }
+
+  private async showToast(message: string) {
+    const toast = await this.toastController.create({ message, duration: 2400, color: 'danger' });
+    await toast.present();
   }
 }

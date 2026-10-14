@@ -5,8 +5,14 @@ import { IonIcon, IonModal } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { chatbubbleOutline, chevronBackOutline, chevronForwardOutline, documentOutline, ellipsisHorizontal, heart, heartOutline, personCircleOutline, repeatOutline, shareOutline } from 'ionicons/icons';
 import { AccountService } from '../../services/account.service';
+import { GroupService } from '../../services/group.service';
 import { Post, PostService } from '../../services/post.service';
 import { CommentsPage } from '../../pages/comments/comments.page';
+
+interface PostBodySegment {
+  text: string;
+  url?: string;
+}
 
 @Component({
   selector: 'app-post-card',
@@ -22,6 +28,7 @@ export class PostCardComponent implements OnChanges {
   @Input() focusRequestId = '';
 
   readonly accountService = inject(AccountService);
+  private readonly groupService = inject(GroupService);
   private readonly postService = inject(PostService);
   commentsOpen = false;
   actionMessage = '';
@@ -36,6 +43,29 @@ export class PostCardComponent implements OnChanges {
   get authorImage() {
     const author = this.accountService.accounts().find((account) => account.id === this.post.authorId);
     return author && this.accountService.canViewProfileImage(author, this.accountService.selectedAccount()) ? author.profileImage : undefined;
+  }
+
+  get groupName() {
+    return this.post.groupId ? this.groupService.getGroupById(this.post.groupId)?.name : undefined;
+  }
+
+  get bodySegments(): PostBodySegment[] {
+    const segments: PostBodySegment[] = [];
+    const linkPattern = /https?:\/\/[^\s<]+/gi;
+    let lastIndex = 0;
+    for (const match of this.post.body.matchAll(linkPattern)) {
+      const index = match.index ?? 0;
+      const rawUrl = match[0];
+      const url = rawUrl.replace(/[),.!?;:]+$/g, '');
+      if (!url) continue;
+      if (index > lastIndex) segments.push({ text: this.post.body.slice(lastIndex, index) });
+      segments.push({ text: url, url });
+      const trailing = rawUrl.slice(url.length);
+      if (trailing) segments.push({ text: trailing });
+      lastIndex = index + rawUrl.length;
+    }
+    if (lastIndex < this.post.body.length) segments.push({ text: this.post.body.slice(lastIndex) });
+    return segments.length ? segments : [{ text: this.post.body }];
   }
 
   get isLiked() {

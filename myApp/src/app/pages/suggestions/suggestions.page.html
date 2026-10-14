@@ -8,12 +8,13 @@
     </button>
   </nav>
 
+  <nav class="suggestion-tabs" aria-label="Suggestion categories">
+    <button type="button" [class.active]="selectedSection === 'suggestions' && selectedCategory === 'people'" (click)="setCategory('people')">People</button>
+    <button type="button" [class.active]="selectedSection === 'suggestions' && selectedCategory === 'posts'" (click)="setCategory('posts')">Posts</button>
+    <button type="button" [class.active]="selectedSection === 'suggestions' && selectedCategory === 'groups'" (click)="setCategory('groups')">Groups @if (groupActivityUnreadCount) { <span class="group-activity-count" [attr.aria-label]="groupActivityUnreadCount + ' unread group messages'">{{ groupActivityUnreadCount }}</span> }</button>
+  </nav>
+
   @if (selectedSection === 'suggestions') {
-    <nav class="suggestion-tabs" aria-label="Suggestion categories">
-      <button type="button" [class.active]="selectedCategory === 'people'" (click)="setCategory('people')">People</button>
-      <button type="button" [class.active]="selectedCategory === 'posts'" (click)="setCategory('posts')">Posts</button>
-      <button type="button" [class.active]="selectedCategory === 'groups'" (click)="setCategory('groups')">Groups @if (groupActivityUnreadCount) { <span class="group-activity-count" [attr.aria-label]="groupActivityUnreadCount + ' unread group messages'">{{ groupActivityUnreadCount }}</span> }</button>
-    </nav>
     @if (selectedCategory === 'people') {
       <section class="intro"><h2>People to meet</h2></section>
       @for (person of people; track person.id) {
@@ -49,9 +50,21 @@
         </button>
       }
       @empty { <p class="empty-suggestions">No group chats yet. Create one to get started.</p> }
-      @if (groups.length) {
-        <section class="intro community-heading"><div><h2>Community groups</h2><p>Groups around shared interests.</p></div><ion-button fill="outline" routerLink="/groups"><ion-icon slot="start" name="add-circle"></ion-icon>Create community group</ion-button></section>
-        @for (group of groups; track group.id) { <article class="suggestion-row community-group-card"><div class="suggestion-copy"><strong>{{ group.name }}</strong><span>{{ group.description || 'A new community group.' }}</span></div></article> }
+      <section class="intro community-heading">
+        <div><h2>Community groups</h2><p>Groups around shared interests.</p></div>
+        <ion-button fill="outline" routerLink="/groups/create"><ion-icon slot="start" name="add-circle"></ion-icon>Create community group</ion-button>
+      </section>
+      @for (group of groups; track group.id) {
+        <button type="button" class="suggestion-row community-group-card activity-community-group" (click)="openCommunityGroup(group.id)">
+          <span class="group-chat-avatar">
+            @if (group.photo) { <img [src]="group.photo" alt="" /> }
+            @else { <ion-icon name="people-outline" aria-hidden="true"></ion-icon> }
+          </span>
+          <span class="suggestion-copy"><strong>{{ group.name }}</strong><span>{{ group.description || 'A new community group.' }}</span></span>
+          <span class="group-chat-count">{{ group.memberIds.length }} member{{ group.memberIds.length === 1 ? '' : 's' }} · {{ group.privacy === 'private' ? 'Private' : 'Public' }}</span>
+        </button>
+      } @empty {
+        <p class="empty-suggestions">No community groups yet. Create one to get started.</p>
       }
     }
   }

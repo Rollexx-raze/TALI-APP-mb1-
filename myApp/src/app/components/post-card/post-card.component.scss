@@ -11,7 +11,9 @@
   gap: 8px;
 }
 
-.post-avatar-link { display: block; width: 38px; height: 38px; margin-top: 14px; color: inherit; text-decoration: none; }
+.post-avatar-link { display: block; width: 38px; height: 38px; margin-top: 14px; color: inherit; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.post-avatar-link:active, .post-profile-link:active { opacity: .68; transform: scale(.97); }
+.post-avatar-link:focus-visible, .post-profile-link:focus-visible { border-radius: 5px; outline: 2px solid var(--ion-color-primary); outline-offset: 2px; }
 
 .post-card {
   box-sizing: border-box;
@@ -19,10 +21,10 @@
   min-width: 0;
   margin: 0;
   padding: 14px 16px 10px;
-  border: 1px solid var(--page-border);
+  border: 1px solid var(--app-border);
   border-radius: 16px;
-  background: var(--page-surface);
-  color: var(--page-text);
+  background: var(--app-surface);
+  color: var(--app-text);
   box-shadow: 0 3px 14px rgba(0, 0, 0, .08);
   transition: border-color .18s ease;
 }
@@ -41,7 +43,7 @@
 }
 
 .post-topline { position: relative; gap: 10px; }
-.post-profile-link { display: flex; flex: 1; min-width: 0; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+.post-profile-link { display: flex; flex: 1; min-width: 0; align-items: center; gap: 10px; color: inherit; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 
 .post-avatar {
   display: grid;
@@ -52,8 +54,9 @@
   place-items: center;
   border: 2px solid var(--page-surface);
   border-radius: 50%;
-  background: linear-gradient(145deg, #6e92f2, #1a3bb0);
-  box-shadow: 0 0 0 1px var(--page-border);
+  border-color: var(--app-avatar-outline);
+  background: var(--app-avatar-fill);
+  box-shadow: 0 0 0 1px var(--app-divider);
 }
 
 .post-avatar img,
@@ -61,10 +64,12 @@
 
 .post-user-details { flex: 1; min-width: 0; }
 .identity-row { gap: 8px; }
-.identity-row strong { overflow: hidden; color: var(--page-text); font-size: .82rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.identity-row strong { overflow: hidden; color: var(--app-text); font-size: .82rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .post-time,
-.post-handle { color: var(--page-muted); font-size: .7rem; }
+.post-handle { color: var(--app-text-muted); font-size: .7rem; }
 .post-handle { display: block; margin-top: 3px; }
+.post-group-link { display: inline-block; margin-top: 8px; color: var(--app-text-muted); font-size: .72rem; text-decoration: none; }
+.post-group-link:hover, .post-group-link:focus-visible { color: var(--app-primary); text-decoration: underline; }
 
 .post-more {
   display: grid;
@@ -75,22 +80,23 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: #6e92f2;
+  color: var(--app-primary);
   cursor: pointer;
 }
 
 .post-more ion-icon { font-size: 1.15rem; }
-.post-options-menu { position: absolute; z-index: 8; top: 38px; right: 0; display: grid; width: min(290px, calc(100vw - 72px)); padding: 6px; border: 1px solid var(--page-border); border-radius: 12px; background: var(--page-surface); box-shadow: 0 14px 32px rgba(0,0,0,.3); }
-.post-options-menu button { min-height: 42px; padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--page-text); font: inherit; font-size: .82rem; text-align: left; cursor: pointer; }
-.post-options-menu button:hover, .post-options-menu button:focus-visible { background: rgba(94, 80, 63, .08); outline: none; }
+.post-options-menu { position: absolute; z-index: 8; top: 38px; right: 0; display: grid; width: min(290px, calc(100vw - 72px)); padding: 6px; border: 1px solid var(--app-border); border-radius: 12px; background: var(--app-surface); color: var(--app-text); box-shadow: 0 14px 32px rgba(0,0,0,.3); }
+.post-options-menu button { min-height: 42px; padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--app-text); font: inherit; font-size: .82rem; text-align: left; cursor: pointer; }
+.post-options-menu button:hover, .post-options-menu button:focus-visible { background: color-mix(in srgb, var(--app-primary) 8%, transparent); outline: none; }
 .post-options-menu .destructive-option { color: #e78484; }
 .post-edit-form { display: grid; gap: 8px; margin: 10px 0 0; }
-.post-edit-form textarea { width: 100%; min-height: 96px; padding: 10px; border: 1px solid var(--page-border); border-radius: 10px; background: var(--page-bg); color: var(--page-text); font: inherit; resize: vertical; }
+.post-edit-form textarea { width: 100%; min-height: 96px; padding: 10px; border: 1px solid var(--app-border); border-radius: 10px; background: var(--app-surface-alt); color: var(--app-text); font: inherit; resize: vertical; }
 .post-edit-form > div { display: flex; justify-content: flex-end; gap: 8px; }
-.post-edit-form button { min-height: 34px; padding: 0 12px; border: 1px solid var(--page-border); border-radius: 9px; background: var(--page-surface); color: var(--page-text); cursor: pointer; }
+.post-edit-form button { min-height: 34px; padding: 0 12px; border: 1px solid var(--app-border); border-radius: 9px; background: var(--app-surface); color: var(--app-text); cursor: pointer; }
 .post-edit-form button:last-child { border-color: var(--ion-color-primary); background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); }
 .post-trash-note { margin: 10px 0 0; color: var(--page-muted); font-size: .75rem; }
-.post-body { margin: 10px 0 0; color: var(--page-text); font-size: .86rem; line-height: 1.5; overflow-wrap: anywhere; }
+.post-body { margin: 10px 0 0; color: var(--app-text); font-size: .86rem; line-height: 1.5; overflow-wrap: anywhere; }
+.post-body a { color: var(--app-text-muted); text-decoration: underline; text-underline-offset: 2px; }
 
 .post-media-carousel {
   position: relative;
@@ -141,11 +147,11 @@
   scroll-snap-align: start;
   border: 1px solid var(--page-border);
   border-radius: 12px;
-  background: var(--page-bg);
+  background: var(--app-surface-alt);
   object-fit: cover;
 }
 
-.post-file { display: flex; min-width: 220px; max-width: calc(100vw - 100px); flex: 0 0 auto; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--page-border); border-radius: 10px; background: var(--page-surface); color: var(--page-text); text-decoration: none; }
+.post-file { display: flex; min-width: 220px; max-width: calc(100vw - 100px); flex: 0 0 auto; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--app-border); border-radius: 10px; background: var(--app-surface-alt); color: var(--app-text); text-decoration: none; }
 .post-file ion-icon { flex: 0 0 auto; font-size: 1.2rem; }
 .post-file span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -160,7 +166,7 @@
   border-top: 0;
 }
 
-.action-button { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; gap: 6px; padding: 0; border: 0; background: transparent; color: var(--page-muted); font: inherit; font-size: .8rem; cursor: pointer; }
+.action-button { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; gap: 6px; padding: 0; border: 0; background: transparent; color: var(--app-text-muted); font: inherit; font-size: .8rem; cursor: pointer; }
 .action-button ion-icon { font-size: 1.4rem; }
 .action-button.is-active { color: var(--ion-color-primary); }
 .action-button:first-child.is-active { color: #e24d61; }

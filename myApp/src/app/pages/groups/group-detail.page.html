@@ -1,0 +1,189 @@
+<ion-header class="page-header ion-no-border">
+  <ion-toolbar>
+    <ion-back-button slot="start" defaultHref="/groups" text=""></ion-back-button>
+    <ion-title class="group-page-title">{{ group?.name || 'Group' }}</ion-title>
+    @if (groupService.loading() || canUseGroupMenu) {
+      <ion-buttons slot="end" class="group-menu-buttons">
+        <ion-button fill="clear" class="group-menu-trigger" aria-label="Group options" [attr.aria-expanded]="showGroupMenu" (click)="toggleGroupMenu()">
+          <ion-icon slot="icon-only" name="ellipsis-vertical" aria-hidden="true"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+@if (showGroupMenu && group && canUseGroupMenu) {
+  <nav class="group-actions-menu" role="menu" aria-label="Group options">
+    @if (isGroupAdmin) {
+      <button type="button" role="menuitem" (click)="editGroup()">Edit group</button>
+      <button type="button" role="menuitem" (click)="manageMembers()">Manage members</button>
+      @if (group.privacy === 'private') { <button type="button" role="menuitem" (click)="manageJoinRequests()">Join requests<span>{{ group.pendingRequests.length }}</span></button> }
+      <button type="button" role="menuitem" class="danger-action" (click)="confirmDeleteGroup()">Delete group</button>
+    } @else if (isGroupModerator) {
+      <button type="button" role="menuitem" (click)="manageJoinRequests()">Join requests<span>{{ group.pendingRequests.length }}</span></button>
+      <button type="button" role="menuitem" (click)="manageMembers()">Manage members</button>
+    } @else if (isGroupMember) {
+      <button type="button" role="menuitem" (click)="leaveGroupFromMenu()">Leave group</button>
+    }
+  </nav>
+}
+
+<ion-content class="groups-page">
+  <main class="groups-content">
+    @if (groupService.loading()) {
+      <p class="groups-state" role="status">Loading group...</p>
+    } @else if (group; as currentGroup) {
+      <section class="groups-hero group-detail-hero">
+        @if (currentGroup.coverPhoto) {
+          <img class="group-cover-photo" [src]="currentGroup.coverPhoto" alt="" />
+        } @else if (currentGroup.photo) {
+          <img class="group-cover-photo" [src]="currentGroup.photo" alt="" />
+        }
+        @if (currentGroup.photo) {
+          <img class="group-detail-photo" [src]="currentGroup.photo" alt="" />
+        } @else {
+          <span class="group-detail-photo group-photo-placeholder">{{ currentGroup.name.slice(0, 1).toUpperCase() || 'G' }}</span>
+        }
+        <h2>{{ currentGroup.name }}</h2>
+        <p>{{ currentGroup.privacy === 'private' ? 'Private group' : 'Public group' }} · {{ currentGroup.memberIds.length }} member{{ currentGroup.memberIds.length === 1 ? '' : 's' }}</p>
+        @if (!isGroupMember && isJoinRequested) {
+          <ion-button class="group-membership-button" fill="outline" disabled>Requested</ion-button>
+        } @else if (!isGroupMember) {
+          <ion-button class="group-membership-button" fill="solid" (click)="joinOrRequest()">
+            {{ currentGroup.privacy === 'private' ? 'Request to join' : 'Join group' }}
+          </ion-button>
+        }
+      </section>
+
+      <nav class="group-detail-tabs" aria-label="Group sections">
+        <button type="button" [class.active]="activeTab === 'posts'" (click)="setTab('posts')">Posts</button>
+        <button type="button" [class.active]="activeTab === 'about'" (click)="setTab('about')">About</button>
+        <button type="button" [class.active]="activeTab === 'members'" (click)="setTab('members')">Members</button>
+      </nav>
+
+      @if (activeTab === 'posts') {
+        @if (!canViewPosts) {
+          <section class="group-empty-state"><p>Join to see posts in this private group.</p></section>
+        } @else {
+          @if (canPost) {
+            <form class="group-post-form" (ngSubmit)="submitGroupPost()">
+              <div class="group-post-text">
+                <ion-textarea
+                  name="groupPost"
+                  [(ngModel)]="postDraft"
+                  maxlength="500"
+                  rows="3"
+                  [autoGrow]="true"
+                  placeholder="Write something to the group..."
+                  aria-label="Write a group post"
+                ></ion-textarea>
+                <span class="group-character-count">{{ postDraft.length }}/500</span>
+              </div>
+              <input #groupPhotoInput class="group-media-input" type="file" accept="image/*" multiple (change)="onPostFilesSelected($event)" aria-label="Choose group post photos" />
+              <input #groupVideoInput class="group-media-input" type="file" accept="video/*" (change)="onPostFilesSelected($event)" aria-label="Choose group post video" />
+              <div class="group-composer-tools" aria-label="Post attachments">
+                <button class="group-composer-tool" type="button" [disabled]="mediaUploading" (click)="groupPhotoInput.click()">
+                  <ion-icon name="image-outline" aria-hidden="true"></ion-icon><span>Photo</span>
+                </button>
+                <button class="group-composer-tool" type="button" [disabled]="mediaUploading" (click)="groupVideoInput.click()">
+                  <ion-icon name="videocam-outline" aria-hidden="true"></ion-icon><span>Video</span>
+                </button>
+                <button class="group-composer-tool" type="button" (click)="addGroupLink()">
+                  <ion-icon name="link-outline" aria-hidden="true"></ion-icon><span>Link</span>
+                </button>
+              </div>
+              @if (pendingMediaUploads.length || postAttachments.length) {
+                <div class="group-attachment-list" aria-label="Selected media">
+                  @for (upload of pendingMediaUploads; track $index) {
+                    <div class="group-attachment-preview">
+                      @if (upload.file.type.startsWith('image/')) {
+                        <img [src]="upload.previewUrl" [alt]="upload.file.name" />
+                      } @else {
+                        <div class="group-video-preview">
+                          <video muted playsinline preload="metadata" [attr.aria-label]="upload.file.name"><source [src]="upload.previewUrl" [type]="upload.file.type" /></video>
+                          <ion-icon name="play-outline" aria-hidden="true"></ion-icon>
+                        </div>
+                      }
+                      <ion-progress-bar class="group-item-progress" [value]="upload.progress / 100" [attr.aria-label]="'Uploading ' + upload.file.name"></ion-progress-bar>
+                    </div>
+                  }
+                @for (attachment of postAttachments; track $index) {
+                  <div class="group-attachment-preview">
+                    @if (attachment.type.startsWith('image/')) {
+                      <img [src]="attachment.dataUrl" [alt]="attachment.name" />
+                    } @else {
+                      <div class="group-video-preview">
+                        <video muted playsinline preload="metadata" [attr.aria-label]="attachment.name"><source [src]="attachment.dataUrl" [type]="attachment.type" /></video>
+                        <ion-icon name="play-outline" aria-hidden="true"></ion-icon>
+                      </div>
+                    }
+                    <button class="group-remove-attachment" type="button" [disabled]="mediaUploading" (click)="removePostAttachment($index)" [attr.aria-label]="'Remove ' + attachment.name">
+                      <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+              }
+              <div class="group-composer-submit-row">
+                @if (mediaUploading) { <span class="group-upload-status" role="status">Adding media... {{ mediaUploadProgress }}%</span> }
+                <ion-button class="group-post-submit" type="submit" [disabled]="mediaUploading || (!postDraft.trim() && !postAttachments.length)">
+                  @if (mediaUploading) { <ion-spinner name="crescent" aria-label="Posting"></ion-spinner> } @else { Post }
+                </ion-button>
+              </div>
+            </form>
+            @if (mediaError) { <p class="form-error" role="alert">{{ mediaError }}</p> }
+            @if (postError) { <p class="form-error" role="alert">{{ postError }}</p> }
+          } @else {
+            <section class="group-empty-state"><p>Join to post.</p></section>
+          }
+          <section class="group-posts" aria-label="Group posts">
+            @for (post of groupPosts; track post.id) {
+              <app-post-card [post]="post"></app-post-card>
+            } @empty {
+              <section class="group-empty-state"><p>No posts yet. Be the first to post.</p></section>
+            }
+          </section>
+        }
+      }
+
+      @if (activeTab === 'about') {
+        <section class="group-about-panel">
+          <h2>About this group</h2>
+          <p>{{ currentGroup.description || 'This group has not added a description yet.' }}</p>
+          <p><strong>{{ currentGroup.privacy === 'private' ? 'Private' : 'Public' }}</strong> · {{ currentGroup.memberIds.length }} member{{ currentGroup.memberIds.length === 1 ? '' : 's' }}</p>
+        </section>
+      }
+
+      @if (activeTab === 'members') {
+        <section class="group-members-list" aria-label="Group members">
+          @for (member of groupMembers; track member.id) {
+            <div class="group-member-row">
+              <a class="group-member-profile" [routerLink]="['/profile', member.id]">
+                <ion-avatar>
+                  @if (canViewMemberPhoto(member)) {
+                    <img [src]="member.profileImage" alt="" />
+                  } @else {
+                    <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+                  }
+                </ion-avatar>
+                <span>{{ member.name }}</span>
+              </a>
+              @if (member.id === currentGroup.adminId) { <small>Admin</small> }
+              @else if (isGroupAdmin) {
+                <ion-button fill="clear" class="remove-group-member" (click)="removeGroupMember(member.id)" [attr.aria-label]="'Remove ' + member.name">Remove</ion-button>
+              }
+            </div>
+          } @empty {
+            <section class="group-empty-state"><p>No members yet.</p></section>
+          }
+        </section>
+      }
+    } @else {
+      <section class="groups-hero">
+        <h2>Group unavailable</h2>
+        <p>This group may have been removed or is not available on this account.</p>
+        <ion-button routerLink="/groups">Back to groups</ion-button>
+      </section>
+    }
+  </main>
+</ion-content>

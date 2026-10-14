@@ -1,0 +1,28 @@
+:host { display: block; min-height: 100%; background: var(--app-background-gradient); color: var(--app-text); }
+.page-header ion-toolbar { position: relative; --background: var(--app-header-gradient); --color: var(--app-text); padding: 4px 12px; }
+.page-header .group-page-title { position: absolute; z-index: 0; left: 50%; width: calc(100% - 112px); min-width: 0; padding: 0 10px; transform: translateX(-50%); color: var(--app-text); font-size: 1.05rem; font-weight: 700; text-align: center; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; pointer-events: none; }
+.page-header ion-back-button { --color: var(--app-text); }
+.create-group-page { --background: var(--app-background-gradient); --color: var(--app-text); }
+.create-group-content { display: grid; min-height: 100%; place-items: start center; padding: 30px 18px 56px; }
+.create-group-card { width: min(100%, 560px); padding: 26px; border: 1px solid var(--app-border); border-radius: 22px; background: var(--app-surface); color: var(--app-text); box-shadow: 0 16px 40px rgba(0, 0, 0, .2); }
+.eyebrow { margin: 0 0 7px; color: var(--app-text-muted); font-size: .7rem; font-weight: 800; letter-spacing: .16em; }
+.create-group-card h2 { margin: 0; color: var(--app-text); font-size: 1.35rem; font-weight: 750; }
+.form-intro { margin: 8px 0 24px; color: var(--app-text-muted); font-size: .88rem; line-height: 1.5; }
+.group-field { display: grid; gap: 8px; margin: 17px 0; color: var(--app-text); font-size: .84rem; font-weight: 700; }
+.group-field > span small { color: var(--app-text-muted); font-size: .75rem; font-weight: 400; }
+.group-field input:not([type="file"]), .group-field textarea { box-sizing: border-box; width: 100%; border: 1px solid var(--app-border); border-radius: 11px; outline: none; padding: 12px; background: var(--app-surface-alt); color: var(--app-text); font: inherit; font-size: .86rem; font-weight: 400; }
+.group-field input::placeholder, .group-field textarea::placeholder { color: var(--app-placeholder); }
+.group-field input:focus, .group-field textarea:focus { border-color: var(--app-text-muted); }
+.group-field textarea { min-height: 92px; resize: vertical; }
+.photo-input { display: none; }
+.photo-picker { display: flex; min-height: 46px; align-items: center; justify-content: center; gap: 9px; border: 1px dashed var(--app-border); border-radius: 11px; background: var(--app-surface-alt); color: var(--app-text-muted); font: inherit; cursor: pointer; }
+.photo-picker ion-icon { font-size: 1.2rem; }
+.photo-preview { display: flex; align-items: center; gap: 12px; }
+.photo-preview img { width: 64px; height: 64px; border: 1px solid var(--app-border); border-radius: 13px; object-fit: cover; }
+.remove-photo { border: 0; background: transparent; color: var(--app-text-muted); font: inherit; font-size: .8rem; text-decoration: underline; cursor: pointer; }
+.form-error { margin: 0; color: var(--ion-color-danger); font-size: .78rem; }
+.group-form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+.group-form-actions ion-button { --border-radius: 11px; }
+.group-form-actions ion-button:last-child { --background: var(--app-primary); --color: var(--app-text); }
+.photo-picker:focus-visible, .remove-photo:focus-visible { outline: 2px solid var(--app-text-muted); outline-offset: 2px; }
+@media (max-width: 420px) { .create-group-content { padding: 20px 14px 44px; } .create-group-card { padding: 22px; } }
