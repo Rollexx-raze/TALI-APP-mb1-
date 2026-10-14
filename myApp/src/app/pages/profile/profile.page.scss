@@ -203,6 +203,15 @@
 .profile-actions ion-button { min-width: 92px; min-height: 36px; margin: 0; --border-radius: 999px; --border-width: 1px; font-size: .74rem; }
 .profile-actions ion-button:not(.message-profile-button) { --background: #171717; --color: #ffffff; --border-color: #ffffff; }
 .profile-actions ion-button:not(.message-profile-button)::part(native) { color: #ffffff !important; }
+:host-context(html:not(.app-light)) .profile-actions ion-button:not(.message-profile-button) {
+  --color: #ffffff !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+:host-context(html:not(.app-light)) .profile-actions ion-button:not(.message-profile-button)::part(native) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
 .profile-actions .message-profile-button { --background: #111111; --color: #ffffff; --border-color: #ffffff; --border-style: solid; --box-shadow: none; }
 .profile-actions .message-profile-button::part(native) { color: #ffffff !important; }
 .message-button-label { display: inline-block; color: #ffffff !important; opacity: 1 !important; visibility: visible !important; font-size: .74rem; font-weight: 600; line-height: 1; }
