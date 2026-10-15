@@ -7,6 +7,7 @@
 }
 
 .login-content { --background: #1a3bb0; --color: var(--auth-paper); }
+.login-content::part(scroll) { display: flex; flex-direction: column; justify-content: center; }
 .login-content::part(background) {
   background: linear-gradient(145deg, rgba(0,0,0,.58), rgba(15,34,112,.42)), url('/assets/bgdesign2.svg') center / cover fixed;
 }
@@ -14,13 +15,14 @@
 .login-wrapper {
   box-sizing: border-box;
   display: flex;
+  flex: 0 0 auto;
   width: min(100% - 36px, 420px);
-  min-height: 650px;
+  min-height: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 14px;
-  margin: max(24px, 7vh) auto;
+  margin: 24px auto;
   padding: 30px 28px;
   border: 1px solid rgba(230,237,253,.13);
   border-radius: 28px;
@@ -30,14 +32,14 @@
   backdrop-filter: blur(16px);
 }
 
-.login-brand { width: 100%; margin-bottom: 14px; text-align: center; }
-.login-brand h1 { margin: 12px 0 4px; font-size: 1.7rem; font-weight: 650; }
+.login-brand { width: 100%; margin-bottom: 8px; text-align: center; }
+.login-brand h1 { margin: 4px 0 4px; font-size: 1.7rem; font-weight: 650; }
 .login-brand p { margin: 0; color: rgba(230,237,253,.62); font-size: .9rem; }
 .login-welcome { width: 100%; max-width: 340px; margin: 2px 0 -5px; color: var(--auth-paper); font-size: .9rem; font-weight: 600; text-align: left; }
 .login-logo {
   display: block;
-  width: 220px;
-  height: 220px;
+  width: 160px;
+  height: 160px;
   margin: 0 auto;
   object-fit: contain;
 }
@@ -87,7 +89,7 @@
 }
 
 @media (max-width: 380px) {
-  .login-wrapper { width: calc(100% - 24px); min-height: 590px; padding: 24px 18px; }
+  .login-wrapper { width: calc(100% - 24px); min-height: 0; padding: 24px 18px; }
 }
 
 @media (max-width: 560px) {

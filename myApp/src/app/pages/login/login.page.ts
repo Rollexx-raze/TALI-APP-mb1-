@@ -16,6 +16,7 @@ export class LoginPage {
   identifier = '';
   password = '';
   submitted = false;
+  welcomeName = '';
 
   private readonly router = inject(Router);
   readonly accountService = inject(AccountService);
@@ -27,18 +28,16 @@ export class LoginPage {
   private prepareSelectedAccountLogin() {
     const account = this.accountService.consumeAccountLoginPrefill();
     if (account) {
+      this.welcomeName = account.name.trim().split(/\s+/)[0] ?? '';
       this.identifier = account.contact;
       this.password = this.accountService.isPasswordSaved(account.id) ? account.password : '';
     }
     else {
+      this.welcomeName = '';
       this.identifier = '';
       this.password = '';
     }
     this.submitted = false;
-  }
-
-  get welcomeName() {
-    return this.accountService.selectedAccount()?.name.trim().split(/\s+/)[0] ?? '';
   }
 
   logIn() {

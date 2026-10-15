@@ -279,7 +279,7 @@
 .profile-sections button img.video-tab-icon { display: block; width: 22px; height: 22px; }
 .profile-sections button.active { border-bottom-color: #ffffff; background: transparent; color: #ffffff; }
 .profile-sections button:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: 2px; }
-.profile-posts { padding: 22px 12px; --page-bg: #000000; --page-surface: #111111; --page-text: #ffffff; --page-muted: #d0d0d0; --page-border: #333333; }
+.profile-posts { padding: 22px 12px; }
 .profile-posts > app-post-card { display: block; margin-top: 12px; }
 .profile-posts-feed { display: grid; gap: 12px; margin-top: 14px; }
 .trash-explanation { margin: 8px 0 0; color: var(--page-muted); font-size: .78rem; }
@@ -363,12 +363,13 @@
 	background: linear-gradient(
 		to bottom,
 		rgba(255, 255, 255, 0) 0%,
-		rgba(255, 255, 255, 0) 36%,
-		rgba(255, 255, 255, 0.4) 60%,
-		rgba(255, 255, 255, 0.85) 82%,
+		rgba(255, 255, 255, 0) 70%,
+		rgba(255, 255, 255, 0.08) 82%,
+		rgba(255, 255, 255, 0.82) 100%,
 		var(--page-bg, #ffffff) 100%
 	);
 }
+:host-context(html.app-light) .profile-cover img { -webkit-mask-image:none; mask-image:none; }
 :host-context(html.app-light) .profile-cover-button {
 	background: color-mix(in srgb, var(--page-bg, #ffffff) 92%, #000000);
 }
@@ -381,6 +382,54 @@
 	color: #ffffff;
 	box-shadow: none;
 }
+
+:host-context(html.app-light) .profile-content,
+:host-context(html.app-light) .profile-page-shell,
+:host-context(html.app-light) .profile-content-panel { --background:var(--page-bg)!important; background:var(--page-bg)!important; color:var(--page-text)!important; }
+:host-context(html.app-light) .profile-hero,
+:host-context(html.app-light) .profile-top,
+:host-context(html.app-light) .profile-stats-card,
+:host-context(html.app-light) .profile-bio,
+:host-context(html.app-light) .profile-bio p > span,
+:host-context(html.app-light) .profile-bio a,
+:host-context(html.app-light) .profile-bio .bio-placeholder,
+:host-context(html.app-light) .profile-top h2,
+:host-context(html.app-light) .profile-top p,
+:host-context(html.app-light) .profile-top .verified-badge,
+:host-context(html.app-light) .stats-row strong,
+:host-context(html.app-light) .stats-row span,
+:host-context(html.app-light) .empty-profile,
+:host-context(html.app-light) .empty-profile ion-icon { color:var(--page-text)!important; }
+:host-context(html.app-light) .profile-cover { background:var(--page-bg); }
+:host-context(html.app-light) .profile-cover-button { background:var(--page-surface); color:var(--page-text); }
+:host-context(html.app-light) .profile-top ion-avatar { border-color:var(--page-bg); background:var(--page-surface); color:var(--page-text); box-shadow:0 0 0 1px var(--page-border); }
+:host-context(html.app-light) .stats-row > :not(:last-child)::after { background:var(--page-border); }
+:host-context(html.app-light) .profile-sections { border-color:var(--page-border); }
+:host-context(html.app-light) .profile-sections button,
+:host-context(html.app-light) .profile-sections button ion-icon { color:var(--page-muted); }
+:host-context(html.app-light) .profile-sections button img,
+:host-context(html.app-light) .empty-profile img.empty-state-icon { filter:brightness(0) saturate(100%); }
+:host-context(html.app-light) .profile-sections button.active { border-bottom-color:var(--ion-color-primary); color:var(--page-text); }
+:host-context(html.app-light) .profile-gallery img,
+:host-context(html.app-light) .profile-gallery video { background:var(--page-surface); border-color:var(--page-border); }
+:host-context(html.app-light) .profile-actions ion-button:not(.message-profile-button) { --background:var(--page-surface); --color:var(--page-text); --border-color:var(--page-border); }
+:host-context(html.app-light) .profile-actions ion-button:not(.message-profile-button)::part(native) { color:var(--page-text)!important; -webkit-text-fill-color:var(--page-text)!important; }
+:host-context(html.app-light) .follow-btn { border-color:var(--page-border); color:var(--page-text); -webkit-text-fill-color:var(--page-text); }
+:host-context(html.app-light) .follow-btn.is-following { background:var(--page-surface); }
+:host-context(html.app-light) .profile-actions .message-profile-button { --background:var(--page-surface); --color:var(--page-text); --border-color:var(--page-border); }
+:host-context(html.app-light) .profile-actions .message-profile-button::part(native),
+:host-context(html.app-light) .message-button-label { color:var(--page-text)!important; }
+:host-context(html.app-light) .profile-circle-btn { background:rgba(0,0,0,.28); color:#fff; }
+:host-context(html.app-light) .edit-dialog { border-color:var(--page-border); background:var(--page-surface); color:var(--page-text); }
+:host-context(html.app-light) .edit-dialog h2,
+:host-context(html.app-light) .edit-dialog p,
+:host-context(html.app-light) .edit-dialog label,
+:host-context(html.app-light) .connection-row,
+:host-context(html.app-light) .connection-row strong { color:var(--page-text); }
+:host-context(html.app-light) .connection-row span,
+:host-context(html.app-light) .connection-empty { color:var(--page-muted); }
+:host-context(html.app-light) .profile-editor-dialog ion-input,
+:host-context(html.app-light) .profile-editor-dialog ion-textarea { --background:var(--page-bg); --color:var(--page-text); --placeholder-color:var(--page-muted); border-color:var(--page-border); }
 
 @media (min-width: 768px) {
 	.profile-page-shell { width: min(100%, 1600px); min-height: calc(100dvh - 132px); padding: 0; }
