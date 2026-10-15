@@ -1130,6 +1130,81 @@
   background: var(--page-surface);
   box-shadow: 0 4px 16px rgba(0, 0, 0, .16);
 }
+.chat-composer:has(.reply-composer-preview) {
+  align-items: center;
+  border-radius: 22px;
+  overflow: hidden;
+}
+.chat-composer .reply-composer-preview {
+  position: relative;
+  display: grid;
+  width: calc(100% + 8px);
+  min-width: 0;
+  min-height: 58px;
+  flex: 0 0 calc(100% + 8px);
+  grid-template-columns: 34px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 10px;
+  margin: -4px -4px 2px;
+  padding: 9px 10px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--page-border) 65%, transparent);
+  background: color-mix(in srgb, var(--ion-color-primary) 6%, var(--page-surface));
+  color: var(--page-text);
+}
+.reply-preview-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--ion-color-primary) 13%, var(--page-surface));
+  color: var(--ion-color-primary);
+  font-size: 1rem;
+}
+.reply-preview-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+.reply-preview-copy strong {
+  overflow: hidden;
+  color: var(--page-text);
+  font-size: .76rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.reply-preview-copy strong span {
+  color: var(--page-muted);
+  font-weight: 500;
+}
+.reply-preview-copy > span {
+  overflow: hidden;
+  color: var(--page-muted);
+  font-size: .75rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-composer .reply-composer-preview button {
+  position: static;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--page-muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.chat-composer .reply-composer-preview button:hover {
+  background: color-mix(in srgb, var(--page-text) 8%, transparent);
+  color: var(--page-text);
+}
 .chat-composer .chat-text-input,
 .chat-input-wrap .chat-text-input {
   min-height: 44px;

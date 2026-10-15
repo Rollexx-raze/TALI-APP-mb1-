@@ -558,7 +558,14 @@
         <input #filePicker hidden type="file" (change)="attachSelectedFile($event, 'file')" />
         <ion-button type="button" fill="clear" class="composer-collapse" tabindex="-1" aria-label="Show attachments" (pointerdown)="$event.preventDefault()" (click)="isComposerExpanded = false"><ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon></ion-button>
         @if (replyToMessage) {
-          <div class="reply-composer-preview"><strong>Replying to {{ messageAuthorName(replyToMessage) }}</strong><span>{{ replyToMessage.body || (hasPhotoAttachment(replyToMessage) ? 'Photo' : 'Message') }}</span><button type="button" aria-label="Cancel reply" (click)="replyToMessage = null"><ion-icon name="close-outline"></ion-icon></button></div>
+          <div class="reply-composer-preview">
+            <span class="reply-preview-icon" aria-hidden="true"><ion-icon name="arrow-undo-outline"></ion-icon></span>
+            <div class="reply-preview-copy">
+              <strong><span>Replying to</span> {{ messageAuthorName(replyToMessage) }}</strong>
+              <span>{{ replyToMessage.body || (hasPhotoAttachment(replyToMessage) ? 'Photo' : 'Message') }}</span>
+            </div>
+            <button type="button" aria-label="Cancel reply" (click)="replyToMessage = null"><ion-icon name="close-outline"></ion-icon></button>
+          </div>
         }
         @if (recordingVoice) {
           <div class="voice-recording-bar" role="group" aria-label="Voice recording controls">
