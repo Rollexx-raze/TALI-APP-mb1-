@@ -70,7 +70,7 @@
       }
       @for (message of visibleMessages; track message.id) {
         @if (shouldShowDateSeparator($index)) { <div class="message-date-separator"><span>{{ messageDateLabel(message.createdAt) }}</span></div> }
-        <div class="message-row" [id]="'message-' + message.id" [class.own-message]="message.senderId === selectedAccount()?.id" [class.grouped-message]="$index > 0 && !shouldShowDateSeparator($index) && visibleMessages[$index - 1]?.senderId === message.senderId" [class.sender-run-end]="$index === visibleMessages.length - 1 || shouldShowDateSeparator($index + 1) || visibleMessages[$index + 1]?.senderId !== message.senderId">
+        <div class="message-row" [id]="'message-' + message.id" [class.own-message]="message.senderId === selectedAccount()?.id" [class.grouped-message]="$index > 0 && !shouldShowDateSeparator($index) && visibleMessages[$index - 1]?.senderId === message.senderId" [class.sender-run-end]="$index === visibleMessages.length - 1 || shouldShowDateSeparator($index + 1) || visibleMessages[$index + 1]?.senderId !== message.senderId" [class.message-actions-revealed]="revealedMessageActionsId === message.id" [class.message-actions-open]="messageActionsId === message.id" (click)="revealedMessageActionsId = message.id">
           <a class="message-sender-avatar" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
             @if (messageAuthorImage(message); as image) { <img [src]="image" [alt]="messageAuthorName(message)" /> }
             @else { <span aria-hidden="true">{{ messageAuthorInitials(message) }}</span> }
@@ -85,52 +85,63 @@
             }
             <div class="message-bubble-row">
               @if (message.body && !hasPhotoAttachment(message)) {
-                <div class="message-bubble" (click)="openMessageActions(message)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message)">
+                <div class="message-bubble" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message, $event.currentTarget)">
                   <p class="message-bubble-copy">@for (part of messageParts(message.body); track $index) { @if (part === '@everyone') { <button type="button" class="message-mention everyone-mention" (click)="$event.stopPropagation(); callNotice = 'Everyone in this conversation was mentioned.'">@everyone</button> } @else if (part.startsWith('@') && mentionAccount(part); as mentioned) { <a class="message-mention" [routerLink]="['/profile', mentioned.id]" (click)="$event.stopPropagation()">{{ part }}</a> } @else { {{ part }} } }</p>
                   @if (messageTimestampInBubble(message)) { <time class="message-time message-bubble-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time> }
-                </div>
-              }
-              @if (messageActionsId === message.id) {
-                <div class="message-action-sheet-backdrop" (click)="messageActionsId = null">
-                  <section class="message-action-sheet" role="dialog" aria-modal="true" aria-label="Message actions" (click)="$event.stopPropagation()">
-                    <button type="button" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
-                    <button type="button" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
-                    <button type="button" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
-                    @if (message.senderId === selectedAccount()?.id) { <button type="button" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
-                  </section>
                 </div>
               }
             </div>
             @if (message.body && !hasPhotoAttachment(message) && messageReactionList(message).length) {
               <div class="message-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">
                 @for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" [attr.aria-label]="reaction.emoji + ', ' + reaction.count + ' reactions. Tap to see who reacted'" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }
-                @if (reactionDetailsKey?.startsWith(message.id + ':')) {
-                  @for (reaction of messageReactionList(message); track reaction.emoji) { @if (reactionDetailsKey === message.id + ':' + reaction.emoji) { <div class="reaction-details-popover"><strong>{{ reaction.emoji }} reactions</strong>@for (account of reactionAccounts(message, reaction.emoji); track account.id) { <span>{{ account.name }}</span> }</div> }
-                  }
-                }
               </div>
             }
             @for (attachment of message.attachments ?? []; track attachment.url) {
+              @let photoStackIndex = photoAttachmentIndex(message, attachment);
               @if (attachment.kind === 'photo' || attachment.kind === 'gif') {
-                <div class="image-message-bubble">
-                  <button type="button" class="image-viewer-trigger" [attr.aria-label]="'Open image ' + attachment.name" [disabled]="imageLoadState(attachment.url) !== 'loaded'" (click)="messageActionsId === message.id ? null : openImageViewer(attachment)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message)">
+                <div class="image-message-bubble" [class.photo-stack-card]="photoAttachmentCount(message) > 1" [class.photo-stack-first]="photoStackIndex === 0" [class.photo-stack-right]="photoStackIndex % 2 === 0">
+                  <button type="button" class="image-viewer-trigger" [attr.aria-label]="'Open image ' + attachment.name" [disabled]="imageLoadState(attachment.url) !== 'loaded'" (click)="messageActionsId === message.id ? $event.stopPropagation() : handleMediaTap(message, attachment, $event)" (pointerdown)="startMediaReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message, $event.currentTarget)">
                     @if (imageLoadState(attachment.url) === 'loading') { <span class="image-loading-skeleton" aria-label="Loading image"></span> }
                     @if (imageLoadState(attachment.url) !== 'error') { <img class="message-attachment" [class.image-is-loading]="imageLoadState(attachment.url) === 'loading'" [src]="attachment.url" [alt]="attachment.name" (load)="setImageLoadState(attachment.url, 'loaded')" (error)="setImageLoadState(attachment.url, 'error')" /> }
                   </button>
+                  @if (photoStackIndex === 0 && reactionPickerMessageId === message.id && !reactionPickerExpanded) {
+                    <div class="media-reaction-picker" role="toolbar" aria-label="React to media">
+                      @for (emoji of ['💛', '😆', '😮', '😭', '😡', '👍']; track emoji) { <button type="button" class="media-reaction-option" (click)="chooseMessageReaction(message, emoji)">{{ emoji }}</button> }
+                      <button type="button" class="media-reaction-option media-reaction-more" aria-label="More reactions" (click)="expandMediaReactionPicker()">+</button>
+                    </div>
+                  }
+                  @if (photoStackIndex === 0 && reactionPickerMessageId === message.id && reactionPickerExpanded && reactionPickerForMedia) {
+                    <div class="media-emoji-picker-backdrop" (click)="closeMediaReactionPicker()">
+                      <emoji-picker class="media-emoji-picker" data-source="/assets/emoji-data.json" (click)="$event.stopPropagation()" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker>
+                    </div>
+                  }
                   @if (imageLoadState(attachment.url) === 'error') { <div class="image-load-error" role="status"><span>Couldn't load image</span><button type="button" (click)="retryInlineImage(attachment.url)">Retry</button></div> }
                   @if (isFirstImageAttachment(message, attachment) && message.body) { <p class="image-message-caption">{{ message.body }}</p> }
                 </div>
-                @if (isFirstImageAttachment(message, attachment) && messageReactionList(message).length) {
+                @if (isLastImageAttachment(message, attachment) && messageReactionList(message).length) {
                   <div class="message-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">
                     @for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" [attr.aria-label]="reaction.emoji + ', ' + reaction.count + ' reactions. Tap to see who reacted'" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }
-                    @if (reactionDetailsKey?.startsWith(message.id + ':')) {
-                      @for (reaction of messageReactionList(message); track reaction.emoji) { @if (reactionDetailsKey === message.id + ':' + reaction.emoji) { <div class="reaction-details-popover"><strong>{{ reaction.emoji }} reactions</strong>@for (account of reactionAccounts(message, reaction.emoji); track account.id) { <span>{{ account.name }}</span> }</div> }
-                      }
-                    }
                   </div>
                 }
               }
-              @if (attachment.kind === 'video') { <video class="message-attachment" [src]="attachment.url" controls playsinline (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); reactionPickerMessageId = message.id"></video> }
+              @if (attachment.kind === 'video') {
+                <div class="video-message-wrap">
+                  <video class="message-attachment" [src]="attachment.url" controls playsinline (click)="handleMediaTap(message, attachment, $event)" (pointerdown)="startMediaReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMediaReactionPicker(message)"></video>
+                  @if (reactionPickerMessageId === message.id) {
+                    <div class="media-reaction-picker" role="toolbar" aria-label="React to video">
+                      @for (emoji of ['💛', '😆', '😮', '😭', '😡', '👍']; track emoji) {
+                        <button type="button" class="media-reaction-option" (click)="chooseMessageReaction(message, emoji)">{{ emoji }}</button>
+                      }
+                      <button type="button" class="media-reaction-option media-reaction-more" aria-label="More reactions" (click)="expandMediaReactionPicker()">+</button>
+                    </div>
+                  }
+                  @if (reactionPickerMessageId === message.id && reactionPickerExpanded && reactionPickerForMedia) {
+                    <div class="media-emoji-picker-backdrop" (click)="closeMediaReactionPicker()">
+                      <emoji-picker class="media-emoji-picker" data-source="/assets/emoji-data.json" (click)="$event.stopPropagation()" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker>
+                    </div>
+                  }
+                </div>
+              }
               @if (attachment.kind === 'voice') {
                 <div class="voice-message-player" [class.own-voice-message]="message.senderId === selectedAccount()?.id">
                   <audio #voicePlayer class="voice-audio-element" [src]="attachment.url" (play)="voicePlayingUrl = attachment.url" (timeupdate)="updateVoiceProgress(attachment.url, voicePlayer)" (pause)="voicePlaybackPaused(attachment.url)" (ended)="voicePlaybackEnded(attachment.url)"></audio>
@@ -144,7 +155,7 @@
             @if (!messageTimestampInBubble(message) || message.senderId === selectedAccount()?.id || reactionPickerMessageId === message.id) {
               <div class="message-delivery-meta">
                 @if (!messageTimestampInBubble(message)) { <time class="message-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time> }
-                @if (reactionPickerMessageId === message.id) { <emoji-picker class="message-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker> }
+                @if (reactionPickerMessageId === message.id && !reactionPickerForMedia) { <emoji-picker class="message-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker> }
                 @if (message.senderId === selectedAccount()?.id) {
                   @switch (messageDeliveryStatus(message)) {
                     @case ('sending') { <span class="message-status sending-status">Sending…</span> }
@@ -155,6 +166,19 @@
                 }
               </div>
             }
+            <div class="message-action-controls" [class.photo-stack-actions]="photoAttachmentCount(message) > 1" (click)="$event.stopPropagation()">
+              <button type="button" class="message-actions-toggle" [attr.aria-label]="'Message options'" [attr.aria-expanded]="messageActionsId === message.id" (click)="toggleMessageActions(message, $event)">
+                <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
+              </button>
+              @if (messageActionsId === message.id) {
+                <div class="message-action-menu" role="menu" aria-label="Message actions" [style.left.px]="messageActionsMenuPosition?.left" [style.top.px]="messageActionsMenuPosition?.top">
+                  <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
+                  <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
+                  <button type="button" role="menuitem" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
+                  @if (message.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
+                </div>
+              }
+            </div>
           </div>
         </div>
       } @empty {
@@ -422,10 +446,59 @@
   }
 </ion-content>
 
+@if (reactionDetailsMessage; as message) {
+  <div class="reaction-modal-backdrop" role="presentation" (click)="closeReactionDetails()">
+    <section class="reaction-modal" role="dialog" aria-modal="true" aria-labelledby="reaction-modal-title" (click)="$event.stopPropagation()">
+      <button type="button" class="reaction-modal-close" aria-label="Close reactions" (click)="closeReactionDetails()"><ion-icon name="close-outline"></ion-icon></button>
+      <h2 id="reaction-modal-title">Message reactions</h2>
+      <nav class="reaction-modal-summary" aria-label="Filter reactions">
+        <button type="button" class="reaction-modal-chip" [class.active]="selectedReactionEmoji === null" [attr.aria-pressed]="selectedReactionEmoji === null" (click)="reactionDetailEmoji = null">
+          <span>All</span>
+          <strong>{{ totalReactionCount(message) }}</strong>
+        </button>
+        @for (reaction of messageReactionList(message); track reaction.emoji) {
+          <button type="button" class="reaction-modal-chip" [class.active]="selectedReactionEmoji === reaction.emoji" [attr.aria-pressed]="selectedReactionEmoji === reaction.emoji" (click)="reactionDetailEmoji = reaction.emoji">
+            <span>{{ reaction.emoji }}</span>
+            <strong>{{ reaction.count }}</strong>
+          </button>
+        }
+      </nav>
+      <div class="reaction-modal-list">
+        @for (account of selectedReactionAccounts(message); track account.id) {
+          <a class="reaction-user-row" [routerLink]="['/profile', account.id]" (click)="closeReactionDetails()">
+            <div class="reaction-user-avatar">
+              @if (account.profileImage) { <img [src]="account.profileImage" [alt]="account.name" /> }
+              @else { <ion-icon name="person-circle-outline"></ion-icon> }
+            </div>
+            <div class="reaction-user-meta">
+              <strong>{{ account.name }}</strong>
+              <span>Click to view profile</span>
+            </div>
+            <span class="reaction-user-badges" aria-label="Reactions">
+              @for (emoji of reactionEmojisForAccount(message, account.id); track emoji) { <span>{{ emoji }}</span> }
+            </span>
+          </a>
+        }
+        @empty { <p class="reaction-modal-empty">No reactions to show.</p> }
+      </div>
+    </section>
+  </div>
+}
+
 @if (activeImageViewer; as image) {
   <div class="image-viewer-backdrop" role="dialog" aria-modal="true" aria-label="Image viewer" (click)="activeImageViewer = null">
     <button type="button" class="image-viewer-close" aria-label="Close image viewer" (click)="activeImageViewer = null"><ion-icon name="close-outline"></ion-icon></button>
-    <img class="image-viewer-image" [src]="image.url" [alt]="image.name" (click)="$event.stopPropagation()" />
+    @let currentPhoto = image.attachments[image.index];
+    @if (image.attachments.length > 1) {
+      <button type="button" class="image-viewer-nav image-viewer-previous" aria-label="Previous photo" (click)="$event.stopPropagation(); navigateImageViewer(-1)"><svg class="image-viewer-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
+      <span class="image-viewer-count" aria-live="polite">{{ image.index + 1 }} / {{ image.attachments.length }}</span>
+      <button type="button" class="image-viewer-nav image-viewer-next" aria-label="Next photo" (click)="$event.stopPropagation(); navigateImageViewer(1)"><svg class="image-viewer-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
+    }
+    <img class="image-viewer-image" [src]="currentPhoto.url" [alt]="currentPhoto.name" (click)="$event.stopPropagation()" />
+    <div class="image-viewer-actions" (click)="$event.stopPropagation()">
+      <button type="button" (click)="replyToViewedPhoto()"><ion-icon name="arrow-undo-outline"></ion-icon> Reply to photo</button>
+      <a [href]="currentPhoto.url" [download]="currentPhoto.name"><ion-icon name="download-outline"></ion-icon> Save photo</a>
+    </div>
   </div>
 }
 
@@ -485,7 +558,7 @@
         <input #filePicker hidden type="file" (change)="attachSelectedFile($event, 'file')" />
         <ion-button type="button" fill="clear" class="composer-collapse" tabindex="-1" aria-label="Show attachments" (pointerdown)="$event.preventDefault()" (click)="isComposerExpanded = false"><ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon></ion-button>
         @if (replyToMessage) {
-          <div class="reply-composer-preview"><strong>Replying to {{ messageAuthorName(replyToMessage) }}</strong><span>{{ replyToMessage.body }}</span><button type="button" aria-label="Cancel reply" (click)="replyToMessage = null"><ion-icon name="close-outline"></ion-icon></button></div>
+          <div class="reply-composer-preview"><strong>Replying to {{ messageAuthorName(replyToMessage) }}</strong><span>{{ replyToMessage.body || (hasPhotoAttachment(replyToMessage) ? 'Photo' : 'Message') }}</span><button type="button" aria-label="Cancel reply" (click)="replyToMessage = null"><ion-icon name="close-outline"></ion-icon></button></div>
         }
         @if (recordingVoice) {
           <div class="voice-recording-bar" role="group" aria-label="Voice recording controls">
