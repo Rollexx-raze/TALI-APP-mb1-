@@ -1174,6 +1174,17 @@
   min-width: 44px;
   flex-basis: 44px;
 }
+.chat-composer .quick-heart-button {
+  --color: var(--ion-color-primary) !important;
+  color: var(--ion-color-primary) !important;
+}
+.chat-composer .quick-heart-button::part(native) {
+  color: var(--ion-color-primary) !important;
+}
+.chat-composer .quick-heart-button ion-icon {
+  color: var(--ion-color-primary) !important;
+  opacity: 1 !important;
+}
 .chat-composer > ion-button[type="submit"]:not([disabled]) {
   --background: var(--ion-color-primary) !important;
   --color: var(--ion-color-primary-contrast) !important;
