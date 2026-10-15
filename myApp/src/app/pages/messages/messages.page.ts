@@ -394,6 +394,16 @@ export class MessagesPage {
     return this.messageAuthor(message)?.name ?? 'Former account';
   }
 
+  messageAuthorInitials(message: ChatMessage) {
+    return this.messageAuthorName(message)
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0))
+      .join('')
+      .toUpperCase();
+  }
+
   accountName(accountId: number) {
     return this.accounts().find((account) => account.id === accountId)?.name;
   }

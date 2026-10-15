@@ -70,15 +70,15 @@
       }
       @for (message of visibleMessages; track message.id) {
         @if (shouldShowDateSeparator($index)) { <div class="message-date-separator"><span>{{ messageDateLabel(message.createdAt) }}</span></div> }
-        <div class="message-row" [id]="'message-' + message.id" [class.own-message]="message.senderId === selectedAccount()?.id">
+        <div class="message-row" [id]="'message-' + message.id" [class.own-message]="message.senderId === selectedAccount()?.id" [class.grouped-message]="$index > 0 && !shouldShowDateSeparator($index) && visibleMessages[$index - 1]?.senderId === message.senderId" [class.sender-run-end]="$index === visibleMessages.length - 1 || shouldShowDateSeparator($index + 1) || visibleMessages[$index + 1]?.senderId !== message.senderId">
           @if (message.senderId !== selectedAccount()?.id) {
             <a class="incoming-avatar" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
               @if (messageAuthorImage(message); as image) { <img [src]="image" [alt]="messageAuthorName(message)" /> }
-              @else { <ion-icon name="person-circle-outline"></ion-icon> }
+              @else { <span aria-hidden="true">{{ messageAuthorInitials(message) }}</span> }
             </a>
           }
           <div class="message-content">
-            @if (message.senderId !== selectedAccount()?.id) { <strong class="message-sender">{{ messageAuthorName(message) }}</strong> }
+            @if (message.senderId !== selectedAccount()?.id && ($index === 0 || shouldShowDateSeparator($index) || visibleMessages[$index - 1]?.senderId !== message.senderId)) { <strong class="message-sender">{{ messageAuthorName(message) }}</strong> }
             @if (message.pinnedFor?.includes(selectedAccount()?.id ?? -1)) { <span class="pinned-message-label"><ion-icon name="pin-outline"></ion-icon> Pinned</span> }
             @if (message.forwarded) { <span class="message-context-label"><ion-icon name="arrow-redo-outline"></ion-icon> {{ message.senderId === selectedAccount()?.id ? 'You forwarded a message' : messageAuthorName(message) + ' forwarded a message' }}</span> }
             @if (message.replyTo; as reply) {
@@ -87,25 +87,10 @@
             }
             <div class="message-bubble-row">
               @if (message.body && !hasPhotoAttachment(message)) {
-                <div class="message-bubble" [class.has-reactions]="messageReactionList(message).length" (click)="openMessageActions(message)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message)">
+                <div class="message-bubble" (click)="openMessageActions(message)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message)">
                   <p class="message-bubble-copy">@for (part of messageParts(message.body); track $index) { @if (part === '@everyone') { <button type="button" class="message-mention everyone-mention" (click)="$event.stopPropagation(); callNotice = 'Everyone in this conversation was mentioned.'">@everyone</button> } @else if (part.startsWith('@') && mentionAccount(part); as mentioned) { <a class="message-mention" [routerLink]="['/profile', mentioned.id]" (click)="$event.stopPropagation()">{{ part }}</a> } @else { {{ part }} } }</p>
-                  @if (messageReactionList(message).length) {
-                    <div class="message-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">
-                      @for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" [attr.aria-label]="reaction.emoji + ', ' + reaction.count + ' reactions. Tap to see who reacted'" (click)="$event.stopPropagation(); onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }
-                      @if (reactionDetailsKey?.startsWith(message.id + ':')) {
-                        @for (reaction of messageReactionList(message); track reaction.emoji) {
-                          @if (reactionDetailsKey === message.id + ':' + reaction.emoji) { <div class="reaction-details-popover"><strong>{{ reaction.emoji }} reactions</strong>@for (account of reactionAccounts(message, reaction.emoji); track account.id) { <span>{{ account.name }}</span> }</div> }
-                        }
-                      }
-                    </div>
-                  }
                 </div>
               }
-              <div class="message-action-buttons" aria-label="Message quick actions">
-                <button type="button" aria-label="React to message" (click)="reactionPickerMessageId = reactionPickerMessageId === message.id ? null : message.id"><ion-icon name="happy-outline"></ion-icon></button>
-                <button type="button" aria-label="Reply to message" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon></button>
-                <button type="button" aria-label="More message actions" [attr.aria-expanded]="messageActionsId === message.id" (click)="messageActionsId = messageActionsId === message.id ? null : message.id"><ion-icon name="ellipsis-horizontal"></ion-icon></button>
-              </div>
               @if (messageActionsId === message.id) {
                 <div class="message-action-sheet-backdrop" (click)="messageActionsId = null">
                   <section class="message-action-sheet" role="dialog" aria-modal="true" aria-label="Message actions" (click)="$event.stopPropagation()">
@@ -117,25 +102,34 @@
                 </div>
               }
             </div>
+            @if (message.body && !hasPhotoAttachment(message) && messageReactionList(message).length) {
+              <div class="message-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">
+                @for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" [attr.aria-label]="reaction.emoji + ', ' + reaction.count + ' reactions. Tap to see who reacted'" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }
+                @if (reactionDetailsKey?.startsWith(message.id + ':')) {
+                  @for (reaction of messageReactionList(message); track reaction.emoji) { @if (reactionDetailsKey === message.id + ':' + reaction.emoji) { <div class="reaction-details-popover"><strong>{{ reaction.emoji }} reactions</strong>@for (account of reactionAccounts(message, reaction.emoji); track account.id) { <span>{{ account.name }}</span> }</div> }
+                  }
+                }
+              </div>
+            }
             @for (attachment of message.attachments ?? []; track attachment.url) {
               @if (attachment.kind === 'photo' || attachment.kind === 'gif') {
-                <div class="image-message-bubble" [class.has-reactions]="isFirstImageAttachment(message, attachment) && messageReactionList(message).length">
-                  <button type="button" class="image-viewer-trigger" [attr.aria-label]="'Open image ' + attachment.name" [disabled]="imageLoadState(attachment.url) !== 'loaded'" (click)="openImageViewer(attachment)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); reactionPickerMessageId = message.id">
+                <div class="image-message-bubble">
+                  <button type="button" class="image-viewer-trigger" [attr.aria-label]="'Open image ' + attachment.name" [disabled]="imageLoadState(attachment.url) !== 'loaded'" (click)="messageActionsId === message.id ? null : openImageViewer(attachment)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message)">
                     @if (imageLoadState(attachment.url) === 'loading') { <span class="image-loading-skeleton" aria-label="Loading image"></span> }
                     @if (imageLoadState(attachment.url) !== 'error') { <img class="message-attachment" [class.image-is-loading]="imageLoadState(attachment.url) === 'loading'" [src]="attachment.url" [alt]="attachment.name" (load)="setImageLoadState(attachment.url, 'loaded')" (error)="setImageLoadState(attachment.url, 'error')" /> }
                   </button>
                   @if (imageLoadState(attachment.url) === 'error') { <div class="image-load-error" role="status"><span>Couldn't load image</span><button type="button" (click)="retryInlineImage(attachment.url)">Retry</button></div> }
                   @if (isFirstImageAttachment(message, attachment) && message.body) { <p class="image-message-caption">{{ message.body }}</p> }
-                  @if (isFirstImageAttachment(message, attachment) && messageReactionList(message).length) {
-                    <div class="message-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">
-                      @for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" [attr.aria-label]="reaction.emoji + ', ' + reaction.count + ' reactions. Tap to see who reacted'" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }
-                      @if (reactionDetailsKey?.startsWith(message.id + ':')) {
-                        @for (reaction of messageReactionList(message); track reaction.emoji) { @if (reactionDetailsKey === message.id + ':' + reaction.emoji) { <div class="reaction-details-popover"><strong>{{ reaction.emoji }} reactions</strong>@for (account of reactionAccounts(message, reaction.emoji); track account.id) { <span>{{ account.name }}</span> }</div> }
-                        }
-                      }
-                    </div>
-                  }
                 </div>
+                @if (isFirstImageAttachment(message, attachment) && messageReactionList(message).length) {
+                  <div class="message-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">
+                    @for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" [attr.aria-label]="reaction.emoji + ', ' + reaction.count + ' reactions. Tap to see who reacted'" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }
+                    @if (reactionDetailsKey?.startsWith(message.id + ':')) {
+                      @for (reaction of messageReactionList(message); track reaction.emoji) { @if (reactionDetailsKey === message.id + ':' + reaction.emoji) { <div class="reaction-details-popover"><strong>{{ reaction.emoji }} reactions</strong>@for (account of reactionAccounts(message, reaction.emoji); track account.id) { <span>{{ account.name }}</span> }</div> }
+                      }
+                    }
+                  </div>
+                }
               }
               @if (attachment.kind === 'video') { <video class="message-attachment" [src]="attachment.url" controls playsinline (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); reactionPickerMessageId = message.id"></video> }
               @if (attachment.kind === 'voice') {
@@ -148,7 +142,8 @@
               }
               @if (attachment.kind === 'file') { <a class="message-file-attachment" [href]="attachment.url" [download]="attachment.name"><ion-icon name="document-outline"></ion-icon><span>{{ attachment.name }}</span></a> }
             }
-            <time class="message-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time>
+            <div class="message-delivery-meta">
+              <time class="message-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time>
             @if (reactionPickerMessageId === message.id) { <emoji-picker class="message-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker> }
             @if (message.senderId === selectedAccount()?.id) {
               @switch (messageDeliveryStatus(message)) {
@@ -158,6 +153,7 @@
                 @default { <span class="message-status sent-status" aria-label="Sent"><span aria-hidden="true">✓</span></span> }
               }
             }
+            </div>
           </div>
         </div>
       } @empty {
@@ -199,9 +195,12 @@
         @for (conversation of visibleConversations; track conversation.id) {
           <div class="conversation-entry">
             <button type="button" class="conversation-row" (click)="openConversation(conversation.id)">
-              <span class="conversation-avatar"><ion-icon name="person-circle-outline"></ion-icon></span>
+              <span class="conversation-avatar">
+                @if (!conversation.groupName && conversationProfileImage(conversation); as image) { <img [src]="image" [alt]="conversationTitle(conversation)" /> }
+                @else { <ion-icon [name]="conversation.groupName ? 'people-outline' : 'person-circle-outline'"></ion-icon> }
+              </span>
               <span class="conversation-copy">
-                <strong>{{ conversationTitle(conversation) }}</strong>
+                <span class="conversation-meta"><strong>{{ conversationTitle(conversation) }}</strong><time [attr.datetime]="conversation.updatedAt.toISOString()">{{ formatMessageTime(conversation.updatedAt) }}</time></span>
                 <span>{{ conversationPreview(conversation) }}</span>
               </span>
               @if (conversationIsUnread(conversation)) { <span class="conversation-unread-count" [attr.aria-label]="unreadMessageCount(conversation) + ' unread messages'">{{ unreadMessageCount(conversation) }}</span> }
@@ -483,7 +482,7 @@
         <input #videoPicker hidden type="file" accept="video/*" (change)="attachSelectedFile($event, 'video')" />
         <input #gifPicker hidden type="file" accept="image/gif,.gif" (change)="attachSelectedFile($event, 'gif')" />
         <input #filePicker hidden type="file" (change)="attachSelectedFile($event, 'file')" />
-        <ion-button type="button" fill="clear" class="composer-collapse" tabindex="-1" aria-label="Return to attachments" (pointerdown)="$event.preventDefault()" (click)="isComposerExpanded = false"><ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon></ion-button>
+        <ion-button type="button" fill="clear" class="composer-collapse" tabindex="-1" aria-label="Show attachments" (pointerdown)="$event.preventDefault()" (click)="isComposerExpanded = false"><ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon></ion-button>
         @if (replyToMessage) {
           <div class="reply-composer-preview"><strong>Replying to {{ messageAuthorName(replyToMessage) }}</strong><span>{{ replyToMessage.body }}</span><button type="button" aria-label="Cancel reply" (click)="replyToMessage = null"><ion-icon name="close-outline"></ion-icon></button></div>
         }
