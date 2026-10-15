@@ -1,13 +1,13 @@
 ﻿import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { effect, ViewChild } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
 import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
-import { ChatAttachment, ChatMessage, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
+import { ChatAttachment, ChatMessage, Community, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
 import { ViewStateService } from '../../services/view-state.service';
 
@@ -24,6 +24,7 @@ export class MessagesPage {
   private readonly viewStateKey = 'tali-view-messages';
   private readonly accountService = inject(AccountService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   readonly messageService = inject(MessageService);
   readonly notificationService = inject(NotificationService);
   readonly selectedAccount = this.accountService.selectedAccount;
@@ -44,10 +45,15 @@ export class MessagesPage {
     return selected ? this.accounts().filter((account) => account.id !== selected.id) : [];
   });
 
-  activeTab: 'inbox' | 'requests' = 'inbox';
+  activeTab: 'inbox' | 'requests' | 'community' = 'inbox';
   activeFilter = 'All';
   showFilters = false;
-  composeMode: 'menu' | 'direct' | 'group' | null = null;
+  composeMode: 'menu' | 'direct' | 'group' | 'community' | 'community-chat' | 'join-community' | null = null;
+  selectedCommunityId: string | null = null;
+  communityNameDraft = '';
+  communityChatNameDraft = '';
+  communityInviteDraft = '';
+  communityNotice = '';
   activeConversationId: string | null = null;
   searchQuery = '';
   conversationSearch = '';
@@ -93,6 +99,7 @@ export class MessagesPage {
   isThreadAtBottom = true;
   newMessagesWhileAway = 0;
   private readonly observedMessageCounts = new Map<string, number>();
+  private readonly handledCommunityInvites = new Set<string>();
   private reactionPressTimer: ReturnType<typeof setTimeout> | null = null;
   private mediaTapTimes = new Map<string, number>();
   private mediaTapTimer: ReturnType<typeof setTimeout> | null = null;
@@ -105,6 +112,7 @@ export class MessagesPage {
   readonly filters = ['All', 'Unread', 'Unanswered', 'Archived', 'Restricted', 'Blocked'];
 
   get visibleConversations() {
+    if (this.activeTab === 'community') return [];
     const accountId = this.selectedAccount()?.id;
     const query = this.searchQuery.trim().toLowerCase();
     return this.conversations()
@@ -115,7 +123,8 @@ export class MessagesPage {
         if (this.activeFilter === 'Restricted') return settings.restrictedFor.includes(accountId);
         if (this.activeFilter === 'Blocked') return settings.blockedFor.includes(accountId);
         const isRequest = this.isConversationRequest(conversation, accountId);
-        if ((this.activeTab === 'requests') !== isRequest) return false;
+        if (conversation.communityId) return false;
+        if (this.activeTab === 'requests' ? !isRequest : this.activeTab === 'inbox' ? isRequest : true) return false;
         if (this.activeFilter === 'Archived') return settings.archivedFor.includes(accountId);
         if (settings.archivedFor.includes(accountId) || settings.restrictedFor.includes(accountId)) return false;
         if (this.activeFilter === 'Unread') return this.unreadMessageCount(conversation) > 0;
@@ -127,6 +136,52 @@ export class MessagesPage {
       })
       .filter((conversation) => this.conversationTitle(conversation).toLowerCase().includes(query) || conversation.messages.some((message) => message.body.toLowerCase().includes(query)))
       .sort((a, b) => Number(this.messageService.settingsFor(b.id).pinnedFor.includes(accountId ?? -1)) - Number(this.messageService.settingsFor(a.id).pinnedFor.includes(accountId ?? -1)) || b.updatedAt.getTime() - a.updatedAt.getTime());
+  }
+
+  get visibleCommunities() {
+    const accountId = this.selectedAccount()?.id;
+    const query = this.searchQuery.trim().toLowerCase();
+    return this.messageService.communities()
+      .filter((community) => accountId !== undefined && community.memberIds.includes(accountId))
+      .filter((community) => !query || community.name.toLowerCase().includes(query))
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  get selectedCommunity() {
+    const accountId = this.selectedAccount()?.id;
+    return this.messageService.communities().find((community) =>
+      community.id === this.selectedCommunityId && accountId !== undefined && community.memberIds.includes(accountId),
+    ) ?? null;
+  }
+
+  get selectedCommunityChats() {
+    const accountId = this.selectedAccount()?.id;
+    const community = this.selectedCommunity;
+    const communityId = community?.id;
+    if (!community || accountId === undefined) return [];
+    const query = this.searchQuery.trim().toLowerCase();
+    return this.conversations()
+      .filter((conversation) => conversation.communityId === communityId && conversation.memberIds.includes(accountId))
+      .filter((conversation) => !query || this.conversationTitle(conversation).toLowerCase().includes(query) || conversation.messages.some((message) => message.body.toLowerCase().includes(query)))
+      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+  }
+
+  communityChatCount(communityId: string) {
+    const accountId = this.selectedAccount()?.id;
+    if (accountId === undefined || !this.messageService.communities().some((community) =>
+      community.id === communityId && community.memberIds.includes(accountId),
+    )) return 0;
+    return this.conversations().filter((conversation) =>
+      conversation.communityId === communityId && conversation.memberIds.includes(accountId),
+    ).length;
+  }
+
+  private canAccessConversation(conversation: Conversation, accountId: number) {
+    if (!conversation.memberIds.includes(accountId)) return false;
+    if (!conversation.communityId) return true;
+    return this.messageService.communities().some((community) =>
+      community.id === conversation.communityId && community.memberIds.includes(accountId),
+    );
   }
 
   private isConversationRequest(conversation: Conversation, accountId: number) {
@@ -164,7 +219,10 @@ export class MessagesPage {
   }
 
   get activeConversation() {
-    return this.conversations().find((conversation) => conversation.id === this.activeConversationId) ?? null;
+    const accountId = this.selectedAccount()?.id;
+    return this.conversations().find((conversation) =>
+      conversation.id === this.activeConversationId && accountId !== undefined && this.canAccessConversation(conversation, accountId),
+    ) ?? null;
   }
 
   get activeChatAccount(): Account | null {
@@ -235,7 +293,7 @@ export class MessagesPage {
       if (this.isThreadAtBottom) this.scrollToLatest();
       else this.newMessagesWhileAway += newIncomingCount;
     });
-    const saved = this.viewState.read<Partial<{ activeTab: 'inbox' | 'requests'; activeFilter: string; searchQuery: string; activeConversationId: string | null; messageDraft: string; conversationSearch: string; showChatSettings: boolean; showGroupInfo: boolean; showSharedItems: boolean; sharedItemsType: SharedItemsType; showFilters: boolean; composeMode: 'menu' | 'direct' | 'group' | null; groupName: string; selectedMemberIds: number[] }>>(this.viewStateKey, {});
+    const saved = this.viewState.read<Partial<{ activeTab: 'inbox' | 'requests' | 'community'; activeFilter: string; searchQuery: string; conversationSearch: string; activeConversationId: string | null; messageDraft: string; showChatSettings: boolean; showGroupInfo: boolean; showSharedItems: boolean; sharedItemsType: SharedItemsType; showFilters: boolean; composeMode: 'menu' | 'direct' | 'group' | 'community' | 'community-chat' | 'join-community' | null; groupName: string; selectedMemberIds: number[]; selectedCommunityId: string | null }>>(this.viewStateKey, {});
     if (saved.activeTab) this.activeTab = saved.activeTab;
     if (saved.activeFilter && this.filters.includes(saved.activeFilter)) this.activeFilter = saved.activeFilter;
     this.searchQuery = saved.searchQuery ?? '';
@@ -248,17 +306,24 @@ export class MessagesPage {
     this.sharedItemsType = saved.sharedItemsType ?? 'photos';
     this.showFilters = saved.showFilters ?? false;
     this.composeMode = saved.composeMode ?? null;
+    this.selectedCommunityId = saved.selectedCommunityId ?? null;
     this.groupName = saved.groupName ?? '';
     this.selectedMemberIds = saved.selectedMemberIds ?? [];
     this.route.queryParamMap.subscribe((params) => {
+      const inviteCode = params.get('communityInvite');
+      if (inviteCode && !this.handledCommunityInvites.has(inviteCode)) void this.handleCommunityInvite(inviteCode);
       const conversationId = params.get('conversationId');
       const conversation = conversationId && this.conversations().find((item) => item.id === conversationId);
-      if (!conversation || !conversation.memberIds.includes(this.selectedAccount()?.id ?? -1)) return;
+      const accountId = this.selectedAccount()?.id;
+      if (!conversation || accountId === undefined || !this.canAccessConversation(conversation, accountId)) return;
       this.activeConversationId = conversation.id;
       this.observedMessageCounts.set(conversation.id, conversation.messages.length);
       this.newMessagesWhileAway = 0;
       this.scrollToLatest();
-      this.activeTab = this.isConversationRequest(conversation, this.selectedAccount()?.id ?? -1) ? 'requests' : 'inbox';
+      this.activeTab = conversation.communityId
+        ? 'community'
+        : this.isConversationRequest(conversation, this.selectedAccount()?.id ?? -1) ? 'requests' : 'inbox';
+      if (conversation.communityId) this.selectedCommunityId = conversation.communityId;
       this.composeMode = null;
       this.saveViewState();
     });
@@ -271,13 +336,13 @@ export class MessagesPage {
       conversationSearch: this.conversationSearch, showChatSettings: this.showChatSettings, showGroupInfo: this.showGroupInfo,
       showSharedItems: this.showSharedItems, sharedItemsType: this.sharedItemsType,
       showFilters: this.showFilters, composeMode: this.composeMode, groupName: this.groupName,
-      selectedMemberIds: this.selectedMemberIds,
+      selectedMemberIds: this.selectedMemberIds, selectedCommunityId: this.selectedCommunityId,
     });
   }
 
   setMessageSearch(value: string) { this.searchQuery = value; this.saveViewState(); }
   setConversationSearch(value: string) { this.conversationSearch = value; this.saveViewState(); }
-  setActiveTab(value: 'inbox' | 'requests') { this.activeTab = value; this.saveViewState(); }
+  setActiveTab(value: 'inbox' | 'requests' | 'community') { this.activeTab = value; this.saveViewState(); }
   selectFilter(value: string) { this.activeFilter = value; this.showFilters = false; this.saveViewState(); }
 
   openComposeMenu() {
@@ -290,6 +355,9 @@ export class MessagesPage {
     this.selectedMemberIds = [];
     this.groupName = '';
     this.groupMemberSearch = '';
+    this.communityNameDraft = '';
+    this.communityChatNameDraft = '';
+    this.communityInviteDraft = '';
     this.saveViewState();
   }
 
@@ -318,7 +386,7 @@ export class MessagesPage {
     return this.accounts().find((account) => account.id === accountId) ?? null;
   }
 
-  setComposeMode(mode: 'menu' | 'direct' | 'group') {
+  setComposeMode(mode: 'menu' | 'direct' | 'group' | 'community' | 'community-chat' | 'join-community') {
     this.composeMode = mode;
     this.saveViewState();
   }
@@ -343,6 +411,94 @@ export class MessagesPage {
     this.activeConversationId = conversation.id;
     this.activeTab = 'inbox';
     this.saveViewState();
+  }
+
+  openCommunity(community: Community) {
+    if (!community.memberIds.includes(this.selectedAccount()?.id ?? -1)) return;
+    this.selectedCommunityId = community.id;
+    this.activeTab = 'community';
+    this.communityNotice = '';
+    this.saveViewState();
+  }
+
+  showCommunityList() {
+    this.selectedCommunityId = null;
+    this.communityNotice = '';
+    this.saveViewState();
+  }
+
+  async createCommunity() {
+    const account = this.selectedAccount();
+    if (!account || !this.communityNameDraft.trim()) return;
+    const community = await this.messageService.createCommunity(this.communityNameDraft, account.id);
+    if (!community) {
+      this.communityNotice = 'The community could not be saved. Please try again.';
+      return;
+    }
+    this.communityNotice = '';
+    this.closeCompose();
+    this.openCommunity(community);
+  }
+
+  async createCommunityChat() {
+    const community = this.selectedCommunity;
+    if (!community || !this.communityChatNameDraft.trim()) return;
+    const conversation = await this.messageService.createCommunityChat(community.id, this.communityChatNameDraft);
+    if (!conversation) {
+      this.communityNotice = 'The topic chat could not be saved. Please try again.';
+      return;
+    }
+    this.communityNotice = '';
+    this.closeCompose();
+    this.openConversation(conversation.id);
+  }
+
+  async copyCommunityInvite(community: Community) {
+    const inviteUrl = `${location.origin}${this.router.serializeUrl(this.router.createUrlTree(['/messages'], { queryParams: { communityInvite: community.inviteCode } }))}`;
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+      this.communityNotice = 'Invite link copied. In this local app, the community must be stored in the same browser profile to join.';
+    } catch {
+      this.communityNotice = 'Could not copy the invite link on this device.';
+    }
+  }
+
+  async joinCommunity() {
+    const account = this.selectedAccount();
+    if (!account || !this.communityInviteDraft.trim()) return;
+    const community = await this.messageService.joinCommunityByInvite(this.communityCodeFromInput(this.communityInviteDraft), account.id);
+    if (!community) {
+      this.communityNotice = 'Could not join. Check the invite link and try again.';
+      return;
+    }
+    this.closeCompose();
+    this.openCommunity(community);
+  }
+
+  private async handleCommunityInvite(inviteCode: string) {
+    this.handledCommunityInvites.add(inviteCode);
+    await this.messageService.communityDataHydrated;
+    const account = this.selectedAccount();
+    if (!account) {
+      this.communityNotice = 'Select an account before joining this community.';
+      return;
+    }
+    const community = await this.messageService.joinCommunityByInvite(inviteCode, account.id);
+    this.activeTab = 'community';
+    if (!community) {
+      this.communityNotice = 'This community invite link is invalid or could not be saved.';
+      this.selectedCommunityId = null;
+      return;
+    }
+    this.openCommunity(community);
+  }
+
+  private communityCodeFromInput(value: string) {
+    try {
+      return new URL(value, location.origin).searchParams.get('communityInvite') ?? value.trim();
+    } catch {
+      return value.trim();
+    }
   }
 
   conversationTitle(conversation: Conversation) {
@@ -535,15 +691,17 @@ export class MessagesPage {
   }
 
   openConversation(conversationId: string) {
+    const accountId = this.selectedAccount()?.id;
+    const targetConversation = this.conversations().find((conversation) => conversation.id === conversationId);
+    if (accountId === undefined || !targetConversation || !this.canAccessConversation(targetConversation, accountId)) return;
     this.openConversationMenuId = null;
     this.activeConversationId = conversationId;
-    const openedConversation = this.conversations().find((item) => item.id === conversationId);
+    const openedConversation = targetConversation;
     this.observedMessageCounts.set(conversationId, openedConversation?.messages.length ?? 0);
     this.conversationSearch = '';
     this.reactionPickerMessageId = null;
     this.saveViewState();
-    const accountId = this.selectedAccount()?.id;
-    if (accountId !== undefined) this.messageService.markRead(conversationId, accountId);
+    this.messageService.markRead(conversationId, accountId);
     this.scrollToLatest();
   }
 
@@ -895,6 +1053,7 @@ export class MessagesPage {
 
   async copyMessage(message: ChatMessage) {
     this.messageActionsId = null;
+    this.messageActionsMenuPosition = null;
     const content = message.body || (message.attachments ?? []).map((item) => item.name).join('\n');
     try {
       await navigator.clipboard.writeText(content);
@@ -1015,7 +1174,17 @@ export class MessagesPage {
   }
 
   messageParts(body: string) {
-    return body.split(/(@everyone|@[\w.]+)/g).filter(Boolean);
+    return body.split(/(https?:\/\/\S+|@everyone|@[\w.]+)/g).filter(Boolean);
+  }
+
+  communityInviteCodeFromUrl(value: string) {
+    try {
+      const url = new URL(value, location.origin);
+      if (url.origin !== location.origin || !url.pathname.endsWith('/messages')) return null;
+      return url.searchParams.get('communityInvite');
+    } catch {
+      return null;
+    }
   }
 
   clearTyping() {

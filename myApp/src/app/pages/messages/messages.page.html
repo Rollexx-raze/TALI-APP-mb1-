@@ -86,7 +86,7 @@
             <div class="message-bubble-row">
               @if (message.body && !hasPhotoAttachment(message)) {
                 <div class="message-bubble" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message, $event.currentTarget)">
-                  <p class="message-bubble-copy">@for (part of messageParts(message.body); track $index) { @if (part === '@everyone') { <button type="button" class="message-mention everyone-mention" (click)="$event.stopPropagation(); callNotice = 'Everyone in this conversation was mentioned.'">@everyone</button> } @else if (part.startsWith('@') && mentionAccount(part); as mentioned) { <a class="message-mention" [routerLink]="['/profile', mentioned.id]" (click)="$event.stopPropagation()">{{ part }}</a> } @else { {{ part }} } }</p>
+                  <p class="message-bubble-copy">@for (part of messageParts(message.body); track $index) { @if (part === '@everyone') { <button type="button" class="message-mention everyone-mention" (click)="$event.stopPropagation(); callNotice = 'Everyone in this conversation was mentioned.'">@everyone</button> } @else if (part.startsWith('@') && mentionAccount(part); as mentioned) { <a class="message-mention" [routerLink]="['/profile', mentioned.id]" (click)="$event.stopPropagation()">{{ part }}</a> } @else if (communityInviteCodeFromUrl(part); as inviteCode) { <a class="message-link community-invite-link" [routerLink]="['/messages']" [queryParams]="{ communityInvite: inviteCode }" (click)="$event.stopPropagation()">{{ part }}</a> } @else if (part.startsWith('https://') || part.startsWith('http://')) { <a class="message-link" [href]="part" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()">{{ part }}</a> } @else { {{ part }} } }</p>
                   @if (messageTimestampInBubble(message)) { <time class="message-time message-bubble-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time> }
                 </div>
               }
@@ -174,6 +174,7 @@
                 <div class="message-action-menu" role="menu" aria-label="Message actions" [style.left.px]="messageActionsMenuPosition?.left" [style.top.px]="messageActionsMenuPosition?.top">
                   <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
                   <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
+                  <button type="button" role="menuitem" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
                   <button type="button" role="menuitem" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
                   @if (message.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
                 </div>
@@ -202,6 +203,7 @@
       </ion-button>
       <ion-button fill="clear" role="tab" [attr.aria-selected]="activeTab === 'inbox'" [class.active-tab]="activeTab === 'inbox'" (click)="setActiveTab('inbox')">Inbox</ion-button>
       <ion-button fill="clear" role="tab" [attr.aria-selected]="activeTab === 'requests'" [class.active-tab]="activeTab === 'requests'" (click)="setActiveTab('requests')">Requests</ion-button>
+      <ion-button fill="clear" role="tab" [attr.aria-selected]="activeTab === 'community'" [class.active-tab]="activeTab === 'community'" (click)="setActiveTab('community')">Community</ion-button>
     </div>
 
     @if (showFilters) {
@@ -215,7 +217,49 @@
       </div>
     }
 
-    @if (visibleConversations.length > 0) {
+    @if (activeTab === 'community') {
+      <section class="community-space" aria-label="Communities">
+        @if (communityNotice) { <p class="community-notice" role="status">{{ communityNotice }}</p> }
+        @if (selectedCommunity; as community) {
+          <header class="community-space-heading">
+            <button type="button" class="community-back-button" (click)="showCommunityList()"><ion-icon name="chevron-back-outline"></ion-icon> Communities</button>
+            <div class="community-heading-copy"><span class="community-heading-icon"><ion-icon name="people-outline"></ion-icon></span><div><h2>{{ community.name }}</h2><p>{{ community.memberIds.length }} {{ community.memberIds.length === 1 ? 'member' : 'members' }} · {{ selectedCommunityChats.length }} topic chats</p></div></div>
+            <div class="community-heading-actions">
+              <button type="button" (click)="copyCommunityInvite(community)"><ion-icon name="copy-outline"></ion-icon> Copy invite link</button>
+              <button type="button" (click)="setComposeMode('community-chat')"><ion-icon name="add-circle"></ion-icon> New topic chat</button>
+            </div>
+          </header>
+          @if (selectedCommunityChats.length) {
+            <section class="community-topic-list" aria-label="Community topic chats">
+              @for (conversation of selectedCommunityChats; track conversation.id) {
+                <button type="button" class="community-topic-row" (click)="openConversation(conversation.id)">
+                  <span class="community-topic-icon"><ion-icon name="chatbubble-outline"></ion-icon></span>
+                  <span class="community-topic-copy"><strong># {{ conversationTitle(conversation) }}</strong><span>{{ conversationPreview(conversation) }}</span></span>
+                  <ion-icon class="community-topic-chevron" name="chevron-back-outline"></ion-icon>
+                </button>
+              }
+            </section>
+          } @else {
+            <div class="community-topic-empty"><span><ion-icon name="chatbubble-outline"></ion-icon></span><h3>No topic chats yet</h3><p>Create a topic chat to start conversations within this community.</p><button type="button" class="community-create-button" (click)="setComposeMode('community-chat')"><ion-icon name="add-circle"></ion-icon> Create topic chat</button></div>
+          }
+        } @else {
+          <header class="community-list-heading"><div><h2>Your communities</h2><p>One community, with separate chats for each topic.</p></div><div class="community-heading-actions"><button type="button" (click)="setComposeMode('join-community')"><ion-icon name="people-outline"></ion-icon> Join with invite</button><button type="button" (click)="setComposeMode('community')"><ion-icon name="add-circle"></ion-icon> Create community</button></div></header>
+          @if (visibleCommunities.length) {
+            <section class="community-card-list">
+              @for (community of visibleCommunities; track community.id) {
+                <button type="button" class="community-card" (click)="openCommunity(community)">
+                  <span class="community-card-icon"><ion-icon name="people-outline"></ion-icon></span>
+                  <span class="community-card-copy"><strong>{{ community.name }}</strong><span>{{ community.memberIds.length }} members · {{ communityChatCount(community.id) }} topic chats</span></span>
+                  <ion-icon class="community-topic-chevron" name="chevron-back-outline"></ion-icon>
+                </button>
+              }
+            </section>
+          } @else {
+            <div class="community-topic-empty"><span><ion-icon name="people-outline"></ion-icon></span><h3>No communities yet</h3><p>Create a community with separate topic chats, or join one using an invite link.</p><div class="community-empty-actions"><button type="button" class="community-create-button" (click)="setComposeMode('community')"><ion-icon name="add-circle"></ion-icon> Create community</button><button type="button" class="community-create-button" (click)="setComposeMode('join-community')"><ion-icon name="people-outline"></ion-icon> Join with invite</button></div></div>
+          }
+        }
+      </section>
+    } @else if (visibleConversations.length > 0) {
       <section class="conversation-list" [attr.aria-label]="activeTab === 'inbox' ? 'Inbox conversations' : 'Message requests'">
         @for (conversation of visibleConversations; track conversation.id) {
           <div class="conversation-entry">
@@ -257,7 +301,7 @@
       <section class="empty-state" aria-live="polite">
         <div class="empty-icon"><ion-icon [name]="activeTab === 'inbox' ? 'chatbubble-outline' : 'paper-plane-outline'"></ion-icon></div>
         <h2>{{ activeTab === 'inbox' ? 'No messages yet' : 'No message requests yet' }}</h2>
-        <p>{{ activeTab === 'inbox' ? 'Mutual-follow conversations and group chats will appear here.' : 'Conversations from people who do not follow you will appear here.' }}</p>
+        <p>{{ activeTab === 'inbox' ? 'Your conversations will appear here.' : 'Conversations from people who do not follow you will appear here.' }}</p>
       </section>
     }
   }
@@ -293,7 +337,7 @@
       <section class="compose-sheet" role="dialog" aria-modal="true" aria-labelledby="compose-title" (click)="$event.stopPropagation()">
         <div class="compose-heading">
           <h2 id="compose-title">
-            {{ composeMode === 'menu' ? 'Start a conversation' : composeMode === 'direct' ? 'New message' : 'Create group chat' }}
+            {{ composeMode === 'menu' ? 'Start a conversation' : composeMode === 'direct' ? 'New message' : composeMode === 'group' ? 'Create group chat' : composeMode === 'community' ? 'Create a community' : composeMode === 'community-chat' ? 'Create a topic chat' : 'Join a community' }}
           </h2>
           <ion-button fill="clear" aria-label="Close" (click)="closeCompose()">Close</ion-button>
         </div>
@@ -305,7 +349,15 @@
           </button>
           <button type="button" class="compose-choice" (click)="setComposeMode('group')">
             <strong>Create group chat</strong>
-            <span>Name a group and choose its members.</span>
+            <span>Start one group conversation with selected members.</span>
+          </button>
+          <button type="button" class="compose-choice" (click)="setComposeMode('community')">
+            <strong>Create a community</strong>
+            <span>Organize several topic chats in one space.</span>
+          </button>
+          <button type="button" class="compose-choice" (click)="setComposeMode('join-community')">
+            <strong>Join a community</strong>
+            <span>Use an invite link to join its topic chats.</span>
           </button>
         } @else {
           @if (composeMode === 'group') {
@@ -323,6 +375,24 @@
             }
           }
 
+          @if (composeMode === 'community') {
+            <div class="community-form-intro"><span class="community-heading-icon"><ion-icon name="people-outline"></ion-icon></span><div><strong>A home for your group</strong><p>Only you can see it until you invite others with its link. Create separate chats for different topics.</p></div></div>
+            <label class="group-name-label" for="community-name">Community name</label>
+            <ion-input id="community-name" class="group-name-input" [(ngModel)]="communityNameDraft" maxlength="60" placeholder="e.g. Book lovers" aria-label="Community name"></ion-input>
+            <ion-button expand="block" class="create-group-button" [disabled]="!communityNameDraft.trim()" (click)="createCommunity()">Create community</ion-button>
+          } @else if (composeMode === 'community-chat') {
+            <div class="community-form-intro"><span class="community-heading-icon"><ion-icon name="chatbubble-outline"></ion-icon></span><div><strong>Add a chat to {{ selectedCommunity?.name }}</strong><p>Each topic chat has its own conversation, separate from regular group chats.</p></div></div>
+            <label class="group-name-label" for="community-chat-name">Topic chat name</label>
+            <ion-input id="community-chat-name" class="group-name-input" [(ngModel)]="communityChatNameDraft" maxlength="60" placeholder="e.g. Introductions" aria-label="Topic chat name"></ion-input>
+            <ion-button expand="block" class="create-group-button" [disabled]="!communityChatNameDraft.trim()" (click)="createCommunityChat()">Create topic chat</ion-button>
+          } @else if (composeMode === 'join-community') {
+            <div class="community-form-intro"><span class="community-heading-icon"><ion-icon name="people-outline"></ion-icon></span><div><strong>Join a community</strong><p>Paste a community invite link or invite code.</p></div></div>
+            <label class="group-name-label" for="community-invite">Invite link or code</label>
+            <ion-input id="community-invite" class="group-name-input" [(ngModel)]="communityInviteDraft" placeholder="Paste invite link or code" aria-label="Community invite link or code"></ion-input>
+            <ion-button expand="block" class="create-group-button" [disabled]="!communityInviteDraft.trim()" (click)="joinCommunity()">Join community</ion-button>
+          }
+
+          @if (composeMode === 'direct' || composeMode === 'group') {
           <div class="account-picker" aria-label="Choose accounts">
             @for (account of (composeMode === 'group' ? groupMemberOptions : otherAccounts()); track account.id) {
               <button type="button" class="account-choice" [attr.aria-pressed]="composeMode === 'group' ? selectedMemberIds.includes(account.id) : null" (click)="composeMode === 'direct' ? startDirectMessage(account.id) : toggleGroupMember(account.id)">
@@ -338,6 +408,7 @@
           @if (composeMode === 'group') {
             <p class="group-member-requirement">{{ selectedMemberIds.length ? selectedMemberIds.length + ' ' + (selectedMemberIds.length === 1 ? 'person' : 'people') + ' selected' : 'Choose at least one person to start your group.' }}</p>
             <ion-button expand="block" class="create-group-button" [disabled]="!groupName.trim() || selectedMemberIds.length < 1" (click)="createGroup()">Create group chat</ion-button>
+          }
           }
         }
       </section>
