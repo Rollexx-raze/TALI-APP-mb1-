@@ -248,40 +248,76 @@ main
 .settings-detail .settings-form-card ion-input { max-width:none; margin-bottom:8px; }
 .settings-detail .settings-form-card ion-button { margin-top:10px; }
 .settings-detail .activity-settings-card > .detail-copy { margin:8px 0; }
-.settings-home,
-.settings-detail,
-.settings-home .settings-group h2,
-.settings-home .group-heading,
-.settings-home .settings-row,
-.settings-home .settings-row > ion-icon,
-.settings-home .settings-row span small,
-
-.settings-detail h2,
-.settings-detail h3,
-.settings-detail ion-icon,
-.settings-detail ion-item,
-.settings-detail ion-label,
-.settings-detail ion-label p,
-main
-.settings-detail .detail-copy,
-.settings-detail .connection-row,
-.settings-detail .connection-row span,
-.settings-detail .activity-post time,
-.settings-detail .field-help,
-.settings-detail .profile-field,
-.settings-detail .edit-photo-name span,
-.settings-detail .account-profile-copy small,
-.settings-detail .account-row-chevron { color:#fff!important; }
-.settings-home .settings-row > .settings-image-icon { filter:brightness(0) invert(1);opacity:1; }
-.settings-home .settings-row.active,
+:host-context(html:not(.app-light)) .settings-home,
+:host-context(html:not(.app-light)) .settings-detail,
+:host-context(html:not(.app-light)) .settings-home .settings-group h2,
+:host-context(html:not(.app-light)) .settings-home .group-heading,
+:host-context(html:not(.app-light)) .settings-home .settings-row,
+:host-context(html:not(.app-light)) .settings-home .settings-row > ion-icon,
+:host-context(html:not(.app-light)) .settings-home .settings-row span small,
+:host-context(html:not(.app-light)) .settings-detail h2,
+:host-context(html:not(.app-light)) .settings-detail h3,
+:host-context(html:not(.app-light)) .settings-detail ion-icon,
+:host-context(html:not(.app-light)) .settings-detail ion-item,
+:host-context(html:not(.app-light)) .settings-detail ion-label,
+:host-context(html:not(.app-light)) .settings-detail ion-label p,
+:host-context(html:not(.app-light)) .settings-detail .detail-copy,
+:host-context(html:not(.app-light)) .settings-detail .connection-row,
+:host-context(html:not(.app-light)) .settings-detail .connection-row span,
+:host-context(html:not(.app-light)) .settings-detail .activity-post time,
+:host-context(html:not(.app-light)) .settings-detail .field-help,
+:host-context(html:not(.app-light)) .settings-detail .profile-field,
+:host-context(html:not(.app-light)) .settings-detail .edit-photo-name span,
+:host-context(html:not(.app-light)) .settings-detail .account-profile-copy small,
+:host-context(html:not(.app-light)) .settings-detail .account-row-chevron,
+:host-context(html:not(.app-light)) .settings-home *,
+:host-context(html:not(.app-light)) .settings-detail * { color:#fff!important; }
+:host-context(html:not(.app-light)) .settings-home .settings-row > .settings-image-icon { filter:brightness(0) invert(1);opacity:1; }
 :host-context(html:not(.app-light)) .settings-home .settings-row.active { background:#262626!important;color:#fff!important; }
-.settings-home,
-.settings-home *,
-.settings-detail,
-.settings-detail * { color:#fff!important; }
-.settings-home ion-button,
-.settings-detail ion-button { --color:#fff!important; }
-.settings-search input::placeholder,
-.profile-field input::placeholder,
-.profile-field textarea::placeholder { color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1; }
-.change-photo-button { --background:#252525!important;--color:#fff!important; }
+:host-context(html:not(.app-light)) .settings-home ion-button,
+:host-context(html:not(.app-light)) .settings-detail ion-button { --color:#fff!important; }
+:host-context(html:not(.app-light)) .settings-search input::placeholder,
+:host-context(html:not(.app-light)) .profile-field input::placeholder,
+:host-context(html:not(.app-light)) .profile-field textarea::placeholder { color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1; }
+:host-context(html:not(.app-light)) .change-photo-button { --background:#252525!important;--color:#fff!important; }
+
+:host-context(html.app-light) .settings-content { --background:#edf1fa; }
+:host-context(html.app-light) .settings-header,
+:host-context(html.app-light) .settings-header ion-toolbar { --background:#b6c9f5; }
+:host-context(html.app-light) .settings-header h1,
+:host-context(html.app-light) .settings-header ion-button { color:#111a30; --color:#111a30; }
+:host-context(html.app-light) .settings-home,
+:host-context(html.app-light) .settings-detail { background:#edf1fa; color:#172033; }
+:host-context(html.app-light) .settings-home .settings-group h2,
+:host-context(html.app-light) .settings-home .group-heading,
+:host-context(html.app-light) .settings-home .settings-row,
+:host-context(html.app-light) .settings-home .settings-row > ion-icon,
+:host-context(html.app-light) .settings-home .settings-row span small,
+:host-context(html.app-light) .settings-detail,
+:host-context(html.app-light) .settings-detail *,
+:host-context(html.app-light) .settings-home * { color:#172033!important; }
+:host-context(html.app-light) .settings-home .settings-row { background:transparent!important; }
+:host-context(html.app-light) .settings-home .settings-row.active { background:#dbe5fb!important; color:#101a30!important; }
+:host-context(html.app-light) .settings-home .settings-row > .settings-image-icon { filter:brightness(0) saturate(100%); opacity:.78; }
+:host-context(html.app-light) .settings-search { background:#fff; color:#172033; }
+:host-context(html.app-light) .settings-search input,
+:host-context(html.app-light) #settings-search-input { color:#172033!important; -webkit-text-fill-color:#172033!important; }
+:host-context(html.app-light) .settings-search input::placeholder { color:#667085!important; -webkit-text-fill-color:#667085!important; }
+:host-context(html.app-light) .settings-detail .notification-settings-card,
+:host-context(html.app-light) .settings-detail .settings-info-card,
+:host-context(html.app-light) .settings-detail .account-safety-list,
+:host-context(html.app-light) .settings-detail .connection-settings-card,
+:host-context(html.app-light) .settings-detail .story-privacy-section,
+:host-context(html.app-light) .settings-detail .privacy-setting-card { border-color:#d3dbea; background:#fff; color:#172033; }
+:host-context(html.app-light) .settings-detail ion-item { --color:#172033; --background:transparent; }
+:host-context(html.app-light) .settings-detail .profile-field input,
+:host-context(html.app-light) .settings-detail .profile-field textarea,
+:host-context(html.app-light) .settings-detail .gender-picker-trigger { border-color:#cbd4e2; background:#fff; color:#172033; -webkit-text-fill-color:#172033; }
+:host-context(html.app-light) .settings-detail .profile-field input::placeholder,
+:host-context(html.app-light) .settings-detail .profile-field textarea::placeholder { color:#667085!important; -webkit-text-fill-color:#667085!important; }
+:host-context(html.app-light) .settings-detail .account-profiles-card,
+:host-context(html.app-light) .settings-detail .account-setting-row { border-color:#d3dbea!important; color:#172033!important; }
+:host-context(html.app-light) .settings-detail .account-settings-list { border-color:#d3dbea; }
+:host-context(html.app-light) .settings-detail .change-photo-button { --background:#e3e9f5!important; --color:#172033!important; }
+:host-context(html.app-light) .settings-detail .gender-options { background:#fff; }
+:host-context(html.app-light) .settings-detail .gender-options > button { color:#172033!important; }

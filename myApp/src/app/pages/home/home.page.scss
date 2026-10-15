@@ -42,6 +42,7 @@
   height: 100%;
   object-fit: contain;
 }
+.home-brand-mark .logo-on-light { display:none; }
 
 .search-button {
 	--color: var(--page-text);
@@ -294,7 +295,7 @@ ion-header.home-header {
 }
 
 .home-brand-mark {
-  justify-self: center;
+	justify-self: start;
 }
 
 .home-title {
@@ -435,3 +436,27 @@ main
     padding-inline: 10px;
   }
 }
+
+:host-context(html.app-light) {
+  --app-background-gradient: var(--page-bg);
+  --app-background-bottom: var(--page-bg);
+  --app-header-gradient: var(--page-surface);
+  --app-text: var(--page-text);
+  --app-text-dark: var(--page-text);
+  --app-text-muted: var(--page-muted);
+  --app-divider: var(--page-border);
+  --app-surface: var(--page-surface);
+}
+:host-context(html.app-light) .home-content,
+:host-context(html.app-light) .screen-shell { --background:var(--page-bg)!important; background:var(--page-bg)!important; color:var(--page-text); }
+:host-context(html.app-light) ion-header.home-header,
+:host-context(html.app-light) ion-header.home-header ion-toolbar { --background:var(--page-surface)!important; --color:var(--page-text)!important; background:var(--page-surface)!important; color:var(--page-text)!important; }
+:host-context(html.app-light) .home-title,
+:host-context(html.app-light) .search-button { --color:var(--page-text)!important; color:var(--page-text)!important; }
+:host-context(html.app-light) .home-header .search-button::part(native) { color:var(--page-text)!important; }
+:host-context(html.app-light) .home-brand-mark .logo-on-dark { display:none; }
+:host-context(html.app-light) .home-brand-mark .logo-on-light { display:block; }
+:host-context(html.app-light) .home-brand-mark { justify-self:start; }
+:host-context(html.app-light) .home-toolbar-row { grid-template-columns:minmax(0,1fr) 44px; }
+:host-context(html.app-light) .home-header .search-button ion-icon { color:var(--page-text)!important; }
+:host-context(html.app-light) .home-footer .home-nav { background:var(--page-surface); }
