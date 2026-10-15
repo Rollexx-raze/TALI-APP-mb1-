@@ -56,6 +56,9 @@ export class SettingsPage {
   activeSection: SettingsSection = 'account';
   mobileDetailOpen = false;
   searchText = '';
+  profileFirstName = '';
+  profileMiddleName = '';
+  profileLastName = '';
   profileBio = '';
   profileGender: 'prefer-not-to-say' | 'female' | 'male' | 'custom' = 'prefer-not-to-say';
   readonly genderOptions = [
@@ -133,6 +136,19 @@ export class SettingsPage {
       : this.genderOptions.find((option) => option.value === this.profileGender)?.label ?? 'Prefer not to say';
   }
 
+  get canChangeProfileName() {
+    const changedAt = this.accountService.selectedAccount()?.nameChangedAt;
+    return changedAt === undefined || Date.now() - changedAt >= 30 * 24 * 60 * 60 * 1000;
+  }
+
+  get nameChangeCooldownMessage() {
+    const changedAt = this.accountService.selectedAccount()?.nameChangedAt;
+    if (changedAt === undefined || this.canChangeProfileName) return 'You can change your name once every 30 days.';
+    const remainingMs = changedAt + 30 * 24 * 60 * 60 * 1000 - Date.now();
+    const days = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+    return `You can change your name again in ${days} ${days === 1 ? 'day' : 'days'}.`;
+  }
+
   chooseGender(value: typeof this.genderOptions[number]['value']) {
     this.profileGender = value;
     this.genderMenuOpen = false;
@@ -165,6 +181,10 @@ export class SettingsPage {
     this.mobileDetailOpen = true;
     if (section === 'profile') {
       const account = this.accountService.selectedAccount();
+      const nameParts = (account?.name ?? '').trim().split(/\s+/).filter(Boolean);
+      this.profileFirstName = nameParts.shift() ?? '';
+      this.profileLastName = nameParts.pop() ?? '';
+      this.profileMiddleName = nameParts.join(' ');
       this.profileBio = account?.bio ?? '';
       this.profileGender = account?.gender ?? 'prefer-not-to-say';
       this.customGender = account?.customGender ?? '';
@@ -178,7 +198,14 @@ export class SettingsPage {
   saveProfileSettings() {
     const account = this.accountService.selectedAccount();
     if (!account) return;
-    const updated = this.accountService.updateProfile(account.name, account.username, this.profileBio, this.profilePhotoPreview || undefined, account.profileImageVisibility, this.profileGender, this.profileWebsite, this.customGender);
+    const editedName = [this.profileFirstName, this.profileMiddleName, this.profileLastName]
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(' ');
+    const name = this.canChangeProfileName && this.profileFirstName.trim() && this.profileLastName.trim()
+      ? editedName
+      : account.name;
+    const updated = this.accountService.updateProfile(name, account.username, this.profileBio, this.profilePhotoPreview || undefined, account.profileImageVisibility, this.profileGender, this.profileWebsite, this.customGender);
     if (updated) this.postService.updateAuthor(updated.id, updated.name, updated.username);
   }
 

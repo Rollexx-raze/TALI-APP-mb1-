@@ -550,7 +550,7 @@ html.app-reduce-motion *::after {
 	pointer-events: auto;
 	width: min(calc(100% - 48px), 480px);
 	height: 60px;
-	margin: 6px auto;
+	margin: 0 auto;
 	padding: 0;
 	grid-template-columns: repeat(5, minmax(0, 1fr));
 	overflow: visible;
@@ -565,6 +565,7 @@ html.app-reduce-motion *::after {
 ion-footer.page-footer,
 ion-footer.home-footer {
 	position: fixed !important;
+	height: 72px !important;
 	right: 0;
 	bottom: 0;
 	left: 0;
@@ -580,6 +581,12 @@ ion-footer.home-footer {
 
 ion-footer.page-footer ion-toolbar,
 ion-footer.home-footer ion-toolbar {
+	height: 72px !important;
+	min-height: 72px !important;
+	--min-height: 72px !important;
+	--padding-top: 0 !important;
+	--padding-bottom: 0 !important;
+	padding: 0 10px !important;
 	--background: transparent !important;
 	--border-color: transparent !important;
 	--border-width: 0;
@@ -587,6 +594,14 @@ ion-footer.home-footer ion-toolbar {
 	box-shadow: none !important;
 	overflow: visible !important;
 	pointer-events: none;
+}
+
+ion-footer.page-footer ion-toolbar::part(content),
+ion-footer.home-footer ion-toolbar::part(content) {
+	display: flex;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
 }
 
 html.app-light body ion-footer.page-footer,
@@ -625,7 +640,8 @@ ion-content.home-content {
 body .page-nav ion-button {
 	pointer-events: auto !important;
 	position: relative;
-	top: 0;
+	top: -10px !important;
+	align-self: center;
 	display: grid;
 	width: 44px !important;
 	min-width: 44px !important;
@@ -672,6 +688,8 @@ body .page-nav svg.nav-icon {
 	color: #ffffff !important;
 	opacity: .88;
 	flex: 0 0 24px;
+	align-self: center;
+	justify-self: center;
 }
 body .page-nav ion-button:not(.compose-button) svg.nav-icon,
 body .page-nav ion-button:not(.compose-button):active svg.nav-icon,

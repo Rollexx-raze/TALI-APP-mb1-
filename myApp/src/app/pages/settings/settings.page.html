@@ -86,6 +86,12 @@
             <ion-button type="button" class="change-photo-button" (click)="settingsPhotoInput.click()">Change photo</ion-button>
           </div>
           @if (profilePhotoError) { <p class="profile-photo-error" role="alert">{{ profilePhotoError }}</p> }
+          <div class="profile-name-fields">
+            <label class="profile-field"><strong>First Name</strong><input type="text" [(ngModel)]="profileFirstName" name="firstName" autocomplete="given-name" required [disabled]="!canChangeProfileName"></label>
+            <label class="profile-field"><strong>Middle Name <span class="optional-label">(optional)</span></strong><input type="text" [(ngModel)]="profileMiddleName" name="middleName" autocomplete="additional-name" [disabled]="!canChangeProfileName"></label>
+            <label class="profile-field"><strong>Last Name</strong><input type="text" [(ngModel)]="profileLastName" name="lastName" autocomplete="family-name" required [disabled]="!canChangeProfileName"></label>
+            <p class="name-change-note">{{ nameChangeCooldownMessage }}</p>
+          </div>
           <label class="profile-field"><strong>Bio</strong><textarea maxlength="150" [(ngModel)]="profileBio" name="bio" placeholder="Bio"></textarea><small>{{ profileBio.length }} / 150</small></label>
           <div class="profile-field gender-field"><strong>Gender</strong>
             <div class="gender-picker">

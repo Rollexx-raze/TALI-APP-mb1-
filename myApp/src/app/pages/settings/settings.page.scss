@@ -150,6 +150,10 @@ main
 .edit-photo-avatar { flex-basis:72px; width:72px; height:72px; }
 .change-photo-button { --background:#fff;--color:#12151a;--border-radius:11px;font-weight:650; }
 .profile-field { gap:12px; }
+.profile-name-fields { display:grid; gap:0; margin-bottom:22px; }
+.profile-name-fields .profile-field { margin-bottom:10px; }
+.profile-name-fields .optional-label { color:#aeb2b7; font-size:.8rem; font-weight:400; }
+.name-change-note { margin:0 0 12px; color:#aeb2b7; font-size:.8rem; line-height:1.4; }
 .profile-field input { border-color:transparent;background:#252525;color:#fff; }
 .profile-field input::placeholder, .profile-field textarea::placeholder { color:#c4c6c9;opacity:1; }
 .profile-field textarea, .gender-picker-trigger { border-color:#30343a;background:#0d1013;color:#fff; }

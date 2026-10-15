@@ -5,6 +5,7 @@ import { NotificationService } from './notification.service';
 export interface Account {
   id: number;
   name: string;
+  nameChangedAt?: number;
   username: string;
   contact: string;
   password: string;
@@ -137,9 +138,16 @@ export class AccountService {
     const selected = this.selectedAccount();
     if (!selected) return null;
 
+    const normalizedName = name.trim().replace(/\s+/g, ' ');
+    const nameHasChanged = normalizedName !== selected.name.trim().replace(/\s+/g, ' ');
+    const nameCooldownMs = 30 * 24 * 60 * 60 * 1000;
+    const canChangeName = selected.nameChangedAt === undefined || Date.now() - selected.nameChangedAt >= nameCooldownMs;
+    const applyNameChange = nameHasChanged && canChangeName;
+
     const updated: Account = {
       ...selected,
-      name: name.trim(),
+      name: applyNameChange ? normalizedName : selected.name,
+      nameChangedAt: applyNameChange ? Date.now() : selected.nameChangedAt,
       username: username.trim().startsWith('@') ? username.trim() : `@${username.trim()}`,
       bio: bio.trim(),
       gender: gender ?? selected.gender,
