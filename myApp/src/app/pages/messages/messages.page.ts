@@ -72,6 +72,7 @@ export class MessagesPage {
   voiceRecordingPaused = false;
   voiceDuration = 0;
   voicePlayingUrl: string | null = null;
+  voicePlaybackProgress: Record<string, number> = {};
   readonly voiceWaveBars = Array.from({ length: 34 }, (_, index) => index);
   reactionPickerMessageId: string | null = null;
   reactionDetailsKey: string | null = null;
@@ -402,6 +403,11 @@ export class MessagesPage {
       .map((part) => part.charAt(0))
       .join('')
       .toUpperCase();
+  }
+
+  messageTimestampInBubble(message: ChatMessage) {
+    return !!message.body && !this.hasPhotoAttachment(message)
+      && !(message.attachments ?? []).some((attachment) => attachment.kind === 'voice');
   }
 
   accountName(accountId: number) {
@@ -1017,6 +1023,17 @@ export class MessagesPage {
     return 18 + ((index * 29 + 17) % 72);
   }
 
+  updateVoiceProgress(url: string, player: HTMLAudioElement) {
+    const progress = Number.isFinite(player.duration) && player.duration > 0
+      ? Math.min(1, Math.max(0, player.currentTime / player.duration))
+      : 0;
+    this.voicePlaybackProgress = { ...this.voicePlaybackProgress, [url]: progress };
+  }
+
+  voiceBarPlayed(url: string, index: number) {
+    return (index + 1) / this.voiceWaveBars.length <= (this.voicePlaybackProgress[url] ?? 0);
+  }
+
   async toggleVoicePlayback(player: HTMLAudioElement) {
     if (player.paused) {
       try { await player.play(); } catch { this.callNotice = 'This voice message could not be played.'; }
@@ -1025,6 +1042,11 @@ export class MessagesPage {
 
   voicePlaybackPaused(url: string) {
     if (this.voicePlayingUrl === url) this.voicePlayingUrl = null;
+  }
+
+  voicePlaybackEnded(url: string) {
+    this.voicePlaybackProgress = { ...this.voicePlaybackProgress, [url]: 1 };
+    this.voicePlaybackPaused(url);
   }
 
   sendMessage() {

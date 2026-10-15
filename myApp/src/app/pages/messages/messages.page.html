@@ -71,12 +71,10 @@
       @for (message of visibleMessages; track message.id) {
         @if (shouldShowDateSeparator($index)) { <div class="message-date-separator"><span>{{ messageDateLabel(message.createdAt) }}</span></div> }
         <div class="message-row" [id]="'message-' + message.id" [class.own-message]="message.senderId === selectedAccount()?.id" [class.grouped-message]="$index > 0 && !shouldShowDateSeparator($index) && visibleMessages[$index - 1]?.senderId === message.senderId" [class.sender-run-end]="$index === visibleMessages.length - 1 || shouldShowDateSeparator($index + 1) || visibleMessages[$index + 1]?.senderId !== message.senderId">
-          @if (message.senderId !== selectedAccount()?.id) {
-            <a class="incoming-avatar" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
-              @if (messageAuthorImage(message); as image) { <img [src]="image" [alt]="messageAuthorName(message)" /> }
-              @else { <span aria-hidden="true">{{ messageAuthorInitials(message) }}</span> }
-            </a>
-          }
+          <a class="message-sender-avatar" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
+            @if (messageAuthorImage(message); as image) { <img [src]="image" [alt]="messageAuthorName(message)" /> }
+            @else { <span aria-hidden="true">{{ messageAuthorInitials(message) }}</span> }
+          </a>
           <div class="message-content">
             @if (message.senderId !== selectedAccount()?.id && ($index === 0 || shouldShowDateSeparator($index) || visibleMessages[$index - 1]?.senderId !== message.senderId)) { <strong class="message-sender">{{ messageAuthorName(message) }}</strong> }
             @if (message.pinnedFor?.includes(selectedAccount()?.id ?? -1)) { <span class="pinned-message-label"><ion-icon name="pin-outline"></ion-icon> Pinned</span> }
@@ -89,6 +87,7 @@
               @if (message.body && !hasPhotoAttachment(message)) {
                 <div class="message-bubble" (click)="openMessageActions(message)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message)">
                   <p class="message-bubble-copy">@for (part of messageParts(message.body); track $index) { @if (part === '@everyone') { <button type="button" class="message-mention everyone-mention" (click)="$event.stopPropagation(); callNotice = 'Everyone in this conversation was mentioned.'">@everyone</button> } @else if (part.startsWith('@') && mentionAccount(part); as mentioned) { <a class="message-mention" [routerLink]="['/profile', mentioned.id]" (click)="$event.stopPropagation()">{{ part }}</a> } @else { {{ part }} } }</p>
+                  @if (messageTimestampInBubble(message)) { <time class="message-time message-bubble-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time> }
                 </div>
               }
               @if (messageActionsId === message.id) {
@@ -134,26 +133,28 @@
               @if (attachment.kind === 'video') { <video class="message-attachment" [src]="attachment.url" controls playsinline (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); reactionPickerMessageId = message.id"></video> }
               @if (attachment.kind === 'voice') {
                 <div class="voice-message-player" [class.own-voice-message]="message.senderId === selectedAccount()?.id">
-                  <audio #voicePlayer class="voice-audio-element" [src]="attachment.url" (play)="voicePlayingUrl = attachment.url" (pause)="voicePlaybackPaused(attachment.url)" (ended)="voicePlaybackPaused(attachment.url)"></audio>
+                  <audio #voicePlayer class="voice-audio-element" [src]="attachment.url" (play)="voicePlayingUrl = attachment.url" (timeupdate)="updateVoiceProgress(attachment.url, voicePlayer)" (pause)="voicePlaybackPaused(attachment.url)" (ended)="voicePlaybackEnded(attachment.url)"></audio>
                   <button type="button" class="voice-play-button" [attr.aria-label]="voicePlayingUrl === attachment.url ? 'Pause voice message' : 'Play voice message'" (click)="toggleVoicePlayback(voicePlayer)"><ion-icon [name]="voicePlayingUrl === attachment.url ? 'pause-outline' : 'play-outline'"></ion-icon></button>
-                  <span class="voice-waveform" aria-hidden="true">@for (bar of voiceWaveBars; track bar) { <i [style.height.%]="voiceBarHeight(bar)"></i> }</span>
+                  <span class="voice-waveform" aria-hidden="true">@for (bar of voiceWaveBars; track bar) { <i [class.voice-bar-played]="voiceBarPlayed(attachment.url, bar)" [style.height.%]="voiceBarHeight(bar)"></i> }</span>
                   <span class="voice-duration">{{ formatVoiceDuration(attachment.durationSeconds ?? 0) }}</span>
                 </div>
               }
               @if (attachment.kind === 'file') { <a class="message-file-attachment" [href]="attachment.url" [download]="attachment.name"><ion-icon name="document-outline"></ion-icon><span>{{ attachment.name }}</span></a> }
             }
-            <div class="message-delivery-meta">
-              <time class="message-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time>
-            @if (reactionPickerMessageId === message.id) { <emoji-picker class="message-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker> }
-            @if (message.senderId === selectedAccount()?.id) {
-              @switch (messageDeliveryStatus(message)) {
-                @case ('sending') { <span class="message-status sending-status">Sending…</span> }
-                @case ('failed') { <button type="button" class="message-status failed-status" (click)="retryMessage(message)"><ion-icon name="alert-circle-outline"></ion-icon> Failed · Tap to retry</button> }
-                @case ('seen') { <span class="message-status seen-status" aria-label="Seen"><span aria-hidden="true">✓✓</span></span> }
-                @default { <span class="message-status sent-status" aria-label="Sent"><span aria-hidden="true">✓</span></span> }
-              }
+            @if (!messageTimestampInBubble(message) || message.senderId === selectedAccount()?.id || reactionPickerMessageId === message.id) {
+              <div class="message-delivery-meta">
+                @if (!messageTimestampInBubble(message)) { <time class="message-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time> }
+                @if (reactionPickerMessageId === message.id) { <emoji-picker class="message-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker> }
+                @if (message.senderId === selectedAccount()?.id) {
+                  @switch (messageDeliveryStatus(message)) {
+                    @case ('sending') { <span class="message-status sending-status">Sending…</span> }
+                    @case ('failed') { <button type="button" class="message-status failed-status" (click)="retryMessage(message)"><ion-icon name="alert-circle-outline"></ion-icon> Failed · Tap to retry</button> }
+                    @case ('seen') { <span class="message-status seen-status" aria-label="Seen"><span aria-hidden="true">✓✓</span></span> }
+                    @default { <span class="message-status sent-status" aria-label="Sent"><span aria-hidden="true">✓</span></span> }
+                  }
+                }
+              </div>
             }
-            </div>
           </div>
         </div>
       } @empty {
