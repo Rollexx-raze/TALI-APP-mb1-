@@ -382,6 +382,15 @@
 	color: #ffffff;
 	box-shadow: none;
 }
+:host-context(html.app-light) .profile-floating-header .profile-circle-btn.settings-button {
+	background: rgba(230, 237, 253, .94) !important;
+	color: #071039 !important;
+	box-shadow: 0 2px 8px rgba(7, 16, 57, .32) !important;
+}
+:host-context(html.app-light) .profile-floating-header .profile-circle-btn.settings-button ion-icon {
+	color: #071039 !important;
+	filter: none;
+}
 
 :host-context(html.app-light) .profile-content,
 :host-context(html.app-light) .profile-page-shell,
