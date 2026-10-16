@@ -4,6 +4,7 @@ import { AccountService } from './account.service';
 import { NotificationService } from './notification.service';
 
 const conversationsStorageKey = 'tali-conversations';
+const communitiesStorageKey = 'tali-communities';
 
 export interface ChatMessage {
   id: string;
@@ -47,16 +48,36 @@ export interface Conversation {
   id: string;
   memberIds: number[];
   groupName: string | null;
+  communityId?: string;
   messages: ChatMessage[];
   updatedAt: Date;
   settings?: ChatSettings;
+}
+
+export interface Community {
+  id: string;
+  name: string;
+  ownerId: number;
+  memberIds: number[];
+  inviteCode: string;
+  createdAt: Date;
 }
 
 @Injectable({ providedIn: 'root' })
 export class MessageService {
   private readonly accountService = inject(AccountService);
   private readonly notificationService = inject(NotificationService);
+  private resolveCommunityDataHydrated!: () => void;
+  private resolveConversationDataHydrated!: () => void;
   readonly conversations = signal<Conversation[]>([]);
+  readonly conversationDataHydrated = new Promise<void>((resolve) => {
+    this.resolveConversationDataHydrated = resolve;
+  });
+  readonly communities = signal<Community[]>([]);
+  readonly communityDataReady = signal(false);
+  readonly communityDataHydrated = new Promise<void>((resolve) => {
+    this.resolveCommunityDataHydrated = resolve;
+  });
   readonly sendStates = signal<Record<string, 'sending' | 'sent' | 'failed'>>({});
   private readonly typingByConversation = signal<Map<string, number[]>>(new Map());
   private nextId = 0;
@@ -69,6 +90,22 @@ export class MessageService {
         : saved;
       this.conversations.set(conversations.map(restoreConversationDates));
       if (this.changedBeforeHydration) this.persistConversations();
+    }).catch((error: unknown) => {
+      console.error('Could not load conversations.', error);
+    }).finally(() => {
+      this.resolveConversationDataHydrated();
+    });
+    void loadBrowserData(communitiesStorageKey, [], isStoredCommunityList).then((saved) => {
+      this.communities.set(saved.map((community) => ({
+        ...community,
+        createdAt: new Date(community.createdAt),
+      })));
+      this.communityDataReady.set(true);
+      this.resolveCommunityDataHydrated();
+    }).catch((error: unknown) => {
+      console.error('Could not load communities.', error);
+      this.communityDataReady.set(true);
+      this.resolveCommunityDataHydrated();
     });
   }
 
@@ -85,6 +122,70 @@ export class MessageService {
     const members = [...new Set(accountIds)];
     if (members.length < 2 || !groupName.trim()) return null;
     return this.createConversation(members, groupName.trim());
+  }
+
+  async createCommunity(name: string, ownerId: number) {
+    await this.communityDataHydrated;
+    const trimmedName = name.trim();
+    if (!trimmedName) return null;
+    const community: Community = {
+      id: `community-${Date.now()}-${++this.nextId}`,
+      name: trimmedName,
+      ownerId,
+      memberIds: [ownerId],
+      inviteCode: createCommunityInviteCode(),
+      createdAt: new Date(),
+    };
+    this.communities.update((communities) => [community, ...communities]);
+    if (!await this.persistCommunities()) {
+      this.communities.update((communities) => communities.filter((item) => item.id !== community.id));
+      return null;
+    }
+    return community;
+  }
+
+  async createCommunityChat(communityId: string, name: string) {
+    await this.communityDataHydrated;
+    await this.conversationDataHydrated;
+    const community = this.communities().find((item) => item.id === communityId);
+    const chatName = name.trim();
+    if (!community || !chatName) return null;
+    const conversation = this.createConversation([...community.memberIds], chatName, community.id);
+    if (!await this.persistConversations()) {
+      this.conversations.update((conversations) => conversations.filter((item) => item.id !== conversation.id));
+      return null;
+    }
+    return conversation;
+  }
+
+  async joinCommunityByInvite(inviteCode: string, accountId: number) {
+    await this.communityDataHydrated;
+    await this.conversationDataHydrated;
+    const community = this.communities().find((item) => item.inviteCode === inviteCode);
+    if (!community) return null;
+    if (!community.memberIds.includes(accountId)) {
+      const previousCommunities = this.communities();
+      const previousConversations = this.conversations();
+      const updatedCommunity = { ...community, memberIds: [...community.memberIds, accountId] };
+      this.communities.update((items) => items.map((item) => item.id === community.id ? updatedCommunity : item));
+      this.conversations.update((items) => items.map((item) =>
+        item.communityId === community.id && !item.memberIds.includes(accountId)
+          ? { ...item, memberIds: [...item.memberIds, accountId] }
+          : item,
+      ));
+      const [communitySaved, conversationsSaved] = await Promise.all([
+        this.persistCommunities(),
+        this.persistConversations(),
+      ]);
+      if (!communitySaved || !conversationsSaved) {
+        this.communities.set(previousCommunities);
+        this.conversations.set(previousConversations);
+        await Promise.all([this.persistCommunities(), this.persistConversations()]);
+        return null;
+      }
+      return updatedCommunity;
+    }
+    return community;
   }
 
   setTyping(conversationId: string, accountId: number, typing: boolean) {
@@ -255,11 +356,12 @@ export class MessageService {
     this.persistConversations();
   }
 
-  private createConversation(memberIds: number[], groupName: string | null) {
+  private createConversation(memberIds: number[], groupName: string | null, communityId?: string) {
     const conversation: Conversation = {
       id: `${Date.now()}-${++this.nextId}`,
       memberIds,
       groupName,
+      ...(communityId ? { communityId } : {}),
       messages: [],
       updatedAt: new Date(),
       settings: normalizeChatSettings(),
@@ -280,6 +382,36 @@ export class MessageService {
     }
     return saveBrowserDataResult(conversationsStorageKey, this.conversations()).then((saved) => saved || localStorageSaved);
   }
+
+  private async persistCommunities() {
+    const snapshot = this.communities();
+    let localStorageSaved = false;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(communitiesStorageKey, JSON.stringify(snapshot));
+        localStorageSaved = true;
+      }
+    } catch (error) {
+      console.error('Could not save communities to local storage.', error);
+    }
+    return saveBrowserDataResult(communitiesStorageKey, snapshot).then((saved) => saved || localStorageSaved);
+  }
+}
+
+function createCommunityInviteCode() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+}
+
+function isStoredCommunityList(value: unknown): value is Community[] {
+  return Array.isArray(value) && value.every((item) => {
+    if (typeof item !== 'object' || item === null) return false;
+    const community = item as Partial<Community>;
+    return typeof community.id === 'string' && typeof community.name === 'string' &&
+      Number.isSafeInteger(community.ownerId) && Array.isArray(community.memberIds) &&
+      typeof community.inviteCode === 'string' &&
+      (typeof community.createdAt === 'string' || community.createdAt instanceof Date);
+  });
 }
 
 function isSettingEnabled(key: string, fallback: boolean) {
