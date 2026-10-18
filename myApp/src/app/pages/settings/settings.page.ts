@@ -77,6 +77,7 @@ export class SettingsPage {
   profileWebsite = '';
   profilePhotoPreview = '';
   pendingLogoutAccount: Account | null = null;
+  appearanceMode = this.appearance.mode();
   darkMode = this.appearance.mode() === 'dark';
   privateAccount = false;
   notifications = true;
@@ -243,8 +244,10 @@ export class SettingsPage {
     void this.router.navigateByUrl('/profile');
   }
 
-  setAppearance(mode: 'light' | 'dark') {
-    this.darkMode = mode === 'dark';
+  setAppearance(mode: 'system' | 'light' | 'dark') {
+    this.appearanceMode = mode;
+    this.darkMode = mode === 'dark'
+      || (mode === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     this.savePreferences();
   }
 
@@ -415,7 +418,7 @@ export class SettingsPage {
   }
   private applyPreferences() {
 		if (typeof document !== 'undefined') {
-		this.appearance.setMode(this.darkMode ? 'dark' : 'light');
+		this.appearance.setMode(this.appearanceMode);
       document.documentElement.classList.toggle('app-large-text', this.largerText);
       document.documentElement.classList.toggle('app-reduce-motion', this.reduceMotion);
       document.documentElement.lang = 'en';
@@ -448,7 +451,10 @@ export class SettingsPage {
     for (const key of Object.keys(defaults) as (keyof typeof defaults)[]) {
       const stored = this.readPreference(key, defaults[key]);
       switch (key) {
-        case 'darkMode': this.darkMode = stored; break;
+        case 'darkMode':
+          this.darkMode = stored;
+          if (this.appearance.mode() !== 'system') this.appearanceMode = stored ? 'dark' : 'light';
+          break;
         case 'privateAccount': this.privateAccount = stored; break;
         case 'notifications': this.notifications = stored; break;
         case 'messageAlerts': this.messageAlerts = stored; break;
