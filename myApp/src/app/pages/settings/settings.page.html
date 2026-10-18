@@ -201,15 +201,20 @@
         <h2>Appearance</h2>
         <p class="detail-copy">Choose how Tali looks on this device.</p>
         <div class="appearance-options" role="group" aria-label="Choose appearance">
-          <button type="button" class="appearance-option" [class.selected]="!darkMode" [attr.aria-pressed]="!darkMode" (click)="setAppearance('light')">
+          <button type="button" class="appearance-option" [class.selected]="appearanceMode === 'system'" [attr.aria-pressed]="appearanceMode === 'system'" (click)="setAppearance('system')">
+            <span class="appearance-preview system-preview" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="appearance-option-copy"><ion-icon name="desktop-outline" aria-hidden="true"></ion-icon><span>System</span></span>
+            @if (appearanceMode === 'system') { <ion-icon class="appearance-check" name="checkmark-outline" aria-hidden="true"></ion-icon> }
+          </button>
+          <button type="button" class="appearance-option" [class.selected]="appearanceMode === 'light'" [attr.aria-pressed]="appearanceMode === 'light'" (click)="setAppearance('light')">
             <span class="appearance-preview light-preview" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="appearance-option-copy"><ion-icon name="sunny-outline" aria-hidden="true"></ion-icon><span>Light</span></span>
-            @if (!darkMode) { <ion-icon class="appearance-check" name="checkmark-outline" aria-hidden="true"></ion-icon> }
+            @if (appearanceMode === 'light') { <ion-icon class="appearance-check" name="checkmark-outline" aria-hidden="true"></ion-icon> }
           </button>
-          <button type="button" class="appearance-option" [class.selected]="darkMode" [attr.aria-pressed]="darkMode" (click)="setAppearance('dark')">
+          <button type="button" class="appearance-option" [class.selected]="appearanceMode === 'dark'" [attr.aria-pressed]="appearanceMode === 'dark'" (click)="setAppearance('dark')">
             <span class="appearance-preview dark-preview" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="appearance-option-copy"><ion-icon name="moon-outline" aria-hidden="true"></ion-icon><span>Dark</span></span>
-            @if (darkMode) { <ion-icon class="appearance-check" name="checkmark-outline" aria-hidden="true"></ion-icon> }
+            @if (appearanceMode === 'dark') { <ion-icon class="appearance-check" name="checkmark-outline" aria-hidden="true"></ion-icon> }
           </button>
         </div>
       }
