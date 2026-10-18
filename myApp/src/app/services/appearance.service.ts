@@ -1,8 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 
-export type AppearanceMode = 'light' | 'dark';
+export type AppearanceMode = 'system' | 'light' | 'dark';
 
-const appearanceStorageKey = 'tali-setting-darkMode';
+const appearanceStorageKey = 'tali-setting-appearance';
+const legacyAppearanceStorageKey = 'tali-setting-darkMode';
 
 @Injectable({ providedIn: 'root' })
 export class AppearanceService {
@@ -16,30 +17,34 @@ export class AppearanceService {
     this.mode.set(mode);
     try {
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(appearanceStorageKey, String(mode === 'dark'));
+        localStorage.setItem(appearanceStorageKey, mode);
+        if (mode === 'system') localStorage.removeItem(legacyAppearanceStorageKey);
+        else localStorage.setItem(legacyAppearanceStorageKey, String(mode === 'dark'));
       }
     } catch {
-      // The selected theme still applies for this session if storage is unavailable.
+      // Keep the selected appearance applied for this session if storage is unavailable.
     }
     this.applyMode(mode);
   }
 
   private readMode(): AppearanceMode {
     try {
-      return typeof localStorage !== 'undefined' && localStorage.getItem(appearanceStorageKey) === 'true'
-        ? 'dark'
-        : 'light';
+      if (typeof localStorage === 'undefined') return 'system';
+      const savedMode = localStorage.getItem(appearanceStorageKey);
+      if (savedMode === 'light' || savedMode === 'dark' || savedMode === 'system') return savedMode;
+      const legacyMode = localStorage.getItem(legacyAppearanceStorageKey);
+      if (legacyMode !== null) return legacyMode === 'true' ? 'dark' : 'light';
+      return 'system';
     } catch {
-      return 'light';
+      return 'system';
     }
   }
 
   private applyMode(mode: AppearanceMode) {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;
-    const isDark = mode === 'dark';
-    root.classList.toggle('app-dark', isDark);
-    root.classList.toggle('app-light', !isDark);
-    root.style.colorScheme = mode;
+    root.classList.toggle('app-dark', mode === 'dark');
+    root.classList.toggle('app-light', mode === 'light');
+    root.style.colorScheme = mode === 'system' ? 'light dark' : mode;
   }
 }
