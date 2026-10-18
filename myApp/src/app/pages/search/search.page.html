@@ -37,7 +37,11 @@
     <section class="section-block">
       <h2>Groups</h2>
       @if (groupService.loading()) {
-        <p class="empty-state">Loading groups...</p>
+        <div class="search-loading-skeletons" role="status" aria-busy="true" aria-label="Loading groups">
+          @for (item of [1, 2]; track item) {
+            <div class="search-loading-row" aria-hidden="true"><span class="design-skeleton design-skeleton-avatar"></span><span class="search-loading-copy"><span class="design-skeleton design-skeleton-title"></span><span class="design-skeleton design-skeleton-line"></span></span></div>
+          }
+        </div>
       } @else {
         @for (group of filteredGroups; track group.id) {
           <a class="search-result group-result" [routerLink]="['/groups', group.id]">
@@ -66,12 +70,3 @@
     </section>
   }
 </ion-content>
-<ion-footer class="page-footer ion-no-border"><ion-toolbar>
-  <nav class="page-nav" aria-label="Main navigation">
-    <ion-button fill="clear" routerLink="/home" (click)="viewState.handleTabTap('/home', 'tali-view-home')" aria-label="Home"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></ion-button>
-    <ion-button fill="clear" routerLink="/messages" (click)="viewState.handleTabTap('/messages', 'tali-view-messages')" aria-label="Messages"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></ion-button>
-    <ion-button fill="clear" class="compose-button" routerLink="/add-post" (click)="viewState.handleTabTap('/add-post', 'tali-post-draft')" aria-label="Create post"><span class="nav-plus-circle"><svg class="nav-plus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></ion-button>
-    <ion-button fill="clear" class="notification-nav-button" routerLink="/activity" (click)="viewState.handleTabTap('/activity', 'tali-view-activity')" aria-label="Activity"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>@if (unreadNotifications) { <span class="notification-badge">{{ unreadNotifications }}</span> }</ion-button>
-    <ion-button fill="clear" routerLink="/profile" (click)="viewState.handleTabTap('/profile', 'tali-view-profile:current')" aria-label="Profile"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="9" r="3"/><path d="M7 20a5 5 0 0 1 10 0"/></svg></ion-button>
-  </nav>
-</ion-toolbar></ion-footer>

@@ -1,3 +1,4 @@
-<ion-app>
-  <ion-router-outlet [animated]="true" [animation]="pageTransition"></ion-router-outlet>
+<ion-app data-surface="base">
+  <ion-router-outlet [animated]="false"></ion-router-outlet>
+  @if (showBottomNav()) { <app-bottom-nav /> }
 </ion-app>

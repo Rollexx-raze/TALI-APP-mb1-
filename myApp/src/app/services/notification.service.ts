@@ -110,6 +110,13 @@ export class NotificationService {
     if (changed) this.persist();
   }
 
+  clearForAccount(recipientId: number) {
+    const remaining = this.notifications().filter((notification) => notification.recipientId !== recipientId);
+    if (remaining.length === this.notifications().length) return;
+    this.notifications.set(remaining);
+    this.persist();
+  }
+
   private add(
     type: NotificationType,
     actor: Pick<Account, 'id' | 'name' | 'username'>,

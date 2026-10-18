@@ -2,27 +2,31 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption, IonToggle, IonToolbar } from '@ionic/angular';
+import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonToggle, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { accessibilityOutline, archiveOutline, banOutline, cardOutline, chatbubblesOutline, chevronBackOutline, chevronDownOutline, chevronForwardOutline, checkmarkOutline, colorPaletteOutline, documentTextOutline, eyeOffOutline, informationCircleOutline, keyOutline, languageOutline, lockClosedOutline, logOutOutline, megaphoneOutline, moonOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, personOutline, searchOutline, serverOutline, shieldCheckmarkOutline, starOutline, sunnyOutline, timeOutline, trashOutline } from 'ionicons/icons';
+import { accessibilityOutline, archiveOutline, banOutline, cardOutline, chatbubblesOutline, chevronBackOutline, chevronDownOutline, chevronForwardOutline, checkmarkOutline, colorPaletteOutline, desktopOutline, documentTextOutline, eyeOffOutline, helpCircleOutline, informationCircleOutline, keyOutline, lockClosedOutline, logOutOutline, moonOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, personOutline, searchOutline, serverOutline, shieldCheckmarkOutline, starOutline, sunnyOutline, timeOutline, trashOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
+import { AuthService } from '../../services/auth.service';
 import { PostService } from '../../services/post.service';
 import { MessageService } from '../../services/message.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
+import { AppearanceService } from '../../services/appearance.service';
 
-type SettingsSection = 'profile' | 'account' | 'privacy' | 'blocked' | 'story-privacy' | 'family' | 'muted' | 'like-counts' | 'tags' | 'comments' | 'sharing' | 'hidden-words' | 'security' | 'notifications' | 'messages' | 'content' | 'connections' | 'activity' | 'archive' | 'trash' | 'appearance' | 'accessibility' | 'language' | 'data' | 'permissions' | 'ads' | 'payments' | 'about';
+type SettingsSection = 'profile' | 'account' | 'privacy' | 'blocked' | 'story-privacy' | 'family' | 'muted' | 'like-counts' | 'tags' | 'comments' | 'sharing' | 'hidden-words' | 'security' | 'notifications' | 'messages' | 'content' | 'connections' | 'activity' | 'archive' | 'trash' | 'appearance' | 'accessibility' | 'data' | 'permissions' | 'about' | 'help';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
-  imports: [CommonModule, FormsModule, RouterLink, IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption, IonToggle, IonToolbar, PostCardComponent],
+  imports: [CommonModule, FormsModule, RouterLink, IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonToggle, IonToolbar, PostCardComponent],
 })
 export class SettingsPage {
   readonly accountService = inject(AccountService);
+  private readonly auth = inject(AuthService);
   readonly postService = inject(PostService);
   readonly messageService = inject(MessageService);
+  private readonly appearance = inject(AppearanceService);
   private readonly router = inject(Router);
   readonly sections = [
     { id: 'account', label: 'Account Center', icon: 'person-circle-outline' },
@@ -46,11 +50,8 @@ export class SettingsPage {
     { id: 'trash', label: 'Trash', icon: 'trash-outline' },
     { id: 'appearance', label: 'Appearance', icon: 'color-palette-outline' },
     { id: 'accessibility', label: 'Accessibility', icon: 'accessibility-outline' },
-    { id: 'language', label: 'Language', icon: 'language-outline' },
     { id: 'data', label: 'Data and Storage', icon: 'server-outline' },
     { id: 'permissions', label: 'Permissions', icon: 'key-outline' },
-    { id: 'ads', label: 'Ads & Recommendations', icon: 'megaphone-outline' },
-    { id: 'payments', label: 'Subscriptions & Payments', icon: 'card-outline' },
     { id: 'about', label: 'About', icon: 'information-circle-outline' },
   ] as const;
   activeSection: SettingsSection = 'account';
@@ -70,23 +71,22 @@ export class SettingsPage {
   genderMenuOpen = false;
   customGender = '';
   profilePhotoError = '';
+  profileSettingsMessage = '';
+  preferenceMessage = '';
+  notificationMessage = '';
   profileWebsite = '';
   profilePhotoPreview = '';
   pendingLogoutAccount: Account | null = null;
-  darkMode = true;
+  darkMode = this.appearance.mode() === 'dark';
   privateAccount = false;
-  activityStatus = true;
   notifications = true;
   messageAlerts = true;
-  callAlerts = true;
   readReceipts = true;
-  sensitiveContent = false;
   autoplayVideos = true;
   largerText = false;
   reduceMotion = false;
   dataSaver = false;
   mediaPermission = true;
-  personalizedRecommendations = true;
   hideLikeCounts = false;
   hideShareCounts = false;
   tagsAndMentions = true;
@@ -94,7 +94,6 @@ export class SettingsPage {
   sharingEnabled = true;
   hiddenWordsEnabled = false;
   hiddenWords = '';
-  language = 'en';
   currentPassword = '';
   newPassword = '';
   passwordMessage = '';
@@ -106,7 +105,7 @@ export class SettingsPage {
   get filteredSettings() {
     const query = this.searchText.trim().toLowerCase();
     const shortcuts: { label: string; icon: string; section: SettingsSection; keywords: string }[] = [
-      { label: 'Accounts Center', icon: 'person-circle-outline', section: 'account', keywords: 'account profiles personal details password security connected experiences ads' },
+      { label: 'Accounts Center', icon: 'person-circle-outline', section: 'account', keywords: 'account profiles personal details password security connected experiences' },
       { label: 'Edit profile', icon: 'person-outline', section: 'profile', keywords: 'name username photo picture bio gender website' },
       { label: 'Notifications', icon: 'notifications-outline', section: 'notifications', keywords: 'alerts push' },
       { label: 'Privacy', icon: 'lock-closed-outline', section: 'privacy', keywords: 'account private public' },
@@ -117,8 +116,8 @@ export class SettingsPage {
     const keywordsBySection: Partial<Record<SettingsSection, string>> = {
       security: 'password login safety', messages: 'chat calls alerts receipts', content: 'sensitive content autoplay video',
       connections: 'close friends blocked followers following', activity: 'posts history', appearance: 'dark light theme mode',
-      accessibility: 'text motion', language: 'translation', data: 'storage saver', permissions: 'media access',
-      ads: 'personalized recommendations', payments: 'meta pay subscriptions billing', about: 'version app',
+      accessibility: 'text motion', data: 'storage saver', permissions: 'media access',
+      about: 'version app',
       family: 'teen parental supervision',
       archive: 'archived posts restore', trash: 'deleted posts restore permanently delete',
       muted: 'mute hide accounts', 'like-counts': 'likes shares counts numbers', tags: 'mentions tag people',
@@ -168,10 +167,9 @@ export class SettingsPage {
   }
 
   constructor() {
-    addIcons({ accessibilityOutline, archiveOutline, banOutline, cardOutline, chatbubblesOutline, chevronBackOutline, chevronDownOutline, chevronForwardOutline, checkmarkOutline, colorPaletteOutline, documentTextOutline, eyeOffOutline, informationCircleOutline, keyOutline, languageOutline, lockClosedOutline, logOutOutline, megaphoneOutline, moonOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, personOutline, searchOutline, serverOutline, shieldCheckmarkOutline, starOutline, sunnyOutline, timeOutline, trashOutline });
+    addIcons({ accessibilityOutline, archiveOutline, banOutline, cardOutline, chatbubblesOutline, chevronBackOutline, chevronDownOutline, chevronForwardOutline, checkmarkOutline, colorPaletteOutline, desktopOutline, documentTextOutline, eyeOffOutline, helpCircleOutline, informationCircleOutline, keyOutline, lockClosedOutline, logOutOutline, moonOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, personOutline, searchOutline, serverOutline, shieldCheckmarkOutline, starOutline, sunnyOutline, timeOutline, trashOutline });
     this.readPreferences();
     this.privateAccount = this.accountService.selectedAccount()?.privacy === 'private' || this.privateAccount;
-    this.language = this.readLanguage();
     this.hiddenWords = this.readHiddenWords();
     this.applyPreferences();
   }
@@ -197,7 +195,14 @@ export class SettingsPage {
 
   saveProfileSettings() {
     const account = this.accountService.selectedAccount();
-    if (!account) return;
+    if (!account) {
+      this.profileSettingsMessage = 'Select an account before saving profile changes.';
+      return;
+    }
+    if (this.canChangeProfileName && (!this.profileFirstName.trim() || !this.profileLastName.trim())) {
+      this.profileSettingsMessage = 'Enter your first and last name.';
+      return;
+    }
     const editedName = [this.profileFirstName, this.profileMiddleName, this.profileLastName]
       .map((part) => part.trim())
       .filter(Boolean)
@@ -206,7 +211,10 @@ export class SettingsPage {
       ? editedName
       : account.name;
     const updated = this.accountService.updateProfile(name, account.username, this.profileBio, this.profilePhotoPreview || undefined, account.profileImageVisibility, this.profileGender, this.profileWebsite, this.customGender);
-    if (updated) this.postService.updateAuthor(updated.id, updated.name, updated.username);
+    if (updated) {
+      this.postService.updateAuthor(updated.id, updated.name, updated.username);
+      this.profileSettingsMessage = 'Profile updated.';
+    } else this.profileSettingsMessage = 'Profile changes could not be saved. Please try again.';
   }
 
   onSettingsPhotoSelected(event: Event) {
@@ -235,23 +243,51 @@ export class SettingsPage {
     void this.router.navigateByUrl('/profile');
   }
 
+  setAppearance(mode: 'light' | 'dark') {
+    this.darkMode = mode === 'dark';
+    this.savePreferences();
+  }
+
   savePreferences() {
     const current = this.accountService.selectedAccount();
-    if (current) this.accountService.updatePrivacy(this.privateAccount ? 'private' : 'public', current.repostVisibility ?? 'public');
-    if (typeof localStorage !== 'undefined') {
-      const preferences = this.preferenceValues();
-      Object.entries(preferences).forEach(([key, value]) => localStorage.setItem(`tali-setting-${key}`, String(value)));
-      localStorage.setItem('tali-language', this.language);
+    try {
+      if (current) this.accountService.updatePrivacy(this.privateAccount ? 'private' : 'public', current.repostVisibility ?? 'public');
+      if (typeof localStorage !== 'undefined') {
+        const preferences = this.preferenceValues();
+        Object.entries(preferences).forEach(([key, value]) => localStorage.setItem(`tali-setting-${key}`, String(value)));
+      }
+      this.preferenceMessage = '';
+    } catch {
+      this.preferenceMessage = 'Your preferences could not be saved. Try again.';
     }
     this.applyPreferences();
   }
 
   async onNotificationsChanged() {
-    if (this.notifications && typeof Notification !== 'undefined' && Notification.permission === 'default') {
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') this.notifications = false;
-    } else if (this.notifications && typeof Notification !== 'undefined' && Notification.permission === 'denied') {
-      this.notifications = false;
+    this.notificationMessage = '';
+    if (this.notifications) {
+      if (typeof Notification === 'undefined') {
+        this.notifications = false;
+        this.notificationMessage = 'Browser notifications are not supported here. In-app notifications remain available.';
+      } else {
+        try {
+          if (Notification.permission === 'default') {
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+              this.notifications = false;
+              this.notificationMessage = 'Browser notification permission was not granted. In-app notifications remain available.';
+            }
+          } else if (Notification.permission === 'denied') {
+            this.notifications = false;
+            this.notificationMessage = 'Browser notifications are blocked in this browser. In-app notifications remain available.';
+          }
+        } catch {
+          this.notifications = false;
+          this.notificationMessage = 'Browser notification permission could not be requested. In-app notifications remain available.';
+        }
+      }
+    } else {
+      this.notificationMessage = 'Browser notifications are off. In-app notifications remain available.';
     }
     this.savePreferences();
   }
@@ -295,7 +331,12 @@ export class SettingsPage {
   }
 
   saveHiddenWords() {
-    if (typeof localStorage !== 'undefined') localStorage.setItem('tali-hidden-words', this.hiddenWords);
+    try {
+      if (typeof localStorage !== 'undefined') localStorage.setItem('tali-hidden-words', this.hiddenWords);
+      this.preferenceMessage = '';
+    } catch {
+      this.preferenceMessage = 'Your hidden words could not be saved. Try again.';
+    }
   }
 
   get followers() {
@@ -353,7 +394,7 @@ export class SettingsPage {
   logout() {
     const account = this.accountService.selectedAccount();
     if (!account) {
-      this.accountService.logout();
+      void this.auth.logout();
       void this.router.navigateByUrl('/login');
       return;
     }
@@ -369,15 +410,15 @@ export class SettingsPage {
     if (!account) return;
     this.accountService.setPasswordSaved(account.id, savePassword);
     this.pendingLogoutAccount = null;
-    this.accountService.logout();
+    void this.auth.logout();
     void this.router.navigateByUrl('/login');
   }
   private applyPreferences() {
-    if (typeof document !== 'undefined') {
-      document.documentElement.classList.toggle('app-light', !this.darkMode);
+		if (typeof document !== 'undefined') {
+		this.appearance.setMode(this.darkMode ? 'dark' : 'light');
       document.documentElement.classList.toggle('app-large-text', this.largerText);
       document.documentElement.classList.toggle('app-reduce-motion', this.reduceMotion);
-      document.documentElement.lang = this.language;
+      document.documentElement.lang = 'en';
     }
   }
 
@@ -385,18 +426,14 @@ export class SettingsPage {
     return {
       darkMode: this.darkMode,
       privateAccount: this.privateAccount,
-      activityStatus: this.activityStatus,
       notifications: this.notifications,
       messageAlerts: this.messageAlerts,
-      callAlerts: this.callAlerts,
       readReceipts: this.readReceipts,
-      sensitiveContent: this.sensitiveContent,
       autoplayVideos: this.autoplayVideos,
       largerText: this.largerText,
       reduceMotion: this.reduceMotion,
       dataSaver: this.dataSaver,
       mediaPermission: this.mediaPermission,
-      personalizedRecommendations: this.personalizedRecommendations,
       hideLikeCounts: this.hideLikeCounts,
       hideShareCounts: this.hideShareCounts,
       tagsAndMentions: this.tagsAndMentions,
@@ -413,18 +450,14 @@ export class SettingsPage {
       switch (key) {
         case 'darkMode': this.darkMode = stored; break;
         case 'privateAccount': this.privateAccount = stored; break;
-        case 'activityStatus': this.activityStatus = stored; break;
         case 'notifications': this.notifications = stored; break;
         case 'messageAlerts': this.messageAlerts = stored; break;
-        case 'callAlerts': this.callAlerts = stored; break;
         case 'readReceipts': this.readReceipts = stored; break;
-        case 'sensitiveContent': this.sensitiveContent = stored; break;
         case 'autoplayVideos': this.autoplayVideos = stored; break;
         case 'largerText': this.largerText = stored; break;
         case 'reduceMotion': this.reduceMotion = stored; break;
         case 'dataSaver': this.dataSaver = stored; break;
         case 'mediaPermission': this.mediaPermission = stored; break;
-        case 'personalizedRecommendations': this.personalizedRecommendations = stored; break;
         case 'hideLikeCounts': this.hideLikeCounts = stored; break;
         case 'hideShareCounts': this.hideShareCounts = stored; break;
         case 'tagsAndMentions': this.tagsAndMentions = stored; break;
@@ -439,12 +472,6 @@ export class SettingsPage {
     if (typeof localStorage === 'undefined') return fallback;
     const value = localStorage.getItem(`tali-setting-${key}`) ?? localStorage.getItem(`tali-${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`);
     return value === null ? fallback : value === 'true';
-  }
-
-  private readLanguage() {
-    if (typeof localStorage === 'undefined') return 'en';
-    const value = localStorage.getItem('tali-language');
-    return value === 'fil' ? value : 'en';
   }
 
   private readHiddenWords() {

@@ -1,50 +1,63 @@
 <ion-content class="login-content auth-screen" [fullscreen]="true">
-  <div class="login-wrapper">
+  <form class="login-wrapper" data-surface="surface" [attr.aria-busy]="isSigningIn" (ngSubmit)="logIn()" novalidate>
     <div class="login-brand">
-      <img class="login-logo" src="assets/Logo%20%E2%80%93%20dark@1x.png" alt="Tali logo" />
-      <h1>Log in</h1>
-      <p>Log in to your account to continue</p>
+      <img class="login-logo" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="Tali logo" />
+      <h1>Welcome back</h1>
+      <p>Sign in to continue to your account</p>
     </div>
 
     @if (welcomeName) { <div class="login-welcome">Welcome {{ welcomeName }}, log in to your account</div> }
-    <ion-item class="login-field" lines="none" [class.field-invalid]="submitted && !identifier.trim()">
-      <ion-input
-        label="Email or number"
-        labelPlacement="floating"
-        [(ngModel)]="identifier"
-        placeholder="Enter your email or number"
-      ></ion-input>
-    </ion-item>
+    <div class="login-field" [class.field-invalid]="identifierError">
+      <div class="login-field-copy">
+        <label for="login-identifier">Email or number</label>
+        <input
+          id="login-identifier"
+          name="identifier"
+          type="text"
+          [(ngModel)]="identifier"
+          autocomplete="username"
+          inputmode="email"
+          placeholder="Enter your email or number"
+          [attr.aria-invalid]="identifierError ? 'true' : null"
+          [attr.aria-describedby]="identifierError ? 'login-identifier-error' : null"
+          (keydown.enter)="$event.preventDefault(); logIn()"
+        />
+      </div>
+    </div>
+    @if (identifierError) { <p id="login-identifier-error" class="login-error" aria-live="polite">{{ identifierError }}</p> }
 
-    <ion-item class="login-field" lines="none" [class.field-invalid]="submitted && !password.trim()">
-      <ion-input
-        label="Password"
-        labelPlacement="floating"
-        type="password"
-        [(ngModel)]="password"
-        placeholder="Enter password"
-      ></ion-input>
-    </ion-item>
+    <div class="login-field" [class.field-invalid]="passwordError">
+      <div class="login-field-copy">
+        <label for="login-password">Password</label>
+        <input
+          #passwordInput
+          id="login-password"
+          name="password"
+          [type]="showPassword ? 'text' : 'password'"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+          placeholder="Enter password"
+          [attr.aria-invalid]="passwordError ? 'true' : null"
+          [attr.aria-describedby]="passwordError ? 'login-password-error' : null"
+          (keydown.enter)="$event.preventDefault(); logIn()"
+        />
+      </div>
+      <ion-button type="button" fill="clear" class="login-password-toggle" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'" [attr.aria-pressed]="showPassword" (click)="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</ion-button>
+    </div>
+    @if (passwordError) { <p id="login-password-error" class="login-error" aria-live="polite">{{ passwordError }}</p> }
+    @if (errorMessage) { <p class="login-error" role="alert" aria-live="assertive">{{ errorMessage }}</p> }
 
-    @if (submitted && (!identifier.trim() || !password.trim())) {
-      <p class="login-error">Please fill in both fields to continue.</p>
-    }
-
-    @if (submitted && identifier.trim() && password.trim() && !accountService.authenticate(identifier, password)) {
-      <p class="login-error">That account does not exist or the password is incorrect.</p>
-    }
-
-    <ion-button expand="block" shape="round" class="login-button" (click)="logIn()">
-      Log in
+    <ion-button type="submit" expand="block" shape="round" class="login-button" [disabled]="isSigningIn">
+      <span class="login-button-content">@if (isSigningIn) { <span class="auth-spinner" aria-hidden="true"></span> } Sign in</span>
     </ion-button>
 
     <div class="login-links">
-      <ion-button fill="clear" class="login-link-button" (click)="goToSelectAccount()">
+      <ion-button type="button" fill="clear" class="login-link-button" (click)="goToSelectAccount()">
         Select Account
       </ion-button>
-      <ion-button fill="clear" class="login-link-button" (click)="goToCreateAccount()">
+      <ion-button type="button" fill="clear" class="login-link-button" (click)="goToCreateAccount()">
         Create Account
       </ion-button>
     </div>
-  </div>
+  </form>
 </ion-content>

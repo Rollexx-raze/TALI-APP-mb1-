@@ -3,68 +3,128 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/login" text=""></ion-back-button>
     </ion-buttons>
-    <img class="create-account-header-logo" src="assets/Logo%20%E2%80%93%20dark@1x.png" alt="Tali logo" />
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="create-account-content auth-screen" [fullscreen]="true">
   <div class="create-account-wrapper">
-    <img class="create-account-logo" src="assets/Logo%20%E2%80%93%20dark@1x.png" alt="Tali logo" />
-
-    <div class="create-account-card">
-      @if (created) {
-        <div class="create-account-heading" role="status">
-          <span class="create-account-eyebrow">ACCOUNT READY</span>
-          <h1>Account successfully created</h1>
-          <p>Your account is ready. Continue to log in.</p>
+    <div class="auth-brand"><img src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="Tali logo"></div>
+    <section class="create-account-card" data-surface="surface" [attr.aria-busy]="isSubmitting" aria-live="polite">
+      <div
+        class="signup-progress"
+        role="progressbar"
+        aria-label="Account creation progress"
+        [attr.aria-valuenow]="activeStep"
+        [attr.aria-valuemin]="1"
+        [attr.aria-valuemax]="totalSteps"
+        [attr.aria-valuetext]="'Step ' + activeStep + ' of ' + totalSteps"
+      >
+        <div class="signup-progress-copy"><span>Account setup</span><span>Step {{ activeStep }} of {{ totalSteps }}</span></div>
+        <span class="signup-progress-track" aria-hidden="true"><span class="signup-progress-fill" [style.width.%]="progressPercent"></span></span>
+        <div class="signup-progress-steps" aria-hidden="true">
+          <span [class.is-current]="activeStep === 1">Account</span>
+          <span [class.is-current]="activeStep === 2">Details</span>
+          <span [class.is-current]="activeStep === 3">Done</span>
         </div>
-        <ion-button expand="block" shape="round" class="create-account-button" (click)="goToLogin()">Continue to log in</ion-button>
-      } @else {
-      <div class="create-account-heading">
-        <span class="create-account-eyebrow">JOIN THE CIRCLE</span>
-        <h1>Create your account</h1>
-        <p>Set up your Tali profile to get started.</p>
       </div>
 
-    <label class="create-account-field" [class.field-invalid]="submitted && !firstName.trim()">
-      <span>First name</span>
-      <input type="text" autocomplete="off" [(ngModel)]="firstName" placeholder="Enter your first name" required />
-    </label>
+      <form class="create-account-form" (ngSubmit)="step === 1 ? nextStep() : createAccount()" novalidate>
+      @if (created) {
+        <div class="create-account-heading" role="status">
+          <h1>Account ready</h1>
+          <p>Your account is ready. Taking you to your home feed.</p>
+        </div>
+        <ion-button type="button" expand="block" class="create-account-button" (click)="goToHome()">Continue to Tali</ion-button>
+      } @else {
+        <div class="create-account-heading">
+          @if (step === 1) {
+            <h1>Create your account</h1>
+            <p>Start with your sign-in details.</p>
+          } @else {
+            <h1>Your details</h1>
+            <p>Tell us what to call you.</p>
+          }
+        </div>
 
-    <label class="create-account-field" [class.field-invalid]="submitted && !lastName.trim()">
-      <span>Last name</span>
-      <input type="text" autocomplete="off" [(ngModel)]="lastName" placeholder="Enter your last name" required />
-    </label>
+        @if (step === 1) {
+          <div class="create-account-fields">
+            <div class="create-account-field" [class.field-invalid]="(submitted && !username.trim()) || !!usernameError">
+              <div class="create-account-field-copy">
+                <label for="signup-username">Username</label>
+                <input id="signup-username" name="username" type="text" autocomplete="username" [(ngModel)]="username" placeholder="Choose a username" required [attr.aria-invalid]="(submitted && !username.trim()) || usernameError ? 'true' : null" aria-describedby="signup-username-error" (blur)="submitted = true" />
+              </div>
+            </div>
+            @if (submitted && !username.trim() || usernameError) { <p id="signup-username-error" class="create-account-error" aria-live="polite">{{ usernameError || 'Enter a username.' }}</p> }
+            <div class="create-account-field" [class.field-invalid]="(submitted && !emailOrNumber.trim()) || !!contactError">
+              <div class="create-account-field-copy">
+                <label for="signup-contact">Email or number</label>
+                <input id="signup-contact" name="contact" type="text" autocomplete="email" [(ngModel)]="emailOrNumber" placeholder="Enter your email or number" required [attr.aria-invalid]="(submitted && !emailOrNumber.trim()) || contactError ? 'true' : null" aria-describedby="signup-contact-error" (blur)="submitted = true" />
+              </div>
+            </div>
+            @if (submitted && !emailOrNumber.trim() || contactError) { <p id="signup-contact-error" class="create-account-error" aria-live="polite">{{ contactError || 'Enter your email or phone number.' }}</p> }
+            <div class="create-account-field" [class.field-invalid]="(submitted && !password) || !!passwordError">
+              <div class="create-account-field-copy">
+                <label for="signup-password">Password</label>
+                <input id="signup-password" name="password" [type]="showPassword ? 'text' : 'password'" autocomplete="new-password" [(ngModel)]="password" placeholder="Create a password" required [attr.aria-invalid]="(submitted && !password) || passwordError ? 'true' : null" aria-describedby="signup-password-error" (blur)="submitted = true" />
+              </div>
+              <button type="button" class="create-account-field-toggle" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'" [attr.aria-pressed]="showPassword" (click)="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
+            </div>
+            @if (submitted && !password || passwordError) { <p id="signup-password-error" class="create-account-error" aria-live="polite">{{ passwordError || 'Enter a password.' }}</p> }
+            @if (password) {
+              <div class="password-strength" role="meter" aria-label="Password strength" [attr.aria-valuemin]="0" [attr.aria-valuemax]="3" [attr.aria-valuenow]="passwordStrength">
+                <span [class.is-filled]="passwordStrength >= 1"></span><span [class.is-filled]="passwordStrength >= 2"></span><span [class.is-filled]="passwordStrength >= 3"></span>
+                <small>{{ passwordStrengthLabel }}</small>
+              </div>
+            }
+            <div class="create-account-field" [class.field-invalid]="(submitted && !confirmPassword) || !!confirmPasswordError">
+              <div class="create-account-field-copy">
+                <label for="signup-confirm-password">Confirm password</label>
+                <input id="signup-confirm-password" name="confirmPassword" [type]="showPassword ? 'text' : 'password'" autocomplete="new-password" [(ngModel)]="confirmPassword" placeholder="Confirm your password" required [attr.aria-invalid]="(submitted && !confirmPassword) || confirmPasswordError ? 'true' : null" aria-describedby="signup-confirm-password-error" (blur)="submitted = true" />
+              </div>
+            </div>
+            @if (submitted && !confirmPassword || confirmPasswordError) { <p id="signup-confirm-password-error" class="create-account-error" aria-live="polite">{{ confirmPasswordError || 'Confirm your password.' }}</p> }
+          </div>
+        } @else {
+          <div class="create-account-fields">
+              <div class="create-account-field" [class.field-invalid]="submitted && !firstName.trim()">
+              <div class="create-account-field-copy">
+                <label for="signup-first-name">First name</label>
+                <input id="signup-first-name" name="firstName" type="text" autocomplete="given-name" [(ngModel)]="firstName" placeholder="Enter your first name" required (blur)="submitted = true" />
+              </div>
+            </div>
+            <div class="create-account-field" [class.field-invalid]="submitted && !lastName.trim()">
+              <div class="create-account-field-copy">
+                <label for="signup-last-name">Last name</label>
+                <input id="signup-last-name" name="lastName" type="text" autocomplete="family-name" [(ngModel)]="lastName" placeholder="Enter your last name" required (blur)="submitted = true" />
+              </div>
+            </div>
+          </div>
+        }
 
-    <label class="create-account-field" [class.field-invalid]="submitted && !username.trim()">
-      <span>Username</span>
-      <input type="text" autocomplete="off" [(ngModel)]="username" placeholder="Choose a username" required />
-    </label>
+        @if (submitted && step === 1 && (!username.trim() || !emailOrNumber.trim() || !password.trim())) {
+          <p class="create-account-error" role="alert">Complete all account fields to continue.</p>
+        }
+        @if (accountError) { <p class="create-account-error" role="alert">{{ accountError }}</p> }
+        @if (submitted && step === 2 && (!firstName.trim() || !lastName.trim())) {
+          <p class="create-account-error" role="alert">Enter your first and last name to continue.</p>
+        }
 
-    <label class="create-account-field" [class.field-invalid]="submitted && !emailOrNumber.trim()">
-      <span>Email or number</span>
-      <input type="text" autocomplete="off" [(ngModel)]="emailOrNumber" placeholder="Enter your email or number" required />
-    </label>
-
-    <label class="create-account-field" [class.field-invalid]="submitted && !password.trim()">
-      <span>Password</span>
-      <input type="password" autocomplete="new-password" [(ngModel)]="password" placeholder="Create a password" required />
-    </label>
-
-    @if (submitted && (!firstName.trim() || !lastName.trim() || !username.trim() || !emailOrNumber.trim() || !password.trim())) {
-      <p class="create-account-error">Please fill in all fields to continue.</p>
-    }
-    @if (accountError) { <p class="create-account-error">{{ accountError }}</p> }
-
-      <ion-button expand="block" shape="round" class="create-account-button" (click)="createAccount()">
-        Create account
-      </ion-button>
+        <div class="signup-actions">
+          <ion-button type="button" class="signup-step-button" [disabled]="isSubmitting" (click)="goBackStep()">Back</ion-button>
+          @if (step === 1) {
+            <ion-button type="button" class="create-account-button" [disabled]="isSubmitting" (click)="nextStep()">Next</ion-button>
+          } @else {
+            <ion-button type="submit" class="create-account-button" [disabled]="!isDetailsStepValid || isSubmitting">
+              <span class="create-account-button-content">@if (isSubmitting) { <span class="auth-spinner" aria-hidden="true"></span> } Create account</span>
+            </ion-button>
+          }
+        </div>
       }
-    </div>
 
-    @if (!created) { <p class="create-account-footer">
-      Already have an account?
-      <a (click)="goToLogin()">Log in</a>
-    </p> }
+      @if (!created) {
+        <p class="create-account-footer">Already have an account? <button type="button" (click)="goToLogin()">Sign in</button></p>
+      }
+      </form>
+    </section>
   </div>
 </ion-content>

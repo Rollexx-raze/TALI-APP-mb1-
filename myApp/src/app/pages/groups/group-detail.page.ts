@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -24,7 +24,7 @@ interface PendingMediaUpload {
   styleUrls: ['./groups.page.scss'],
   imports: [CommonModule, FormsModule, RouterLink, IonAvatar, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonProgressBar, IonSpinner, IonTextarea, IonTitle, IonToolbar, PostCardComponent],
 })
-export class GroupDetailPage implements OnInit, OnDestroy {
+export class GroupDetailPage implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly groupService = inject(GroupService);
@@ -45,16 +45,6 @@ export class GroupDetailPage implements OnInit, OnDestroy {
 
   constructor() {
     addIcons({ closeOutline, ellipsisVertical, imageOutline, linkOutline, personCircleOutline, playOutline, videocamOutline });
-  }
-
-  ngOnInit() {
-    const group = this.group;
-    const userId = this.accountService.selectedAccount()?.id;
-    console.log('Group membership check', {
-      groupId: group?.id,
-      userId,
-      member: !!group && userId !== undefined && group.memberIds.includes(userId),
-    });
   }
 
   ngOnDestroy() {
@@ -138,7 +128,6 @@ export class GroupDetailPage implements OnInit, OnDestroy {
     const updated = group.privacy === 'private'
       ? this.groupService.requestToJoin(group.id, userId)
       : this.groupService.joinGroup(group.id, userId);
-    console.log('Group membership check', { groupId: group.id, userId, member: group.memberIds.includes(userId), updated });
     if (!updated) {
       await this.showToast('Could not update group membership. Please try again.', 'danger');
       return;
@@ -193,8 +182,7 @@ export class GroupDetailPage implements OnInit, OnDestroy {
       this.postAttachments = [...this.postAttachments, ...attachments];
       this.mediaError = errors.join(' ');
       if (this.mediaError) await this.showToast(this.mediaError, 'danger');
-    } catch (error) {
-      console.error('Could not upload group post attachments.', error);
+    } catch {
       this.mediaError = 'Could not upload attachments. Please try again.';
       await this.showToast(this.mediaError, 'danger');
     } finally {
@@ -248,7 +236,7 @@ export class GroupDetailPage implements OnInit, OnDestroy {
     if (this.mediaUploading || !group || !account || (!body && !this.postAttachments.length) || !this.canPost) return;
 
     try {
-      const post = this.postService.addGroupPost({
+      this.postService.addGroupPost({
         authorId: account.id,
         groupId: group.id,
         authorName: account.name,
@@ -258,12 +246,10 @@ export class GroupDetailPage implements OnInit, OnDestroy {
         audience: 'public',
         audienceAccountIds: [],
       }, account, this.accountService.accounts());
-      console.log('Group post saved', { groupId: group.id, postId: post.id });
       this.postDraft = '';
       this.postAttachments = [];
       this.postError = '';
-    } catch (error) {
-      console.error('Could not save group post.', error);
+    } catch {
       this.postError = 'Could not save your post. Please try again.';
       await this.showToast(this.postError, 'danger');
     }
@@ -381,8 +367,7 @@ export class GroupDetailPage implements OnInit, OnDestroy {
       if (userId === undefined || !this.groupService.deleteGroup(group.id, userId)) throw new Error('Group is no longer available.');
       await this.router.navigateByUrl('/groups');
       await this.showToast('Group deleted');
-    } catch (error) {
-      console.error('Could not delete group.', error);
+    } catch {
       await this.showToast('Could not delete group. Please try again.', 'danger');
     }
   }

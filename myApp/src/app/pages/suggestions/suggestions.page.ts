@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonAvatar, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar, ToastController } from '@ionic/angular';
+import { IonAvatar, IonButton, IonContent, IonHeader, IonIcon, IonToolbar, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addCircle, atOutline, chatbubbleOutline, heartOutline, homeOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, repeatOutline, shareOutline, trendingUpOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
@@ -16,7 +16,7 @@ import { GroupService } from '../../services/group.service';
   standalone: true,
   templateUrl: './suggestions.page.html',
   styleUrls: ['./suggestions.page.scss'],
-  imports: [CommonModule, RouterLink, IonAvatar, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonToolbar],
+  imports: [CommonModule, RouterLink, IonAvatar, IonButton, IonContent, IonHeader, IonIcon, IonToolbar],
 })
 export class SuggestionsPage {
   readonly viewState = inject(ViewStateService);
@@ -172,6 +172,11 @@ export class SuggestionsPage {
   markAllNotificationsRead() {
     const accountId = this.accountService.selectedAccount()?.id;
     if (accountId !== undefined) this.notificationService.markAllRead(accountId);
+  }
+
+  clearNotifications() {
+    const accountId = this.accountService.selectedAccount()?.id;
+    if (accountId !== undefined) this.notificationService.clearForAccount(accountId);
   }
 
   toggleFollow(person: Account) {

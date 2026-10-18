@@ -47,7 +47,7 @@
         <h2>{{ currentGroup.name }}</h2>
         <p>{{ currentGroup.privacy === 'private' ? 'Private group' : 'Public group' }} · {{ currentGroup.memberIds.length }} member{{ currentGroup.memberIds.length === 1 ? '' : 's' }}</p>
         @if (!isGroupMember && isJoinRequested) {
-          <ion-button class="group-membership-button" fill="outline" disabled>Requested</ion-button>
+          <span class="group-membership-status" role="status">Requested</span>
         } @else if (!isGroupMember) {
           <ion-button class="group-membership-button" fill="solid" (click)="joinOrRequest()">
             {{ currentGroup.privacy === 'private' ? 'Request to join' : 'Join group' }}

@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonAvatar, IonButton, IonContent, IonFooter, IonIcon, IonToolbar } from '@ionic/angular';
+import { IonAvatar, IonButton, IonContent, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, createOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { Account, AccountService } from '../../services/account.service';
 import { PostService } from '../../services/post.service';
@@ -16,7 +16,7 @@ import { MessageService } from '../../services/message.service';
   standalone: true,
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
-  imports: [CommonModule, RouterLink, IonAvatar, IonButton, IonContent, IonFooter, IonIcon, IonToolbar, PostCardComponent],
+  imports: [CommonModule, RouterLink, IonAvatar, IonButton, IonContent, IonIcon, PostCardComponent],
 })
 export class ProfilePage {
   readonly accountService = inject(AccountService);
@@ -39,7 +39,7 @@ export class ProfilePage {
   }
 
   constructor() {
-    addIcons({ addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, createOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline });
+    addIcons({ addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline });
     const saved = this.viewState.read<Partial<{ activeSection: 'posts' | 'photos' | 'videos' | 'reposts' | 'archive' | 'trash'; connectionsView: 'followers' | 'following' | null }>>(this.profileStateKey, {});
     if (saved.activeSection && saved.activeSection !== 'archive' && saved.activeSection !== 'trash' && saved.activeSection !== 'photos') this.activeSection = saved.activeSection;
     this.connectionsView = saved.connectionsView ?? null;

@@ -51,8 +51,7 @@ export class CreateGroupPage {
     try {
       this.photo = await this.readPhoto(file);
       this.photoError = '';
-    } catch (error) {
-      console.error('Could not read the selected group photo.', error);
+    } catch {
       this.photoError = 'The group photo could not be loaded. Please try another image.';
     }
   }
@@ -70,11 +69,9 @@ export class CreateGroupPage {
     this.saving = true;
     try {
       const group = await this.groupService.createGroup(this.name, this.description, this.photo, account);
-      console.log('Redirecting to created group', { groupId: group.id });
       await this.showToast('Group created');
       await this.router.navigate(['/groups', group.id], { replaceUrl: true });
-    } catch (error) {
-      console.error('Could not create group.', error);
+    } catch {
       await this.showToast('Could not save group. Please try again.', 'danger');
     } finally {
       this.saving = false;

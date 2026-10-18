@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, effect, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonToolbar, IonButton, IonIcon, IonAvatar, IonFooter, ToastController } from '@ionic/angular';
+import { IonContent, IonHeader, IonToolbar, IonButton, IonIcon, IonAvatar, ToastController } from '@ionic/angular';
 import { AccountService } from '../../services/account.service';
 import { PostService } from '../../services/post.service';
 import { NotificationService } from '../../services/notification.service';
@@ -16,7 +16,7 @@ import { GroupService } from '../../services/group.service';
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
-  imports: [IonContent, IonHeader, IonToolbar, IonButton, IonIcon, IonAvatar, IonFooter, CommonModule, FormsModule, RouterLink, PostCardComponent]
+  imports: [IonContent, IonHeader, IonToolbar, IonButton, IonIcon, IonAvatar, CommonModule, FormsModule, RouterLink, PostCardComponent]
 })
 export class HomePage implements AfterViewInit {
   @ViewChild(IonContent) private content?: IonContent;
@@ -82,20 +82,14 @@ export class HomePage implements AfterViewInit {
       const error = this.postService.loadError();
       if (error) void this.showToast(error);
     });
-    effect(() => {
-      const viewerId = this.accountService.selectedAccount()?.id;
-      const posts = this.feedPosts;
-      console.log('Home feed query', {
-        viewerId,
-        loadedPostCount: this.postService.posts().length,
-        visiblePostCount: posts.length,
-        groupCount: this.groupService.groups().length,
-      });
-    });
   }
 
   setFeed(feed: 'for-you' | 'following') {
     this.activeFeed = feed;
+  }
+
+  retryLoadingPosts() {
+    if (typeof window !== 'undefined') window.location.reload();
   }
 
   ngAfterViewInit() {

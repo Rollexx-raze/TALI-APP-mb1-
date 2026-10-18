@@ -1,39 +1,31 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { AnimationBuilder, createAnimation, IonApp, IonRouterOutlet } from '@ionic/angular';
+import { IonApp, IonRouterOutlet } from '@ionic/angular';
+import { BottomNavComponent } from './components/bottom-nav/bottom-nav.component';
+import { AppearanceService } from './services/appearance.service';
 
 @Component({
 	selector: 'app-root',
 	standalone: true,
 	templateUrl: './app.component.html',
-	imports: [IonApp, IonRouterOutlet],
+	imports: [IonApp, IonRouterOutlet, BottomNavComponent],
 })
 export class AppComponent {
 	private readonly router = inject(Router);
-	readonly pageTransition: AnimationBuilder = (baseEl, options) =>
-		createAnimation()
-			.addElement(options?.enteringEl ?? baseEl)
-			.fromTo('opacity', '0', '1')
-			.fromTo('transform', 'translateY(4px)', 'translateY(0)')
-			.duration(180)
-			.easing('cubic-bezier(0.2, 0.8, 0.2, 1)');
+	private readonly appearance = inject(AppearanceService);
+	readonly showBottomNav = signal(true);
 
 	constructor() {
-		if (typeof document === 'undefined' || typeof localStorage === 'undefined') return;
-
-		const savedDarkMode = localStorage.getItem('tali-setting-darkMode') ?? localStorage.getItem('tali-dark-mode');
-		document.documentElement.classList.toggle('app-light', savedDarkMode === 'false');
-
-		const updateWebShell = (url: string) => {
-			const path = url.split(/[?#]/, 1)[0];
-			const isSignedInPage = ['/home', '/search', '/messages', '/add-post', '/activity', '/suggestions', '/profile', '/settings']
-				.some((route) => path === route || path.startsWith(`${route}/`));
-			document.documentElement.classList.toggle('app-web-shell', isSignedInPage);
+		void this.appearance;
+		const updateRouteState = (url = this.router.url) => {
+			if (typeof document !== 'undefined') document.documentElement.classList.add('app-web-shell');
+			const path = url.split(/[?#]/, 1)[0].replace(/\/$/, '') || '/';
+			this.showBottomNav.set(!['/login', '/create-account', '/select-account', '/more-accounts'].includes(path));
 		};
-
-		updateWebShell(this.router.url);
+		updateRouteState();
 		this.router.events.subscribe((event) => {
-			if (event instanceof NavigationEnd) updateWebShell(event.urlAfterRedirects);
+			if (event instanceof NavigationEnd) updateRouteState(event.urlAfterRedirects);
 		});
 	}
+
 }

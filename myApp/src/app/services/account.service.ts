@@ -112,7 +112,7 @@ export class AccountService {
     const normalizedContact = contact.trim().toLowerCase();
     const normalizedUsername = `@${username.trim().replace(/^@+/, '').toLowerCase()}`;
     if (this.accounts().some((account) =>
-      account.contact.toLowerCase() === normalizedContact || account.username.toLowerCase() === normalizedUsername,
+      contactsMatch(account.contact, normalizedContact) || account.username.toLowerCase() === normalizedUsername,
     )) return null;
 
     const account: Account = {
@@ -303,9 +303,12 @@ export class AccountService {
 
   authenticate(identifier: string, password: string) {
     const normalizedIdentifier = identifier.trim().toLowerCase();
+    const normalizedDigits = normalizedIdentifier.replace(/\D/g, '');
+    const isPhoneIdentifier = !normalizedIdentifier.includes('@');
     return this.accounts().find(
       (account) =>
-        account.contact.toLowerCase() === normalizedIdentifier &&
+        (account.contact.trim().toLowerCase() === normalizedIdentifier ||
+          (isPhoneIdentifier && !!normalizedDigits && !account.contact.includes('@') && account.contact.replace(/\D/g, '') === normalizedDigits)) &&
         account.password === password,
     ) ?? null;
   }
@@ -397,4 +400,12 @@ function isStoredAccount(value: unknown): value is Account {
     Array.isArray(account.followersIds) && account.followersIds.every(Number.isSafeInteger) &&
     Array.isArray(account.followingIds) && account.followingIds.every(Number.isSafeInteger) &&
     (account.closeFriendsIds === undefined || Array.isArray(account.closeFriendsIds) && account.closeFriendsIds.every(Number.isSafeInteger));
+}
+
+function contactsMatch(first: string, second: string) {
+  const firstNormalized = first.trim().toLowerCase();
+  const secondNormalized = second.trim().toLowerCase();
+  if (firstNormalized === secondNormalized) return true;
+  if (firstNormalized.includes('@') || secondNormalized.includes('@')) return false;
+  return firstNormalized.replace(/\D/g, '') === secondNormalized.replace(/\D/g, '');
 }

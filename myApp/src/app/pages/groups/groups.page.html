@@ -32,7 +32,7 @@
       @if (groupService.loading()) {
         <p class="groups-state" role="status">Loading groups...</p>
       } @else if (groupService.loadError()) {
-        <p class="groups-state" role="alert">{{ groupService.loadError() }}</p>
+        <div class="groups-state" role="alert"><p>{{ groupService.loadError() }}</p><ion-button fill="outline" (click)="retryLoadingGroups()">Retry</ion-button></div>
       } @else if (!accountService.selectedAccount()) {
         <p class="groups-state" role="status">Select an account to browse groups.</p>
       } @else {
@@ -56,9 +56,9 @@
               </ion-button>
             }
             @if (isGroupMember(group)) {
-              <ion-button class="group-membership-button" fill="outline" disabled>Joined</ion-button>
+              <span class="group-membership-status" role="status">Joined</span>
             } @else if (isJoinRequested(group)) {
-              <ion-button class="group-membership-button" fill="outline" disabled>Requested</ion-button>
+              <span class="group-membership-status" role="status">Requested</span>
             } @else {
               <ion-button class="group-membership-button" fill="outline" (click)="handleGroupAction(group)">
                 {{ group.privacy === 'private' ? 'Request' : 'Join' }}

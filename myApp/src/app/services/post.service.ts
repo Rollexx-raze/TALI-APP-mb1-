@@ -64,7 +64,6 @@ export class PostService {
     let browserLoadError: unknown;
     void loadBrowserData(postsStorageKey, posts, isStoredPostList, (error) => {
       browserLoadError = error;
-      console.error('Could not load saved posts from browser storage.', error);
     }).then((savedRecords) => {
       const indexedPosts = savedRecords.filter(isStoredPost).map(restorePostDates);
       // Merge the synchronous backup with IndexedDB so a partial/failed
@@ -81,7 +80,6 @@ export class PostService {
       if (this.changedBeforeHydration || this.posts().length !== mergedPosts.length) this.persistPosts();
       this.scheduleTrashCleanup();
     }, (error: unknown) => {
-      console.error('Could not load saved posts.', error);
       this.loading.set(false);
       this.loadError.set('Posts could not be loaded. Check your browser storage and try again.');
     });
@@ -318,13 +316,11 @@ export class PostService {
       const stored = JSON.parse(localStorage.getItem(postsStorageKey) ?? '[]') as unknown;
       if (!Array.isArray(stored)) {
         this.localLoadError = new Error('Saved post data in local storage is not a list.');
-        console.error('Could not read saved posts from local storage.', this.localLoadError);
         return [];
       }
       return this.removeExpiredTrash(stored.filter(isStoredPost).map(restorePostDates));
     } catch (error) {
       this.localLoadError = error;
-      console.error('Could not read saved posts from local storage.', error);
       return [];
     }
   }
@@ -340,8 +336,7 @@ export class PostService {
     if (typeof localStorage !== 'undefined') {
       try {
         localStorage.setItem(postsStorageKey, JSON.stringify(snapshot));
-      } catch (error) {
-        console.error('Could not save posts to local storage.', error);
+      } catch {
         return false;
       }
     }

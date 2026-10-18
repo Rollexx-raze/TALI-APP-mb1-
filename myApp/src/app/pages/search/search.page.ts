@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { IonAvatar, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonSearchbar, IonToolbar } from '@ionic/angular';
+import { IonAvatar, IonContent, IonHeader, IonIcon, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addCircle, chatbubbleOutline, homeOutline, notificationsOutline, peopleOutline, personCircleOutline, searchOutline, trendingUpOutline } from 'ionicons/icons';
 import { AccountService } from '../../services/account.service';
@@ -14,7 +14,7 @@ import { ViewStateService } from '../../services/view-state.service';
   standalone: true,
   templateUrl: './search.page.html',
   styleUrls: ['./search.page.scss'],
-  imports: [FormsModule, RouterLink, IonAvatar, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonSearchbar, IonToolbar],
+  imports: [FormsModule, RouterLink, IonAvatar, IonContent, IonHeader, IonIcon, IonSearchbar, IonToolbar],
 })
 export class SearchPage {
   private readonly stateKey = 'tali-view-search';

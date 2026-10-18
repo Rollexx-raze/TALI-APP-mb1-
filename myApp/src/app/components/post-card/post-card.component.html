@@ -1,24 +1,26 @@
 <article class="post-layout" [attr.id]="'post-' + post.id">
-  <a class="post-avatar-link" [routerLink]="post.authorId === null ? null : ['/profile', post.authorId]" [attr.aria-label]="'View ' + post.authorName + ' profile'">
-    <div class="post-avatar">
-      @if (authorImage; as profileImage) {
-        <img [src]="profileImage" alt="" />
-      } @else {
-        <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
-      }
-    </div>
+  @if (post.authorId !== null) {
+  <a class="post-avatar-link" [routerLink]="['/profile', post.authorId]" [attr.aria-label]="'View ' + post.authorName + ' profile'">
+    <ng-container *ngTemplateOutlet="postAvatar"></ng-container>
   </a>
-  <div class="post-card">
+  } @else {
+    <div class="post-avatar-link" aria-hidden="true"><ng-container *ngTemplateOutlet="postAvatar"></ng-container></div>
+  }
+  <ng-template #postAvatar><div class="post-avatar">
+    @if (authorImage; as profileImage) { <img [src]="profileImage" alt="" /> }
+    @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
+  </div></ng-template>
+  <div class="post-card" data-surface="surface">
     <div class="post-topline">
-      <a class="post-profile-link" [routerLink]="post.authorId === null ? null : ['/profile', post.authorId]">
-      <div class="post-user-details">
-        <div class="identity-row">
-          <strong>{{ post.authorName }}</strong>
-          <span class="post-time" [attr.title]="post.createdAt | date:'medium'">{{ timeAgo }}</span>
-        </div>
+      @if (post.authorId !== null) {
+        <a class="post-profile-link" [routerLink]="['/profile', post.authorId]"><ng-container *ngTemplateOutlet="postIdentity"></ng-container></a>
+      } @else {
+        <div class="post-profile-link"><ng-container *ngTemplateOutlet="postIdentity"></ng-container></div>
+      }
+      <ng-template #postIdentity><div class="post-user-details">
+        <div class="identity-row"><strong>{{ post.authorName }}</strong><span class="post-time" [attr.title]="post.createdAt | date:'medium'">{{ timeAgo }}</span></div>
         <span class="post-handle">{{ post.authorUsername }}</span>
-      </div>
-    </a>
+      </div></ng-template>
     <button class="post-more" type="button" aria-label="More post options" [attr.aria-expanded]="showMoreOptions" (click)="showMoreOptions = !showMoreOptions">
       <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
     </button>
@@ -71,6 +73,8 @@
             <video class="post-media" controls playsinline [muted]="autoplayVideos" [autoplay]="autoplayVideos" [attr.preload]="dataSaver ? 'none' : 'metadata'" [attr.aria-label]="attachment.name">
               <source [src]="attachment.dataUrl" [type]="attachment.type" />
             </video>
+          } @else if (attachment.type.startsWith('audio/')) {
+            <audio class="post-media" controls preload="metadata" [attr.aria-label]="attachment.name"><source [src]="attachment.dataUrl" [type]="attachment.type" /></audio>
           } @else {
             <a class="post-file" [href]="attachment.dataUrl" [download]="attachment.name">
               <ion-icon name="document-outline" aria-hidden="true"></ion-icon>

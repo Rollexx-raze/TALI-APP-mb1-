@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
-import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonTextarea, IonToolbar } from '@ionic/angular';
+import { IonContent, IonHeader, IonIcon, IonTextarea, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, micOutline, notificationsOutline, personCircleOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, micOutline, notificationsOutline, personCircleOutline, stopCircleOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
 import { AccountService } from '../../services/account.service';
 import { PostAttachment, PostAudience, PostService } from '../../services/post.service';
 import { MediaAttachmentService } from '../../services/media-attachment.service';
@@ -34,9 +34,9 @@ function isPostDraft(value: unknown): value is PostDraft {
   standalone: true,
   templateUrl: './add-post.page.html',
   styleUrls: ['./add-post.page.scss'],
-  imports: [FormsModule, RouterLink, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonTextarea, IonToolbar],
+  imports: [FormsModule, RouterLink, IonContent, IonHeader, IonIcon, IonTextarea, IonToolbar],
 })
-export class AddPostPage {
+export class AddPostPage implements OnDestroy {
   readonly accountService = inject(AccountService);
   private readonly postService = inject(PostService);
   private readonly mediaAttachmentService = inject(MediaAttachmentService);
@@ -44,6 +44,8 @@ export class AddPostPage {
   readonly viewState = inject(ViewStateService);
   message = '';
   publishError = '';
+  isPublishing = false;
+  isRecordingVoice = false;
   pendingAttachments: PostAttachment[] = [];
   mediaError = '';
   mediaUploading = false;
@@ -55,6 +57,9 @@ export class AddPostPage {
   private draftReady = false;
   private draftEdited = false;
   private draftSaveQueue: Promise<void> = Promise.resolve();
+  private voiceRecorder: MediaRecorder | null = null;
+  private voiceStream: MediaStream | null = null;
+  private discardVoiceRecording = false;
   readonly audienceOptions: { value: PostAudience; label: string }[] = [
     { value: 'public', label: 'Public' },
     { value: 'friends', label: 'Friends' },
@@ -65,7 +70,7 @@ export class AddPostPage {
   ];
 
   constructor() {
-    addIcons({ addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, micOutline, notificationsOutline, personCircleOutline, trendingUpOutline, videocamOutline });
+    addIcons({ addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, micOutline, notificationsOutline, personCircleOutline, stopCircleOutline, trendingUpOutline, videocamOutline });
     void loadBrowserData<PostDraft | null>(postDraftKey, null, (value): value is PostDraft | null => value === null || isPostDraft(value)).then((draft) => {
       if (!this.draftEdited && draft) {
         this.message = draft.message;
@@ -142,6 +147,77 @@ export class AddPostPage {
     return typeof localStorage === 'undefined' || localStorage.getItem('tali-setting-mediaPermission') !== 'false';
   }
 
+  async toggleVoiceRecording() {
+    if (this.voiceRecorder?.state === 'recording') {
+      this.voiceRecorder.stop();
+      return;
+    }
+    this.mediaError = '';
+    if (!this.mediaPermissionEnabled) {
+      this.mediaError = 'Allow media attachments in Settings before recording audio.';
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      this.mediaError = 'Voice recording is not supported by this browser.';
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const supportedMime = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find((type) => MediaRecorder.isTypeSupported(type));
+      const recorder = new MediaRecorder(stream, supportedMime ? { mimeType: supportedMime } : undefined);
+      const chunks: BlobPart[] = [];
+      this.discardVoiceRecording = false;
+      this.voiceStream = stream;
+      this.voiceRecorder = recorder;
+      recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
+      recorder.onerror = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        this.voiceStream = null;
+        this.voiceRecorder = null;
+        this.isRecordingVoice = false;
+        this.mediaError = 'The voice recording could not be completed. Please try again.';
+      };
+      recorder.onstop = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        this.voiceStream = null;
+        this.voiceRecorder = null;
+        this.isRecordingVoice = false;
+        if (this.discardVoiceRecording) return;
+        const recording = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        if (!recording.size) {
+          this.mediaError = 'No audio was recorded. Try again.';
+          return;
+        }
+        if (recording.size > 15 * 1024 * 1024) {
+          this.mediaError = 'The voice recording is larger than 15 MB.';
+          return;
+        }
+        const extension = recording.type.includes('mp4') ? 'm4a' : 'webm';
+        const file = new File([recording], `Voice note.${extension}`, { type: recording.type });
+        this.mediaUploading = true;
+        void this.mediaAttachmentService.readAttachments([file], (progress) => { this.mediaUploadProgress = progress; })
+          .then(({ attachments, errors }) => {
+            this.pendingAttachments = [...this.pendingAttachments, ...attachments];
+            this.mediaError = errors.join(' ');
+            this.persistDraft();
+          })
+          .catch(() => { this.mediaError = 'The voice recording could not be added. Please try again.'; })
+          .finally(() => { this.mediaUploading = false; this.mediaUploadProgress = 0; });
+      };
+      recorder.start(250);
+      this.isRecordingVoice = true;
+    } catch {
+      this.mediaError = 'Microphone access was not granted.';
+    }
+  }
+
+  ngOnDestroy() {
+    this.discardVoiceRecording = true;
+    if (this.voiceRecorder?.state !== 'inactive') this.voiceRecorder?.stop();
+    this.voiceStream?.getTracks().forEach((track) => track.stop());
+  }
+
   async onFilesSelected(event: Event) {
     if (!this.mediaPermissionEnabled) return;
     const input = event.target as HTMLInputElement;
@@ -160,8 +236,7 @@ export class AddPostPage {
       this.pendingAttachments = [...this.pendingAttachments, ...attachments];
       this.persistDraft();
       this.mediaError = errors.join(' ');
-    } catch (error) {
-      console.error('Could not add post attachments.', error);
+    } catch {
       this.mediaError = 'Attachments could not be uploaded. Please try again.';
     } finally {
       this.mediaUploading = false;
@@ -175,8 +250,8 @@ export class AddPostPage {
     this.persistDraft();
   }
 
-  publish() {
-    if (this.mediaUploading) return;
+  async publish() {
+    if (this.mediaUploading || this.isPublishing || this.isRecordingVoice || !this.canPublish) return;
     const account = this.accountService.selectedAccount();
     if (!account) {
       this.publishError = 'Select an account before publishing.';
@@ -192,23 +267,30 @@ export class AddPostPage {
     }
 
     this.publishError = '';
-    this.postService.addPost({
-      authorId: account.id,
-      authorName: account.name,
-      authorUsername: account.username,
-      body: this.message.trim(),
-      attachments: [...this.pendingAttachments],
-      audience: this.audience,
-      audienceAccountIds: [...this.audienceAccountIds],
-    }, account, this.accountService.accounts());
-    this.clearDraft();
-    this.message = '';
-    this.pendingAttachments = [];
-    this.audience = 'public';
-    this.audienceAccountIds = [];
-    this.showAudienceMenu = false;
-    this.showAudiencePicker = false;
-    void this.router.navigateByUrl('/home');
+    this.isPublishing = true;
+    try {
+      this.postService.addPost({
+        authorId: account.id,
+        authorName: account.name,
+        authorUsername: account.username,
+        body: this.message.trim(),
+        attachments: [...this.pendingAttachments],
+        audience: this.audience,
+        audienceAccountIds: [...this.audienceAccountIds],
+      }, account, this.accountService.accounts());
+      this.clearDraft();
+      this.message = '';
+      this.pendingAttachments = [];
+      this.audience = 'public';
+      this.audienceAccountIds = [];
+      this.showAudienceMenu = false;
+      this.showAudiencePicker = false;
+      await this.router.navigateByUrl('/home');
+    } catch {
+      this.publishError = 'Your post could not be saved. Please retry.';
+    } finally {
+      this.isPublishing = false;
+    }
   }
 
 }

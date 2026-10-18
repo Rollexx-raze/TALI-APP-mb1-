@@ -1,6 +1,8 @@
 const databaseName = 'tali-local-data';
 const databaseVersion = 1;
 const objectStoreName = 'records';
+const databaseRequestTimeoutMs = 3000;
+const recordRequestTimeoutMs = 3000;
 
 interface StoredRecord<T> {
   key: string;
@@ -24,7 +26,6 @@ export async function loadBrowserData<T>(
       if (record !== undefined && isValid(record)) return record;
       if (record !== undefined) loadError = new Error(`Saved ${key} data has an invalid shape.`);
     } catch (error) {
-      console.error(`Could not read saved ${key} from IndexedDB.`, error);
       loadError = error;
     }
   } else if (typeof indexedDB !== 'undefined') {
@@ -43,7 +44,6 @@ export async function loadBrowserData<T>(
       loadError = new Error(`Saved ${key} data in local storage has an invalid shape.`);
     }
   } catch (error) {
-    console.error(`Could not migrate saved ${key}.`, error);
     loadError = error;
   }
 
@@ -58,15 +58,13 @@ export async function saveBrowserData<T>(key: string, value: T): Promise<void> {
 export async function saveBrowserDataResult<T>(key: string, value: T): Promise<boolean> {
   const database = await openDatabase();
   if (!database) {
-    console.error(`IndexedDB is unavailable; ${key} could not be saved.`);
     return false;
   }
 
   try {
     await writeRecord(database, key, value);
     return true;
-  } catch (error) {
-    console.error(`Could not save ${key} to IndexedDB.`, error);
+  } catch {
     return false;
   }
 }
@@ -89,6 +87,14 @@ function openDatabase(): Promise<IDBDatabase | null> {
 
   databasePromise = new Promise((resolve) => {
     const request = indexedDB.open(databaseName, databaseVersion);
+    let settled = false;
+    const finish = (database: IDBDatabase | null) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      resolve(database);
+    };
+    const timeout = window.setTimeout(() => finish(null), databaseRequestTimeoutMs);
     request.onupgradeneeded = () => {
       const database = request.result;
       if (!database.objectStoreNames.contains(objectStoreName)) {
@@ -101,16 +107,10 @@ function openDatabase(): Promise<IDBDatabase | null> {
       if (typeof navigator !== 'undefined' && navigator.storage?.persist) {
         void navigator.storage.persist().catch(() => undefined);
       }
-      resolve(database);
+      finish(database);
     };
-    request.onerror = () => {
-      console.error('Could not open the local app database.', request.error);
-      resolve(null);
-    };
-    request.onblocked = () => {
-      console.error('The local app database is blocked by another open version.');
-      resolve(null);
-    };
+    request.onerror = () => finish(null);
+    request.onblocked = () => finish(null);
   });
 
   return databasePromise;
@@ -118,10 +118,29 @@ function openDatabase(): Promise<IDBDatabase | null> {
 
 function readRecord<T>(database: IDBDatabase, key: string): Promise<T | undefined> {
   return new Promise((resolve, reject) => {
+    let settled = false;
+    const finish = (value: T | undefined) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      resolve(value);
+    };
+    const timeout = window.setTimeout(() => finish(undefined), recordRequestTimeoutMs);
     const transaction = database.transaction(objectStoreName, 'readonly');
     const request = transaction.objectStore(objectStoreName).get(key) as IDBRequest<StoredRecord<T> | undefined>;
-    request.onsuccess = () => resolve(request.result?.value);
-    request.onerror = () => reject(request.error);
+    request.onsuccess = () => finish(request.result?.value);
+    request.onerror = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      reject(request.error);
+    };
+    transaction.onabort = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      reject(transaction.error);
+    };
   });
 }
 

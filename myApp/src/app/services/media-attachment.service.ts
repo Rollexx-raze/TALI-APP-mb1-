@@ -43,8 +43,7 @@ export class MediaAttachmentService {
             onProgress(totalBytes ? Math.round(completedBytes / totalBytes * 100) : 100);
             continue;
           }
-        } catch (error) {
-          console.error('Could not validate video duration.', error);
+        } catch {
           errors.push(`${file.name} could not be validated. Please choose another video.`);
           onFileProgress(fileIndex, 100);
           completedBytes += file.size;
@@ -60,8 +59,7 @@ export class MediaAttachmentService {
         }));
         onFileProgress(fileIndex, 100);
         if (file.type.startsWith('video/')) acceptedVideo = true;
-      } catch (error) {
-        console.error(`Could not read attachment ${file.name}.`, error);
+      } catch {
         errors.push(`${file.name} could not be added. Please try again.`);
         onFileProgress(fileIndex, 100);
       }

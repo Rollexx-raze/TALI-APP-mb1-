@@ -4,7 +4,7 @@
       <section class="profile-hero">
         <div class="profile-floating-header">
           <button type="button" class="profile-circle-btn back-button" (click)="goBack()" aria-label="Back">
-            <img src="assets/chevron-left.png" alt="" aria-hidden="true" />
+            <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
           </button>
           @if (isOwnProfile) {
             <button type="button" class="profile-circle-btn settings-button" routerLink="/settings" aria-label="Settings">
@@ -63,10 +63,11 @@
         </div>
       </section>
       <div class="profile-content-panel">
+      <h2 class="profile-section-heading">Posts and activity</h2>
       <nav class="profile-sections" aria-label="Profile content">
-      <button type="button" aria-label="Posts" title="Posts" [class.active]="activeSection === 'posts'" [attr.aria-pressed]="activeSection === 'posts'" (click)="setProfileSection('posts')"><img src="assets/app.png" alt="" aria-hidden="true"></button>
-      <button type="button" aria-label="Videos" title="Videos" [class.active]="activeSection === 'videos'" [attr.aria-pressed]="activeSection === 'videos'" (click)="setProfileSection('videos')"><img class="video-tab-icon" src="assets/square-play.png?v=2" alt="" aria-hidden="true"></button>
-      <button type="button" aria-label="Reposts" title="Reposts" [class.active]="activeSection === 'reposts'" [attr.aria-pressed]="activeSection === 'reposts'" (click)="setProfileSection('reposts')"><img src="assets/repeat-2.png" alt="" aria-hidden="true"></button>
+      <button type="button" aria-label="Posts" title="Posts" [class.active]="activeSection === 'posts'" [attr.aria-pressed]="activeSection === 'posts'" (click)="setProfileSection('posts')"><ion-icon name="grid-outline" aria-hidden="true"></ion-icon><span>Posts</span></button>
+      <button type="button" aria-label="Videos" title="Videos" [class.active]="activeSection === 'videos'" [attr.aria-pressed]="activeSection === 'videos'" (click)="setProfileSection('videos')"><ion-icon name="videocam-outline" aria-hidden="true"></ion-icon><span>Videos</span></button>
+      <button type="button" aria-label="Reposts" title="Reposts" [class.active]="activeSection === 'reposts'" [attr.aria-pressed]="activeSection === 'reposts'" (click)="setProfileSection('reposts')"><ion-icon name="repeat-outline" aria-hidden="true"></ion-icon><span>Reposts</span></button>
     </nav>
     @if (activeSection === 'posts') {
       <section class="profile-posts">
@@ -96,7 +97,7 @@
   } @else {
     <div class="profile-floating-header">
       <button type="button" class="profile-circle-btn back-button" (click)="goBack()" aria-label="Back">
-        <img src="assets/chevron-left.png" alt="" aria-hidden="true" />
+        <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
       </button>
     </div>
     <div class="empty-profile profile-unavailable">
@@ -139,15 +140,4 @@
       <div class="edit-actions"><ion-button fill="clear" (click)="setConnectionsView(null)">Close</ion-button></div>
     </section>
   </div>
-}
-@if (isOwnProfile) {
-<ion-footer class="page-footer ion-no-border"><ion-toolbar>
-  <nav class="page-nav profile-nav" aria-label="Main navigation">
-    <ion-button fill="clear" routerLink="/home" (click)="viewState.handleTabTap('/home', 'tali-view-home')" aria-label="Home"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></ion-button>
-    <ion-button fill="clear" routerLink="/messages" (click)="viewState.handleTabTap('/messages', 'tali-view-messages')" aria-label="Messages"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></ion-button>
-    <ion-button fill="clear" class="compose-button" routerLink="/add-post" (click)="viewState.handleTabTap('/add-post', 'tali-post-draft')" aria-label="Create post"><span class="nav-plus-circle"><svg class="nav-plus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></ion-button>
-    <ion-button fill="clear" class="notification-nav-button" routerLink="/activity" (click)="viewState.handleTabTap('/activity', 'tali-view-activity')" aria-label="Activity"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>@if (unreadNotifications) { <span class="notification-badge">{{ unreadNotifications }}</span> }</ion-button>
-    <ion-button fill="solid" class="active-tab" routerLink="/profile" (click)="viewState.handleTabTap('/profile', 'tali-view-profile:current')" aria-label="Profile"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="9" r="3"/><path d="M7 20a5 5 0 0 1 10 0"/></svg></ion-button>
-  </nav>
-</ion-toolbar></ion-footer>
 }

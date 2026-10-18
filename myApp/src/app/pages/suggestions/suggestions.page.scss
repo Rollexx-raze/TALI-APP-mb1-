@@ -1,99 +1,100 @@
 .page-content { --background: var(--page-bg); --color: var(--page-text); }
-.activity-switcher { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 10px 14px; }
-.activity-switcher button { display: flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 0 12px; border: 1px solid color-mix(in srgb, var(--ion-color-primary) 62%, var(--page-border)); border-radius: 12px; background: var(--page-surface); color: var(--page-muted); font: inherit; font-size: .9rem; cursor: pointer; }
-.activity-switcher button.active { border-color: var(--ion-color-primary); background: color-mix(in srgb, var(--ion-color-primary) 15%, var(--page-surface)); color: var(--page-text); font-weight: 600; box-shadow: 0 0 0 1px color-mix(in srgb, var(--ion-color-primary) 22%, transparent); }
+.activity-switcher { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 8px 16px; }
+.activity-switcher button { display: flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 0 8px; border: 1px solid var(--border); border-radius: var(--radius-inner); background: var(--page-surface); color: var(--page-muted); font: inherit; font-size: var(--font-body); cursor: pointer; }
+.activity-switcher button.active { border-color: var(--ion-color-primary); background: var(--surface-2); color: var(--page-text); font-weight: 600; box-shadow: var(--shadow-soft); }
 .activity-switcher button:focus-visible,.mark-read-button:focus-visible,.notification-row:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: -2px; }
-.notification-count { display: inline-grid; min-width: 20px; height: 20px; place-items: center; padding: 0 5px; border-radius: 999px; background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); font-size: .7rem; font-weight: 700; }
-.notification-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px; border-bottom: 1px solid var(--page-border); }
-.notification-heading h2 { margin: 0; color: var(--page-text); font-size: 1rem; }
-.notification-heading p { margin: 5px 0 0; color: var(--page-muted); font-size: .78rem; }
-.mark-read-button { min-height: 36px; padding: 0 11px; border: 1px solid color-mix(in srgb, var(--ion-color-primary) 62%, var(--page-border)); border-radius: 10px; background: var(--page-surface); color: var(--ion-color-primary); font: inherit; font-size: .78rem; cursor: pointer; }
-.notification-row { display: flex; width: calc(100% - 24px); align-items: center; gap: 12px; margin: 8px 12px; padding: 13px 14px; border: 1px solid var(--page-border); border-radius: 12px; background: var(--page-surface); color: var(--page-text); font: inherit; text-align: left; cursor: pointer; }
+.notification-count { display: inline-grid; min-width: 20px; height: 20px; place-items: center; padding: 0 8px; border-radius: 999px; background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); font-size: var(--font-body); font-weight: 700; }
+.notification-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; border-bottom: 1px solid var(--page-border); }
+.notification-heading h2 { margin: 0; color: var(--page-text); font-size: var(--font-body); }
+.notification-heading p { margin: 8px 0 0; color: var(--page-muted); font-size: var(--font-body); }
+.notification-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
+.mark-read-button { min-height: 44px; padding: 0 8px; border: 1px solid var(--border); border-radius: var(--radius-inner); background: var(--page-surface); color: var(--ion-color-primary); font: inherit; font-size: var(--font-body); cursor: pointer; }
+.notification-row { display: flex; width: calc(100% - 24px); align-items: center; gap: 8px; margin: 8px 8px; padding: 16px 16px; border: 1px solid var(--page-border); border-radius: var(--radius-inner); background: var(--page-surface); color: var(--page-text); font: inherit; text-align: left; cursor: pointer; }
 .notification-row:hover, .notification-row:focus-visible { border-color: var(--ion-color-primary); }
-.notification-row.unread { border-color: color-mix(in srgb, var(--ion-color-primary) 68%, var(--page-border)); background: color-mix(in srgb, var(--ion-color-primary) 10%, var(--page-surface)); }
-.notification-avatar { display: grid; width: 42px; height: 42px; flex: 0 0 42px; place-items: center; border: 1px solid var(--page-border); border-radius: 50%; background: var(--page-surface); color: var(--ion-color-primary); font-size: 1.15rem; }
-.notification-copy { display: grid; min-width: 0; flex: 1; gap: 4px; font-size: .83rem; line-height: 1.4; }
+.notification-row.unread { border-color: var(--border); background: var(--surface-2); }
+.notification-avatar { display: grid; width: 42px; height: 42px; flex: 0 0 42px; place-items: center; border: 1px solid var(--page-border); border-radius: 50%; background: var(--page-surface); color: var(--ion-color-primary); font-size: var(--font-subheading); }
+.notification-copy { display: grid; min-width: 0; flex: 1; gap: 8px; font-size: var(--font-body); line-height: 1.4; }
 .notification-copy strong { color: var(--page-text); }
-.notification-preview { overflow: hidden; color: var(--page-muted); font-size: .76rem; text-overflow: ellipsis; white-space: nowrap; }
-.notification-copy time { color: var(--page-muted); font-size: .7rem; }
+.notification-preview { overflow: hidden; color: var(--page-muted); font-size: var(--font-body); text-overflow: ellipsis; white-space: nowrap; }
+.notification-copy time { color: var(--page-muted); font-size: var(--font-body); }
 .unread-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--ion-color-primary); }
 .page-header, .page-footer { --background: var(--page-bg); --border-color: var(--page-border); }
-.page-header ion-toolbar { --background: var(--page-bg); padding: 8px 18px; }
-.page-header h1 { margin: 0; color: var(--page-text); font-size: 1.2rem; font-weight: 650; }
-.suggestion-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 9px 14px; }
-.suggestion-tabs button { min-height: 40px; padding: 0 8px; border: 1px solid color-mix(in srgb, var(--ion-color-primary) 62%, var(--page-border)); border-radius: 11px; background: var(--page-surface); color: var(--page-muted); font: inherit; font-size: .86rem; cursor: pointer; }
-.suggestion-tabs button.active { border-color: var(--ion-color-primary); background: color-mix(in srgb, var(--ion-color-primary) 15%, var(--page-surface)); color: var(--page-text); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ion-color-primary) 22%, transparent); }
+.page-header ion-toolbar { --background: var(--page-bg); padding: 8px 16px; }
+.page-header h1 { margin: 0; color: var(--page-text); font-size: var(--font-subheading); font-weight: 650; }
+.suggestion-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px 16px; }
+.suggestion-tabs button { min-height: 40px; padding: 0 8px; border: 1px solid var(--border); border-radius: var(--radius-inner); background: var(--page-surface); color: var(--page-muted); font: inherit; font-size: var(--font-body); cursor: pointer; }
+.suggestion-tabs button.active { border-color: var(--ion-color-primary); background: var(--surface-2); color: var(--page-text); box-shadow: var(--shadow-soft); }
 .suggestion-tabs button:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: -2px; }
-.intro { padding: 20px 18px 14px; border-bottom: 1px solid var(--page-border); }
-.intro h2 { margin: 6px 0; color: var(--page-text); font-size: 1.05rem; }
-.intro p { margin: 0; color: var(--page-muted); font-size: .82rem; line-height: 1.5; }
-.suggestion-row { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--page-border); }
+.intro { padding: 16px 16px 16px; border-bottom: 1px solid var(--page-border); }
+.intro h2 { margin: 8px 0; color: var(--page-text); font-size: var(--font-body); }
+.intro p { margin: 0; color: var(--page-muted); font-size: var(--font-body); line-height: 1.5; }
+.suggestion-row { display: flex; align-items: center; gap: 8px; padding: 16px 16px; border-bottom: 1px solid var(--page-border); }
 .suggestion-row ion-avatar { display: grid; flex-shrink: 0; width: 48px; height: 48px; place-items: center; border: 1px solid var(--app-avatar-outline); background: var(--app-avatar-fill); color: var(--app-text-muted); }
 .suggestion-row ion-avatar ion-icon { width: 37px; height: 37px; }
-.person-profile-link { display: flex; flex: 1; min-width: 0; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+.person-profile-link { display: flex; flex: 1; min-width: 0; align-items: center; gap: 8px; color: inherit; text-decoration: none; }
 .suggestion-copy { flex: 1; min-width: 0; }
 .suggestion-copy strong, .suggestion-copy span { display: block; }
-.suggestion-copy strong { color: var(--page-text); font-size: .83rem; }
-.suggestion-copy span, .suggestion-copy p { color: var(--page-muted); font-size: .72rem; }
-.suggestion-copy p { margin: 5px 0 0; }
-.suggestion-row ion-button { --color: var(--ion-color-primary); --border-color: color-mix(in srgb, var(--ion-color-primary) 62%, var(--page-border)); --border-width: 1px; --border-style: solid; --border-radius: 10px; font-size: .72rem; }
-.suggestion-row ion-button::part(native) { border: 1px solid color-mix(in srgb, var(--ion-color-primary) 62%, var(--page-border)); border-radius: 10px; }
-.empty-suggestions { margin: 0; padding: 28px 18px; color: var(--page-muted); font-size: .82rem; text-align: center; }
-.groups-intro { display:flex;align-items:center;justify-content:space-between;gap:14px; }
-.groups-intro ion-button { flex:0 0 auto;--background:var(--ion-color-primary);--color:var(--ion-color-primary-contrast);--border-radius:10px;font-size:.76rem; }
+.suggestion-copy strong { color: var(--page-text); font-size: var(--font-body); }
+.suggestion-copy span, .suggestion-copy p { color: var(--page-muted); font-size: var(--font-body); }
+.suggestion-copy p { margin: 8px 0 0; }
+.suggestion-row ion-button { --color: var(--ion-color-primary); --border-color: var(--border); --border-width: 1px; --border-style: solid; --border-radius: var(--radius-inner); font-size: var(--font-body); }
+.suggestion-row ion-button::part(native) { border: 1px solid var(--border); border-radius: var(--radius-inner); }
+.empty-suggestions { margin: 0; padding: 24px 16px; color: var(--page-muted); font-size: var(--font-body); text-align: center; }
+.groups-intro { display:flex;align-items:center;justify-content:space-between;gap: 16px; }
+.groups-intro ion-button { flex:0 0 auto;--background:var(--ion-color-primary);--color:var(--ion-color-primary-contrast);--border-radius: var(--radius-inner);font-size: var(--font-body); }
 .community-heading { border-top:1px solid var(--page-border); }
-.group-chat-row { width:100%;border:0;border-bottom:1px solid var(--page-border);background:transparent;color:var(--page-text);font:inherit;text-align:left;cursor:pointer; }
-.group-chat-row:hover,.group-chat-row:focus-visible { background:color-mix(in srgb,var(--ion-color-primary) 8%,transparent);outline:none; }
-.group-chat-avatar { display:grid;width:48px;height:48px;flex:0 0 48px;place-items:center;border:1px solid var(--page-border);border-radius:15px;background:var(--page-surface);color:var(--ion-color-primary);font-size:1.35rem; }
-.activity-community-group { width:100%; border:0; border-bottom:1px solid var(--page-border); background:transparent; color:var(--page-text); font:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background-color .15s ease, transform .15s ease; }
-.activity-community-group:hover,.activity-community-group:focus-visible { background:color-mix(in srgb,var(--ion-color-primary) 8%,transparent); outline:none; }
+.group-chat-row { width:100%;border:0;border-bottom:1px solid var(--page-border);background: var(--transparent);color:var(--page-text);font:inherit;text-align:left;cursor:pointer; }
+.group-chat-row:hover,.group-chat-row:focus-visible { background: var(--surface-2);outline:none; }
+.group-chat-avatar { display:grid;width:48px;height:48px;flex:0 0 48px;place-items:center;border:1px solid var(--page-border);border-radius: var(--radius-inner);background:var(--page-surface);color:var(--ion-color-primary);font-size: var(--font-subheading); }
+.activity-community-group { width:100%; border:0; border-bottom:1px solid var(--page-border); background: var(--transparent); color:var(--page-text); font:inherit; text-align:left; cursor:pointer; -webkit-tap-highlight-color: var(--transparent); transition:background-color .15s ease, transform .15s ease; }
+.activity-community-group:hover,.activity-community-group:focus-visible { background: var(--surface-2); outline:none; }
 .activity-community-group:active { transform:scale(.99); }
 .activity-community-group .group-chat-avatar { overflow:hidden; }
 .activity-community-group .group-chat-avatar img { width:100%;height:100%;object-fit:cover; }
-.group-chat-count { flex:0 0 auto;color:var(--page-muted);font-size:.7rem; }
-.group-activity-count { display:inline-grid;min-width:19px;height:19px;place-items:center;padding:0 5px;border-radius:999px;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-size:.68rem;font-weight:750;line-height:1; }
-.suggestion-post { display: grid; gap: 5px; padding: 16px 18px; border-bottom: 1px solid var(--page-border); color: var(--page-text); }
-.suggestion-post strong { font-size: .83rem; }
-.suggestion-post span { color: var(--page-muted); font-size: .72rem; }
-.suggestion-post-author { display: grid; gap: 5px; color: inherit; text-decoration: none; }
-.suggestion-post p { margin: 6px 0 0; color: var(--page-text); font-size: .84rem; line-height: 1.45; }
+.group-chat-count { flex:0 0 auto;color:var(--page-muted);font-size: var(--font-body); }
+.group-activity-count { display:inline-grid;min-width:19px;height:19px;place-items:center;padding: 0 8px;border-radius:999px;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-size: var(--font-body);font-weight:750;line-height:1; }
+.suggestion-post { display: grid; gap: 8px; padding: 16px 16px; border-bottom: 1px solid var(--page-border); color: var(--page-text); }
+.suggestion-post strong { font-size: var(--font-body); }
+.suggestion-post span { color: var(--page-muted); font-size: var(--font-body); }
+.suggestion-post-author { display: grid; gap: 8px; color: inherit; text-decoration: none; }
+.suggestion-post p { margin: 8px 0 0; color: var(--page-text); font-size: var(--font-body); line-height: 1.45; }
 .suggestion-post img, .suggestion-post video { display: block; width: 100%; max-height: 360px; margin-top: 8px; object-fit: contain; }
-.suggestion-post a { color: var(--ion-color-primary); font-size: .8rem; }
-.suggestion-unfollow-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(0, 0, 0, .64); backdrop-filter: blur(4px); }
-.suggestion-unfollow-dialog { width: min(100%, 390px); padding: 24px; border: 1px solid var(--page-border); border-radius: 18px; background: var(--page-surface); color: var(--page-text); box-shadow: 0 18px 48px rgba(0, 0, 0, .3); }
-.suggestion-unfollow-dialog h2 { margin: 0 0 8px; color: var(--page-text); font-size: 1.1rem; }
-.suggestion-unfollow-dialog p { margin: 0; color: var(--page-muted); font-size: .9rem; line-height: 1.5; }
-.suggestion-unfollow-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
-.suggestion-unfollow-actions ion-button { margin: 0; --border-radius: 11px; }
+.suggestion-post a { color: var(--ion-color-primary); font-size: var(--font-body); }
+.suggestion-unfollow-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 16px; background: var(--bg);  }
+.suggestion-unfollow-dialog { width: min(100%, 390px); padding: 24px; border: 1px solid var(--page-border); border-radius: var(--radius-inner); background: var(--page-surface); color: var(--page-text); box-shadow: var(--shadow-soft); }
+.suggestion-unfollow-dialog h2 { margin: 0 0 8px; color: var(--page-text); font-size: var(--font-body); }
+.suggestion-unfollow-dialog p { margin: 0; color: var(--page-muted); font-size: var(--font-body); line-height: 1.5; }
+.suggestion-unfollow-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+.suggestion-unfollow-actions ion-button { margin: 0; --border-radius: var(--radius-inner); }
 .suggestion-unfollow-actions .confirm-suggestion-unfollow { --background: var(--ion-color-primary); --color: var(--ion-color-primary-contrast); font-weight: 650; }
-.page-footer ion-toolbar { display: flex; justify-content: space-around; min-height: 70px; padding: 4px 10px; --background: var(--page-bg); }
-.page-footer ion-button { width: 48px; height: 48px; margin: 0; --color: var(--page-muted); font-size: 1.45rem; }
+.page-footer ion-toolbar { display: flex; justify-content: space-around; min-height: 70px; padding: 8px 8px; --background: var(--page-bg); }
+.page-footer ion-button { width: 48px; height: 48px; margin: 0; --color: var(--page-muted); font-size: var(--font-heading); }
 .page-footer .active-tab, .page-footer .compose-button { --color: var(--page-text); }
-.page-footer .compose-button { font-size: 1.9rem; }
+.page-footer .compose-button { font-size: var(--font-display); }
 
 @media (max-width: 560px) {
-	.activity-switcher { gap: 8px; padding: 9px 12px; }
-	.activity-switcher button { min-height: 42px; padding-inline: 8px; font-size: .78rem; }
-	.suggestion-tabs { gap: 7px; padding: 8px 12px; }
-	.suggestion-tabs button { min-height: 38px; padding-inline: 5px; font-size: .76rem; }
-	.notification-heading h2 { font-size: .88rem; }
-	.notification-heading p { font-size: .7rem; }
-	.mark-read-button { min-height: 34px; padding-inline: 8px; font-size: .7rem; text-transform: none; }
-	.notification-row { width: calc(100% - 20px); margin: 7px 10px; padding: 11px 12px; }
-	.notification-avatar { width: 38px; height: 38px; flex-basis: 38px; font-size: 1rem; }
-	.notification-copy { font-size: .74rem; }
-	.notification-preview { font-size: .68rem; }
-	.notification-copy time { font-size: .66rem; }
-	.intro { padding: 16px 14px 10px; }
-	.intro h2 { font-size: .9rem; }
-	.intro p { font-size: .7rem; }
-	.suggestion-row { gap: 9px; padding: 13px 14px; }
+	.activity-switcher { gap: 8px; padding: 8px 8px; }
+	.activity-switcher button { min-height: 42px; padding-inline: 8px; font-size: var(--font-body); }
+	.suggestion-tabs { gap: 8px; padding: 8px 8px; }
+	.suggestion-tabs button { min-height: 38px; padding-inline: 8px; font-size: var(--font-body); }
+	.notification-heading h2 { font-size: var(--font-body); }
+	.notification-heading p { font-size: var(--font-body); }
+	.mark-read-button { min-height: 34px; padding-inline: 8px; font-size: var(--font-body); text-transform: none; }
+	.notification-row { width: calc(100% - 20px); margin: 8px 8px; padding: 8px 8px; }
+	.notification-avatar { width: 38px; height: 38px; flex-basis: 38px; font-size: var(--font-body); }
+	.notification-copy { font-size: var(--font-body); }
+	.notification-preview { font-size: var(--font-body); }
+	.notification-copy time { font-size: var(--font-body); }
+	.intro { padding: 16px 16px 8px; }
+	.intro h2 { font-size: var(--font-body); }
+	.intro p { font-size: var(--font-body); }
+	.suggestion-row { gap: 8px; padding: 16px 16px; }
 	.suggestion-row ion-avatar { width: 42px; height: 42px; }
-	.suggestion-copy strong, .suggestion-post strong { font-size: .76rem; }
-	.suggestion-copy span, .suggestion-copy p, .suggestion-post span { font-size: .66rem; }
-	.suggestion-copy p, .suggestion-post p { font-size: .74rem; }
-	.suggestion-row ion-button { font-size: .68rem; text-transform: none; }
-	.empty-suggestions { font-size: .74rem; }
+	.suggestion-copy strong, .suggestion-post strong { font-size: var(--font-body); }
+	.suggestion-copy span, .suggestion-copy p, .suggestion-post span { font-size: var(--font-body); }
+	.suggestion-copy p, .suggestion-post p { font-size: var(--font-body); }
+	.suggestion-row ion-button { font-size: var(--font-body); text-transform: none; }
+	.empty-suggestions { font-size: var(--font-body); }
 }
 
 .page-footer img.navigation-icon { display: block; width: 24px; height: 24px; object-fit: contain; }

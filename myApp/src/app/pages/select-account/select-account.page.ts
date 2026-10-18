@@ -48,7 +48,7 @@ export class SelectAccountPage {
   }
 
   chooseAccount(account: ReturnType<typeof this.accountService.accounts>[number]) {
-    this.accountService.selectAccount(account);
+    if (this.accountService.selectedAccount()) this.accountService.logout();
     this.accountService.prepareAccountLogin(account);
     this.router.navigateByUrl('/login');
   }
