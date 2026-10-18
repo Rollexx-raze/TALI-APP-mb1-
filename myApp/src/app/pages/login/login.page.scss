@@ -130,8 +130,8 @@
 }
 
 /* Auth screens share the light, compact Tali onboarding style. */
-.login-content { --background:var(--bg); }
-.login-content::part(background) { background:var(--bg); }
+.login-content { background:#f9faff !important; --background:#f9faff !important; --color:#202b45 !important; }
+.login-content::part(background) { background:#f9faff !important; }
 .login-content::part(scroll) { justify-content:flex-start; padding-top:max(36px, calc(env(safe-area-inset-top, 0px) + 24px)); }
 .login-wrapper { width:min(calc(100% - 32px), 430px); gap:13px; margin:0 auto; padding:12px 0 24px; border:0; border-radius:0; background:transparent; box-shadow:none; }
 .login-brand { text-align:left; }
@@ -179,7 +179,13 @@
 .login-links { margin-top:0; }
 .login-link-button { min-height:40px; }
 
+.login-brand-mark .logo-on-dark { display:none !important; }
+.login-brand-mark .logo-on-light { display:block !important; filter:none !important; }
+
 @media (min-width:768px) {
   .login-content { width:100%; max-width:none; margin:0; }
   .login-content::part(scroll) { align-items:center; }
 }
+
+:host-context(html.app-light) .login-brand h1,
+:host-context(html.app-light) .login-field label { color:#202b45; }

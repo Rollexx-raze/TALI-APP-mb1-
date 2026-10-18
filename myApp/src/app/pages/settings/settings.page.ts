@@ -9,9 +9,10 @@ import { Account, AccountService } from '../../services/account.service';
 import { AuthService } from '../../services/auth.service';
 import { PostService } from '../../services/post.service';
 import { MessageService } from '../../services/message.service';
+import { AppearanceService } from '../../services/appearance.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 
-type SettingsSection = 'profile' | 'account' | 'privacy' | 'blocked' | 'story-privacy' | 'family' | 'muted' | 'like-counts' | 'tags' | 'comments' | 'sharing' | 'hidden-words' | 'security' | 'notifications' | 'messages' | 'content' | 'connections' | 'activity' | 'archive' | 'trash' | 'accessibility' | 'data' | 'permissions' | 'about' | 'help';
+type SettingsSection = 'profile' | 'account' | 'privacy' | 'blocked' | 'story-privacy' | 'family' | 'muted' | 'like-counts' | 'tags' | 'comments' | 'sharing' | 'hidden-words' | 'security' | 'notifications' | 'appearance' | 'messages' | 'content' | 'connections' | 'activity' | 'archive' | 'trash' | 'accessibility' | 'data' | 'permissions' | 'about' | 'help';
 
 @Component({
   selector: 'app-settings',
@@ -25,6 +26,7 @@ export class SettingsPage {
   private readonly auth = inject(AuthService);
   readonly postService = inject(PostService);
   readonly messageService = inject(MessageService);
+  readonly appearance = inject(AppearanceService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   readonly sections = [
@@ -104,7 +106,7 @@ export class SettingsPage {
   get settingsTitle() {
     const titles: Partial<Record<SettingsSection, string>> = {
       profile: 'Edit profile', account: 'Accounts Center', security: 'Password and security',
-      privacy: 'Privacy', notifications: 'Notification & Help',
+      privacy: 'Privacy', appearance: 'Appearance', notifications: 'Notification & Help',
       help: 'Notification & Help', blocked: 'Privacy', muted: 'Privacy', tags: 'Privacy',
       comments: 'Privacy', sharing: 'Privacy', 'hidden-words': 'Privacy', 'like-counts': 'Privacy',
     };

@@ -22,6 +22,7 @@
           <nav class="settings-simple-list" aria-label="Settings">
             <button class="settings-simple-row" type="button" (click)="openSection('account')"><span class="settings-row-icon"><ion-icon name="person-outline" aria-hidden="true"></ion-icon></span><span><strong>Account</strong><small>Profiles, personal details &amp; security</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="settings-simple-row" type="button" (click)="openSection('notifications')"><span class="settings-row-icon"><ion-icon name="notifications-outline" aria-hidden="true"></ion-icon></span><span><strong>Notification</strong><small>Choose what you hear about</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="settings-simple-row" type="button" (click)="openSection('appearance')"><span class="settings-row-icon" aria-hidden="true">◐</span><span><strong>Appearance</strong><small>Light, dark, or system theme</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="settings-simple-row" type="button" (click)="openSection('privacy')"><span class="settings-row-icon"><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon></span><span><strong>Privacy</strong><small>Control your connections</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="settings-simple-row" type="button" (click)="openSection('help')"><span class="settings-row-icon"><ion-icon name="help-circle-outline" aria-hidden="true"></ion-icon></span><span><strong>Help</strong><small>Guidance, information &amp; about Tali</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
           </nav>
@@ -92,6 +93,24 @@
             <button class="account-setting-row" type="button" routerLink="/more-accounts"><ion-icon name="people-outline" aria-hidden="true"></ion-icon><span>Manage accounts</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
           </div>
         </section>
+      }
+      @if (activeSection === 'appearance') {
+        <h2>Appearance</h2>
+        <p class="detail-copy">Choose how Tali looks on this device.</p>
+        <div class="appearance-options" role="group" aria-label="Appearance mode">
+          <button type="button" class="appearance-option" [class.selected]="appearance.mode() === 'light'" [attr.aria-pressed]="appearance.mode() === 'light'" (click)="appearance.setMode('light')">
+            <span class="appearance-preview"><i></i><i></i><i></i></span>
+            <span class="appearance-option-copy">Light</span>
+          </button>
+          <button type="button" class="appearance-option" [class.selected]="appearance.mode() === 'dark'" [attr.aria-pressed]="appearance.mode() === 'dark'" (click)="appearance.setMode('dark')">
+            <span class="appearance-preview dark-preview"><i></i><i></i><i></i></span>
+            <span class="appearance-option-copy">Dark</span>
+          </button>
+          <button type="button" class="appearance-option" [class.selected]="appearance.mode() === 'system'" [attr.aria-pressed]="appearance.mode() === 'system'" (click)="appearance.setMode('system')">
+            <span class="appearance-preview"><i></i><i></i><i></i></span>
+            <span class="appearance-option-copy">System</span>
+          </button>
+        </div>
       }
       @if (activeSection === 'privacy') {
         <h2>Connection, on your terms.</h2><p class="detail-copy">Choose how people find and interact with you.</p>
