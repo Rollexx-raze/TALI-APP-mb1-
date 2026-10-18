@@ -44,13 +44,12 @@ export class GroupsPage {
     this.activeTab = tab;
   }
 
+  retryLoadingGroups() {
+    if (typeof window !== 'undefined') window.location.reload();
+  }
+
   updateQuery(value: string | null | undefined) {
     this.query = value ?? '';
-    console.log('Group search query', {
-      query: this.query.trim().toLocaleLowerCase(),
-      tab: this.activeTab,
-      resultCount: this.visibleGroups.length,
-    });
   }
 
   groupAdminName(group: Group) {
@@ -104,8 +103,7 @@ export class GroupsPage {
       const userId = this.accountService.selectedAccount()?.id;
       if (userId === undefined || !this.groupService.deleteGroup(group.id, userId)) throw new Error('Group is no longer available.');
       await this.showToast('Group deleted');
-    } catch (error) {
-      console.error('Could not delete group.', error);
+    } catch {
       await this.showToast('Could not delete group. Please try again.', 'danger');
     }
   }

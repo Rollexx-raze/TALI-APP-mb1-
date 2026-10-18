@@ -1,7 +1,7 @@
 <ion-header class="home-header ion-no-border">
   <ion-toolbar>
     <div class="home-toolbar-row">
-      <div class="home-brand-mark"><img class="logo-on-dark" src="assets/Logo%20%E2%80%93%20dark@1x.png" alt="Tali" /><img class="logo-on-light" src="assets/Logo%20%E2%80%93%20light@1x.png" alt="" aria-hidden="true" /></div>
+      <div class="home-brand-mark"><img class="logo-on-dark" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="Tali" /><img class="logo-on-light" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="" aria-hidden="true" /></div>
       <ion-button fill="clear" class="search-button" aria-label="Search" routerLink="/search">
         <ion-icon slot="icon-only" name="search-outline"></ion-icon>
       </ion-button>
@@ -32,14 +32,22 @@
       <button type="button" role="tab" class="feed-tab" [class.is-active]="activeFeed === 'following'" [attr.aria-selected]="activeFeed === 'following'" (click)="setFeed('following')">Following</button>
     </div>
 
-    @if (postService.loading()) {
-      <section class="feed-empty" role="status">
-        <h3>Loading posts...</h3>
+    @if (postService.loading() && visiblePosts.length === 0) {
+      <section class="feed-loading-skeletons" role="status" aria-busy="true" aria-label="Loading posts">
+        @for (item of [1, 2, 3]; track item) {
+          <article class="feed-loading-card" aria-hidden="true">
+            <span class="design-skeleton design-skeleton-avatar"></span>
+            <span class="design-skeleton design-skeleton-title"></span>
+            <span class="design-skeleton design-skeleton-line"></span>
+            <span class="design-skeleton design-skeleton-media"></span>
+          </article>
+        }
       </section>
     } @else if (postService.loadError()) {
       <section class="feed-empty" role="alert">
         <h3>Could not load posts</h3>
         <p>{{ postService.loadError() }}</p>
+        <ion-button fill="outline" (click)="retryLoadingPosts()">Retry</ion-button>
       </section>
     } @else if (visiblePosts.length === 0) {
       <section class="feed-empty">
@@ -48,8 +56,8 @@
           <h3>Nothing from people you follow</h3>
           <p>Follow accounts to see their posts here.</p>
         } @else {
-          <h3>No posts yet</h3>
-          <p>Posts from you and other accounts will appear here.</p>
+          <h3>Welcome to Tali</h3>
+          <p>Your feed is ready. Create a post or explore these sample conversations to get started.</p>
           <ion-button fill="clear" routerLink="/add-post">
             <ion-icon slot="start" name="add-circle"></ion-icon>
             Create a post
@@ -58,22 +66,39 @@
       </section>
     }
 
-    @if (!postService.loading() && !postService.loadError()) {
+    @if (!postService.loading() && !postService.loadError() && activeFeed === 'for-you' && visiblePosts.length === 0) {
+      <section class="starter-feed" aria-label="Sample posts">
+        <article class="starter-post">
+          <div class="starter-avatar" aria-hidden="true">J</div>
+          <div class="starter-post-content">
+            <div class="starter-post-heading"><strong>Jordan Cruz</strong><span>@jordan.cruz</span><small>Sample</small></div>
+            <p>First thread on Tali, connecting one idea at a time.</p>
+            <div class="starter-post-actions" aria-hidden="true"><span>♡ <b>5</b></span><span>◯ <b>12</b></span><span>↻ <b>1</b></span></div>
+          </div>
+        </article>
+        <article class="starter-post">
+          <div class="starter-avatar" aria-hidden="true">M</div>
+          <div class="starter-post-content">
+            <div class="starter-post-heading"><strong>Mika Santos</strong><span>@mika.santos</span><small>Sample</small></div>
+            <p>Loving how simple it is to start a conversation here.</p>
+            <div class="starter-post-actions" aria-hidden="true"><span>♡ <b>8</b></span><span>◯ <b>3</b></span><span>↻ <b>2</b></span></div>
+          </div>
+        </article>
+        <article class="starter-post">
+          <div class="starter-avatar" aria-hidden="true">D</div>
+          <div class="starter-post-content">
+            <div class="starter-post-heading"><strong>Dani Reyes</strong><span>@dani.reyes</span><small>Sample</small></div>
+            <p>Anyone else exploring the new features today?</p>
+            <div class="starter-post-actions" aria-hidden="true"><span>♡ <b>4</b></span><span>◯ <b>6</b></span><span>↻ <b>1</b></span></div>
+          </div>
+        </article>
+      </section>
+    }
+
+    @if (visiblePosts.length > 0) {
       @for (post of visiblePosts; track post.id) {
         <app-post-card [post]="post" [focusPostOnLoad]="post.id === focusedPostId" [openCommentsOnLoad]="post.id === focusedPostId && openCommentsForFocusedPost" [focusRequestId]="notificationFocusKey"></app-post-card>
       }
     }
   </div>
 </ion-content>
-
-<ion-footer class="home-footer ion-no-border">
-  <ion-toolbar>
-    <nav class="page-nav home-nav" aria-label="Main navigation">
-      <ion-button fill="solid" class="active-tab" routerLink="/home" (click)="viewState.handleTabTap('/home', 'tali-view-home')" aria-label="Home"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></ion-button>
-      <ion-button fill="clear" routerLink="/messages" (click)="viewState.handleTabTap('/messages', 'tali-view-messages')" aria-label="Messages"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></ion-button>
-      <ion-button fill="clear" class="compose-button" routerLink="/add-post" (click)="viewState.handleTabTap('/add-post', 'tali-post-draft')" aria-label="Create post"><span class="nav-plus-circle"><svg class="nav-plus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></ion-button>
-      <ion-button fill="clear" class="notification-nav-button" routerLink="/activity" (click)="viewState.handleTabTap('/activity', 'tali-view-activity')" aria-label="Activity"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>@if (unreadNotifications) { <span class="notification-badge">{{ unreadNotifications }}</span> }</ion-button>
-      <ion-button fill="clear" routerLink="/profile" (click)="viewState.handleTabTap('/profile', 'tali-view-profile:current')" aria-label="Profile"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="9" r="3"/><path d="M7 20a5 5 0 0 1 10 0"/></svg></ion-button>
-    </nav>
-  </ion-toolbar>
-</ion-footer>

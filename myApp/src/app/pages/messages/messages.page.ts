@@ -40,6 +40,10 @@ export class MessagesPage {
     const accountId = this.selectedAccount()?.id;
     return accountId === undefined ? 0 : this.notificationService.unreadCount(accountId);
   }
+
+  retryLoadingMessages() {
+    if (typeof window !== 'undefined') window.location.reload();
+  }
   readonly otherAccounts = computed(() => {
     const selected = this.selectedAccount();
     return selected ? this.accounts().filter((account) => account.id !== selected.id) : [];
@@ -1212,10 +1216,6 @@ export class MessagesPage {
     return Object.entries(message.reactions ?? {})
       .filter(([, users]) => users.length > 0)
       .map(([emoji, users]) => ({ emoji, count: users.length }));
-  }
-
-  startVideoCall() {
-    this.callNotice = 'Video calls are not connected in this local app yet.';
   }
 
   attachSelectedFile(event: Event, kind: 'photo' | 'video' | 'gif' | 'file') {

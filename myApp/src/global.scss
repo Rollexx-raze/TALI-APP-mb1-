@@ -1,1605 +1,1184 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
+/* Ionic foundation */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
-
-:root {
-	--app-bg-dark: var(--app-background-top);
-	--app-surface-dark: var(--app-surface);
-	--app-text-dark: var(--app-text);
-	--app-muted-dark: var(--app-text-muted);
-	--app-border-dark: var(--app-border);
-	--app-bg-light: #f3f3f1;
-	--app-surface-light: #ffffff;
-	--app-text-light: #111111;
-	--app-muted-light: #5f6362;
-	--app-border-light: rgba(17, 17, 17, 0.08);
-	--page-bg: var(--app-bg-dark);
-	--page-surface: var(--app-surface-dark);
-	--page-text: var(--app-text-dark);
-	--page-muted: var(--app-muted-dark);
-	--page-border: var(--app-border-dark);
-}
-html:not(.app-light) body .filter-menu {
-  border-color: var(--app-border) !important;
-  background: var(--app-surface) !important;
-  color: var(--app-text) !important;
-}
-html:not(.app-light) body .filter-menu button {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: var(--app-text) !important;
+* {
+  box-sizing: border-box;
 }
 
 html,
 body,
 ion-app {
-	background: var(--page-bg);
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: var(--font-body);
+  line-height: var(--line-height-body);
+  -webkit-tap-highlight-color: var(--transparent);
+}
+
+body {
+  min-height: 100dvh;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+ion-app {
+  display: block;
+  height: 100dvh;
+}
+
+.app-main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+ion-router-outlet {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+ion-content {
+  --background: var(--bg);
+  --color: var(--text);
+  color: var(--text);
+  font-family: var(--font-family);
 }
 
 ion-header,
 ion-footer,
 ion-toolbar {
-	--background: var(--page-bg);
-	--border-color: var(--page-border);
+  --background: var(--surface);
+  --color: var(--text);
+  --border-color: var(--border);
+  color: var(--text);
+  font-family: var(--font-family);
 }
 
-ion-toolbar {
-	--color: var(--page-text);
+ion-header ion-toolbar {
+  min-height: 56px;
 }
 
-/* Keep Ionic's default button text from forcing labels into all caps. */
+ion-button {
+  --background: var(--primary);
+  --background-hover: var(--primary-hover);
+  --background-activated: var(--primary-hover);
+  --color: var(--on-primary);
+  --border-radius: var(--radius-sm);
+  --box-shadow: none;
+  --padding-start: var(--space-4);
+  --padding-end: var(--space-4);
+  --min-height: 44px;
+  font-family: var(--font-family);
+  font-size: var(--font-14);
+  font-weight: 600;
+}
+
 ion-button::part(native) {
-	text-transform: none;
+  min-height: 44px;
+  text-transform: none;
+  transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 
-ion-content,
+ion-button[fill="clear"],
+ion-button[fill="outline"] {
+  --background: var(--transparent);
+  --background-hover: var(--primary-soft);
+  --background-activated: var(--primary-soft);
+  --color: var(--primary);
+}
+
+ion-button[fill="outline"] {
+  --border-color: var(--border);
+  --border-width: 1px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  color: var(--text);
+  -webkit-tap-highlight-color: var(--transparent);
+}
+
+input,
+textarea,
+select,
+ion-input,
+ion-textarea,
+ion-select {
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: var(--font-16);
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  max-width: 100%;
+  border-color: var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select {
+  min-height: 44px;
+}
+
+input::placeholder,
+textarea::placeholder,
+ion-input,
+ion-textarea {
+  --placeholder-color: var(--text-muted);
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible,
+a:focus-visible,
+ion-button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--primary);
+  text-decoration-color: color-mix(in srgb, var(--primary) 45%, var(--transparent));
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+ion-icon {
+  flex: 0 0 auto;
+  color: currentColor;
+  font-size: var(--font-20);
+}
+
+[data-surface="surface"],
+.post-card,
+.composer-card,
+.create-group-card,
+.group-card,
+.feed-empty,
+.settings-home,
+.settings-detail,
+.settings-info-card,
+.notification-settings-card,
+.connection-settings-card,
+.account-center-panel {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.post-card,
+.composer-card,
+.create-group-card,
+.group-card,
+.settings-info-card,
+.notification-settings-card,
+.connection-settings-card,
+.account-center-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.post-card,
+.group-card,
+.search-result,
+.community-card,
+.settings-simple-row,
+.settings-row {
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.page-header,
+.home-header,
+.settings-header {
+  --background: color-mix(in srgb, var(--surface) 92%, var(--transparent));
+  --border-color: var(--border);
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, var(--transparent));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.page-header ion-toolbar,
+.home-header ion-toolbar,
+.settings-header ion-toolbar {
+  --background: var(--transparent);
+  --color: var(--text);
+  --border-color: var(--transparent);
+  color: var(--text);
+}
+
+.page-header h1,
+.settings-header h1 {
+  color: var(--text);
+  font-size: var(--font-20);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.home-brand-mark {
+  width: 44px;
+  height: 44px;
+}
+
+.home-brand-mark .logo-on-dark {
+  display: none;
+}
+
+.home-brand-mark .logo-on-light {
+  display: block;
+}
+
+.auth-logo-dark { display: none !important; }
+.auth-logo-light { display: block; }
+
+html.app-dark .home-brand-mark .logo-on-dark {
+  display: block;
+  filter: brightness(0) invert(1);
+}
+
+html.app-dark .home-brand-mark .logo-on-light {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.app-light):not(.app-dark) .home-brand-mark .logo-on-dark {
+    display: block;
+    filter: brightness(0) invert(1);
+  }
+  html:not(.app-light):not(.app-dark) .home-brand-mark .logo-on-light { display: none; }
+}
+
+html.app-dark .auth-logo-light { display: none; }
+html.app-dark .auth-logo-dark { display: block !important; filter: brightness(0) invert(1); }
+
+@media (prefers-color-scheme: dark) {
+  html:not(.app-light):not(.app-dark) .auth-logo-light { display: none; }
+  html:not(.app-light):not(.app-dark) .auth-logo-dark { display: block !important; filter: brightness(0) invert(1); }
+}
+
+.screen-shell,
+.profile-page-shell,
+.settings-layout,
+.search-page,
+.messages-page,
+.groups-page,
+.activity-page-header + ion-content > *,
+.group-page-title + ion-content > * {
+  min-width: 0;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.screen-shell {
+  width: min(100%, 620px);
+  padding: var(--space-4);
+  background: var(--bg);
+}
+
 .home-content,
 .page-content,
 .settings-content,
-.more-content,
-.select-content,
 .messages-content,
 .search-content,
-.profile-content {
-	--background: var(--page-bg);
-	--color: var(--page-text);
-	background: var(--page-bg);
-	color: var(--page-text);
+.profile-content,
+.groups-content,
+.create-group-content {
+  --background: var(--bg);
+  --color: var(--text);
 }
 
-body,
-ion-app,
-ion-page {
-	background: var(--page-bg);
-	color: var(--page-text);
+.profile-page-shell {
+  width: min(100%, 960px);
+  padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom, var(--space-0)));
 }
 
-html.app-light {
-	color-scheme: light;
-	--page-bg: var(--app-bg-light);
-	--page-surface: var(--app-surface-light);
-	--page-text: var(--app-text-light);
-	--page-muted: var(--app-muted-light);
-	--page-border: var(--app-border-light);
-	--app-surface: #afc5f8;
-	--app-surface-alt: #e6edfd;
-	--app-border: rgba(26, 59, 176, .2);
-	--app-text: #071039;
-	--app-text-muted: #1a3bb0;
-	--app-placeholder: #5f6362;
-	--app-avatar-fill: #dbe5ff;
-	--app-avatar-outline: #6e92f2;
-	--ion-color-primary: #365c4b;
-	--ion-color-primary-rgb: 54, 92, 75;
-	--ion-color-primary-contrast: #ffffff;
-	--ion-color-primary-contrast-rgb: 255, 255, 255;
-	--ion-color-primary-shade: #305243;
-	--ion-color-primary-tint: #4b715f;
-	--ion-color-medium: #5f6362;
-	--ion-color-medium-rgb: 95, 99, 98;
-	--ion-color-medium-contrast: #ffffff;
-	--ion-color-medium-contrast-rgb: 255, 255, 255;
-	--ion-color-medium-shade: #545756;
-	--ion-color-medium-tint: #707473;
-	--ion-background-color: #f3f3f1;
-	--ion-background-color-rgb: 243, 243, 241;
-	--ion-text-color: #111111;
-	--ion-text-color-rgb: 17, 17, 17;
-	--ion-toolbar-background: #f3f3f1;
-	--ion-item-background: #ffffff;
-	--ion-color-step-50: #f8f8f7;
-	--ion-color-step-100: #f0f0ee;
-	--ion-color-step-150: #e8e8e5;
-	--ion-color-step-200: #deded9;
+.profile-hero {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
 }
 
-html.app-light body,
-html.app-light ion-app,
-html.app-light ion-page,
-html.app-light .home-content,
-html.app-light .page-content,
-html.app-light .settings-content,
-html.app-light .more-content,
-html.app-light .select-content,
-html.app-light .messages-content,
-html.app-light .search-content,
-html.app-light .profile-content,
-html.app-light ion-header,
-html.app-light ion-footer,
-html.app-light ion-toolbar,
-html.app-light .home-header,
-html.app-light .home-footer,
-html.app-light .page-header,
-html.app-light .page-footer,
-html.app-light .settings-header {
-	background: var(--page-bg) !important;
-	color: var(--page-text) !important;
-	--background: var(--page-bg) !important;
-	--color: var(--page-text) !important;
-	--border-color: var(--page-border) !important;
+.profile-cover {
+  min-height: clamp(160px, 34vw, 300px);
+  background: var(--surface-alt);
 }
 
-html.app-light ion-content,
-html.app-light .home-content,
-html.app-light .page-content,
-html.app-light .settings-content,
-html.app-light .more-content,
-html.app-light .select-content,
-html.app-light .messages-content,
-html.app-light .search-content,
-html.app-light .profile-content,
-html.app-light .home-header ion-toolbar,
-html.app-light .page-header ion-toolbar,
-html.app-light .settings-header ion-toolbar,
-html.app-light .home-footer ion-toolbar,
-html.app-light .page-footer ion-toolbar {
-	--background: var(--page-bg) !important;
-	background: var(--page-bg) !important;
-	color: var(--page-text) !important;
+.profile-cover img {
+  width: 100%;
+  height: 100%;
+  max-height: 320px;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
 }
 
-html:not(.app-light) {
-	--page-bg: var(--app-background-bottom);
-	--page-surface: var(--app-surface);
-	--page-text: var(--app-text);
-	--page-muted: var(--app-text-muted);
-	--page-border: var(--app-border);
+.profile-top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
 }
 
-/* Warm ink, wine, paper and earth theme for signed-in screens only. */
-html.app-web-shell {
-	--page-bg: var(--app-background-bottom);
-	--page-surface: var(--app-surface);
-	--page-text: var(--app-text);
-	--page-muted: var(--app-text-muted);
-	--page-border: var(--app-border);
-	--ion-color-primary: #2e5de6;
-	--ion-color-primary-rgb: 46, 93, 230;
-	--ion-color-primary-contrast: #071039;
-	--ion-color-primary-contrast-rgb: 7, 16, 57;
-	--ion-color-primary-shade: #2852ca;
-	--ion-color-primary-tint: #4370e9;
-	--ion-color-medium: #6e92f2;
-	--ion-color-medium-contrast: #071039;
-	--ion-background-color: #000000;
-	--ion-text-color: #e6edfd;
-	--ion-toolbar-background: #000000;
-	--ion-item-background: var(--app-surface);
+.profile-avatar-wrap ion-avatar {
+  width: clamp(72px, 18vw, 112px);
+  height: clamp(72px, 18vw, 112px);
+  overflow: hidden;
+  border: 4px solid var(--surface);
+  border-radius: var(--radius-circle);
+  background: var(--surface-alt);
+  box-shadow: 0 0 0 1px var(--border);
 }
 
-html.app-web-shell.app-light {
-	--page-bg: #e6edfd;
-	--page-surface: #afc5f8;
-	--page-text: #071039;
-	--page-muted: #1a3bb0;
-	--page-border: rgba(26, 59, 176, .22);
-	--ion-color-primary: #2e5de6;
-	--ion-color-primary-rgb: 46, 93, 230;
-	--ion-color-primary-contrast: #e6edfd;
-	--ion-color-primary-contrast-rgb: 255, 255, 255;
-	--ion-color-primary-shade: #2852ca;
-	--ion-color-primary-tint: #4370e9;
-	--ion-color-medium: #1a3bb0;
-	--ion-color-medium-contrast: #e6edfd;
-	--ion-background-color: #e6edfd;
-	--ion-text-color: #071039;
-	--ion-toolbar-background: #e6edfd;
-	--ion-item-background: #afc5f8;
-	--ion-color-step-50: #e6edfd;
-	--ion-color-step-100: #afc5f8;
-	--ion-color-step-150: #6e92f2;
-	--ion-color-step-200: #2e5de6;
+.profile-avatar-wrap img,
+.view-profile-photo,
+.view-profile-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-html.app-light ion-header,
-html.app-light ion-footer,
-html.app-light ion-toolbar,
-html.app-light .home-header,
-html.app-light .home-footer,
-html.app-light .page-header,
-html.app-light .page-footer,
-html.app-light .settings-header {
-	--background: var(--page-surface);
-	--border-color: var(--page-border);
-	--color: var(--page-text);
+.profile-stats-card {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
 }
 
-html.app-light .profile-top h2,
-html.app-light .profile-posts h2,
-html.app-light .stats-row strong,
-html.app-light .page-header h1,
-html.app-light .settings-header h1,
-html.app-light .settings-section h2,
-html.app-light .suggestion-copy strong,
-html.app-light .intro h2,
-html.app-light .suggestion-post,
-html.app-light .feed-heading h2,
-html.app-light .profile-copy h1,
-html.app-light .feed-empty h3,
-html.app-light .post-topline strong,
-html.app-light .account-identity,
-html.app-light .edit-dialog h2 {
-	color: var(--page-text);
+.profile-identity {
+  grid-column: 1 / -1;
+  min-width: 0;
 }
 
-html.app-light .profile-top p,
-html.app-light .stats-row span,
-html.app-light .profile-post span,
-html.app-light .intro p,
-html.app-light .suggestion-copy span,
-html.app-light .suggestion-copy p,
-html.app-light .empty-suggestions,
-html.app-light .feed-empty p,
-html.app-light .profile-copy p,
-html.app-light .post-topline span {
-	color: var(--page-muted);
+.profile-identity h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--font-24);
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
-html.app-light .post-card,
-html.app-light .profile-post,
-html.app-light .suggestion-row,
-html.app-light .suggestion-post,
-html.app-light .stats-row,
-html.app-light .intro,
-html.app-light .suggestion-tabs {
-	border-color: var(--page-border);
+.profile-bio,
+.profile-bio p {
+  color: var(--text-muted);
+  font-size: var(--font-14);
 }
 
-html.app-light .post-card > p,
-html.app-light .suggestion-post p,
-html.app-light .composer-identity,
-html.app-light .composer ion-textarea,
-html.app-light .settings-section ion-item,
-html.app-light .edit-dialog ion-input,
-html.app-light .edit-dialog ion-textarea {
-	color: var(--page-text);
+.profile-sections {
+  display: flex;
+  min-height: 52px;
+  align-items: stretch;
+  justify-content: space-around;
+  border-bottom: 1px solid var(--border);
 }
 
-html.app-light .edit-dialog,
-html.app-light .attachment-preview {
-	background: var(--page-surface);
-	color: var(--page-text);
+.profile-sections button {
+  position: relative;
+  display: flex;
+  min-width: 44px;
+  min-height: 44px;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 0;
+  background: var(--transparent);
+  color: var(--text-muted);
+  font-size: var(--font-14);
 }
 
-html.app-light .suggestion-tabs button.active {
-	color: var(--page-text);
+.profile-sections button.active {
+  color: var(--primary);
+  font-weight: 700;
 }
 
-html.app-light .settings-detail,
-html.app-light .settings-detail h2,
-html.app-light .settings-detail h3,
-html.app-light .settings-categories button.active,
-html.app-light .connection-row,
-html.app-light .activity-post p {
-	color: var(--page-text);
+.profile-sections button.active::after {
+  position: absolute;
+  right: var(--space-4);
+  bottom: 0;
+  left: var(--space-4);
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  content: "";
 }
 
-html.app-light .settings-categories button {
-	color: var(--page-muted);
+.profile-content-panel {
+  max-width: 720px;
+  margin-inline: auto;
+  padding: var(--space-4);
 }
 
-html.app-light .settings-detail ion-item,
-html.app-light .settings-detail ion-input {
-	--color: var(--page-text);
-	color: var(--page-text);
+.settings-layout {
+  width: min(100%, 1200px);
+  padding: var(--space-4);
 }
 
-html.app-light .settings-categories,
-html.app-light .settings-detail {
-	border-color: var(--page-border);
+.settings-home-simple {
+  width: 100%;
+  max-width: none;
+  padding: var(--space-2) 0 var(--space-8);
+  background: var(--transparent);
 }
 
-html.app-light .settings-detail .detail-copy,
-html.app-light .settings-detail ion-label p,
-html.app-light .connection-row span,
-html.app-light .activity-post time {
-	color: var(--page-muted);
+.settings-simple-list {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
 }
 
-html.app-light ion-header,
-html.app-light ion-footer,
-html.app-light ion-toolbar,
-html.app-light .home-header ion-toolbar,
-html.app-light .home-footer ion-toolbar,
-html.app-light .page-header ion-toolbar,
-html.app-light .page-footer ion-toolbar,
-html.app-light .settings-header ion-toolbar {
-	--background: var(--page-surface);
-	--color: var(--page-text);
-	--border-color: var(--page-border);
+.settings-simple-row {
+  display: grid;
+  width: 100%;
+  min-height: 56px;
+  grid-template-columns: 24px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--font-16);
+  text-align: left;
 }
 
-html.app-light .section-block h2,
-html.app-light .topic-row,
-html.app-light .person-row,
-html.app-light .suggestion-tabs button.active,
-html.app-light .intro h2,
-html.app-light .suggestion-post,
-html.app-light .profile-post,
-html.app-light .post-card > p,
-html.app-light .settings-detail .activity-post p {
-	color: var(--page-text);
+.settings-simple-row:last-child {
+  border-bottom: 0;
 }
 
-html.app-light .topic-row,
-html.app-light .person-row,
-html.app-light .suggestion-tabs,
-html.app-light .intro,
-html.app-light .suggestion-row,
-html.app-light .suggestion-post,
-html.app-light .profile-post,
-html.app-light .stats-row,
-html.app-light .account-center,
-html.app-light .settings-section,
-html.app-light .connection-row {
-	border-color: var(--page-border);
+.settings-simple-row > ion-icon:first-child {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
 }
 
-html.app-light .post-card {
-	border-color: color-mix(in srgb, var(--ion-color-primary) 48%, var(--page-border));
+.settings-simple-row .settings-row-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
 }
 
-html.app-light .suggestion-tabs button,
-html.app-light .intro p,
-html.app-light .suggestion-copy span,
-html.app-light .suggestion-copy p,
-html.app-light .suggestion-post span,
-html.app-light .empty-suggestions,
-html.app-light .empty-state,
-html.app-light .profile-top p,
-html.app-light .profile-post span,
-html.app-light .account-contact,
-html.app-light .account-bio,
-html.app-light .settings-section ion-label p,
-html.app-light .detail-copy,
-html.app-light .settings-detail ion-label p,
-html.app-light .connection-row span,
-html.app-light .activity-post time {
-	color: var(--page-muted);
+.settings-simple-row:hover,
+.settings-row:hover {
+  background: var(--surface-alt);
+  color: var(--primary);
 }
 
-html.app-light ion-searchbar,
-html.app-light .filter-menu,
-html.app-light .edit-dialog,
-html.app-light .attachment-preview,
-html.app-light .empty-state {
-	--background: var(--page-surface);
-	background: var(--page-surface);
-	color: var(--page-text);
+.appearance-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
 }
 
-html.app-light ion-searchbar {
-	--color: var(--page-text);
-	--placeholder-color: var(--page-muted);
-	--icon-color: var(--ion-color-primary);
+.appearance-option {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 
-html.app-light .topic-row ion-icon,
-html.app-light .suggestion-post a,
-html.app-light .profile-top ion-button,
-html.app-light .settings-section ion-item ion-icon,
-html.app-light .settings-header ion-button {
-	--color: var(--ion-color-primary);
-	color: var(--ion-color-primary);
+.appearance-option.selected {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 18%, var(--transparent));
 }
 
-html.app-light .person-row ion-button,
-html.app-light .suggestion-row ion-button,
-html.app-light .profile-top ion-button,
-html.app-light .account-center ion-button {
-	--color: var(--ion-color-primary);
-	--border-color: color-mix(in srgb, var(--ion-color-primary) 55%, var(--page-border));
+.appearance-preview {
+  display: grid;
+  min-height: 80px;
+  align-content: start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
 }
 
-html.app-light .page-footer ion-button,
-html.app-light .home-footer ion-button {
-	--color: var(--page-muted);
+.appearance-preview i {
+  display: block;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--text-muted);
 }
 
-html.app-light .page-footer .active-tab,
-html.app-light .page-footer .compose-button,
-html.app-light .home-footer .active-tab,
-html.app-light .home-footer .compose-button {
-	--color: var(--ion-color-primary);
+.appearance-preview i:first-child {
+  width: 45%;
+  height: 12px;
+  background: var(--text);
 }
 
-html.app-light .settings-categories button.active {
-	background: color-mix(in srgb, var(--ion-color-primary) 12%, transparent);
-	color: var(--page-text);
+.appearance-preview i:nth-child(2) {
+  width: 100%;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
 }
 
-html.app-light .settings-categories button,
-html.app-light .settings-detail,
-html.app-light .settings-detail h2,
-html.app-light .settings-detail h3,
-html.app-light .settings-categories button.active,
-html.app-light .connection-row {
-	color: var(--page-text);
+.appearance-preview i:last-child {
+  width: 66%;
 }
 
-html.app-light .settings-detail ion-item,
-html.app-light .settings-section ion-item,
-html.app-light .settings-detail ion-input,
-html.app-light .settings-detail ion-textarea,
-html.app-light .composer ion-textarea,
-html.app-light .edit-dialog ion-input,
-html.app-light .edit-dialog ion-textarea {
-	--color: var(--page-text);
-	color: var(--page-text);
+.dark-preview {
+  border-color: var(--preview-dark-border);
+  background: var(--preview-dark-bg);
 }
 
-html.app-light .message-tabs ion-button,
-html.app-light .message-tabs .filter-button {
-	--color: var(--ion-color-primary);
+.dark-preview i {
+  background: var(--preview-dark-muted);
 }
 
-html.app-light .filter-menu button {
-	color: var(--page-text);
+.dark-preview i:first-child {
+  background: var(--preview-dark-text);
 }
 
-html.app-light .settings-section ion-select {
-	color: var(--ion-color-primary);
+.dark-preview i:nth-child(2) {
+  border-color: var(--preview-dark-border);
+  background: var(--preview-dark-surface);
 }
 
-html.app-light body .page-header,
-html.app-light body .page-footer,
-html.app-light body .home-header,
-html.app-light body .home-footer,
-html.app-light body .settings-header {
-	--background: var(--page-surface) !important;
-	--border-color: var(--page-border) !important;
+.appearance-option-copy {
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-1);
+  font-size: var(--font-14);
+  font-weight: 650;
 }
 
-html.app-light body .page-header ion-toolbar,
-html.app-light body .page-footer ion-toolbar,
-html.app-light body .home-header ion-toolbar,
-html.app-light body .home-footer ion-toolbar,
-html.app-light body .settings-header ion-toolbar {
-	--background: var(--page-surface) !important;
-	--color: var(--page-text) !important;
+.appearance-option-copy ion-icon {
+  font-size: var(--font-20);
 }
 
-html.app-light body .page-header h1,
-html.app-light body .settings-header h1,
-html.app-light body .section-block h2 {
-	color: var(--page-text) !important;
+.appearance-check {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  color: var(--primary);
+  font-size: var(--font-18);
 }
 
-html.app-large-text {
-	font-size: 112.5%;
+.auth-screen {
+  display: grid;
+  width: min(100%, 560px);
+  min-height: 100dvh;
+  align-content: center;
+  justify-items: center;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-4) calc(var(--space-8) + env(safe-area-inset-bottom, var(--space-0)));
+}
+
+.login-wrapper,
+.create-account-wrapper {
+  width: 100%;
+  max-width: 480px;
+}
+
+.login-wrapper,
+.create-account-card,
+.account-entry,
+.auth-empty-state {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.login-button,
+.create-account-button,
+.publish-button,
+.group-form-actions ion-button {
+  --background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  --background-hover: var(--primary-hover);
+  --color: var(--on-primary);
+}
+
+.login-field input,
+.create-account-field input,
+.profile-field input,
+.profile-field textarea,
+.post-edit-form textarea,
+.comment-composer textarea,
+.group-field input,
+.group-field textarea {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.login-error,
+.create-account-error,
+.form-error,
+.media-error,
+.publish-error,
+.comment-error,
+.profile-photo-error {
+  color: var(--danger);
+  font-size: var(--font-12);
+}
+
+.search-filters button,
+.suggestion-tabs button,
+.groups-tabs button {
+  min-height: 44px;
+}
+
+.search-filters button.active,
+.suggestion-tabs button.active,
+.groups-tabs button.active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.search-result,
+.conversation-row,
+.account-choice,
+.community-card,
+.notification-row,
+.suggestion-row,
+.group-card {
+  color: var(--text);
+}
+
+.conversation-row,
+.account-choice,
+.notification-row,
+.suggestion-row {
+  min-height: 64px;
+  border-bottom-color: var(--border);
+}
+
+.message-bubble-copy,
+.post-body,
+.detail-copy,
+.group-description,
+.notification-preview {
+  line-height: var(--line-height-body);
+}
+
+.post-options-menu,
+.account-action-menu,
+.group-actions-menu,
+.gender-options {
+  z-index: 80;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-soft);
+}
+
+.post-options-menu button,
+.account-action-menu button,
+.group-actions-menu button,
+.gender-options button {
+  min-height: 44px;
+  color: var(--text);
+}
+
+.edit-backdrop,
+.profile-photo-viewer,
+.logout-confirm-backdrop,
+.media-emoji-picker-backdrop {
+  background: color-mix(in srgb, var(--text) 48%, var(--transparent));
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.edit-dialog,
+.logout-confirm-dialog,
+.reaction-modal-dialog {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-soft);
+}
+
+ion-modal {
+  --background: var(--surface);
+  --color: var(--text);
+}
+
+ion-modal.post-comments-modal {
+  --height: min(92dvh, 860px);
+  --border-radius: var(--radius-card) var(--radius-card) 0 0;
+  align-items: end;
+}
+
+.design-skeleton {
+  display: block;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--surface-alt), color-mix(in srgb, var(--surface-alt) 65%, var(--surface)), var(--surface-alt));
+  background-size: 200% 100%;
+}
+
+.feed-loading-card,
+.search-loading-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.empty-state,
+.feed-empty,
+.thread-empty,
+.groups-empty-state,
+.empty-suggestions,
+.auth-empty-state {
+  color: var(--text-muted);
+}
+
+.empty-state h2,
+.feed-empty h3,
+.thread-empty h2,
+.groups-empty-state h3,
+.empty-suggestions h2 {
+  color: var(--text);
+  font-size: var(--font-20);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.post-card {
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.post-layout {
+  align-items: start;
+}
+
+.post-actions .action-button,
+.post-more,
+.attachment-arrow,
+.message-actions-toggle,
+.profile-circle-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.post-actions .action-button ion-icon {
+  font-size: var(--font-20);
+}
+
+.profile-stats-card,
+.profile-sections,
+.stats-row,
+.post-card,
+.search-result,
+.topic-row,
+.settings-simple-row,
+.appearance-option {
+  border-color: var(--border);
+}
+
+::selection {
+  background: var(--primary-soft);
+  color: var(--text);
+}
+
+* {
+  scrollbar-color: var(--text-muted) var(--bg);
+  scrollbar-width: thin;
+}
+
+@media (max-width: 767px) {
+  .app-main {
+    padding-bottom: calc(var(--space-8) + var(--space-1) + env(safe-area-inset-bottom, var(--space-0)));
+  }
+
+  ion-content:not(.login-content):not(.create-account-content):not(.select-content):not(.more-content) {
+    --padding-bottom: calc(var(--space-7) + env(safe-area-inset-bottom, var(--space-0)));
+  }
+
+  .screen-shell,
+  .profile-content-panel,
+  .settings-layout {
+    padding-inline: var(--space-4);
+  }
+
+  .profile-top {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .profile-identity h2 {
+    font-size: var(--font-20);
+  }
+
+  .profile-stats-card {
+    width: 100%;
+  }
+
+  .profile-content-panel {
+    padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom, var(--space-0)));
+  }
+
+  .settings-layout.mobile-detail-open .settings-home {
+    display: none;
+  }
+
+  .settings-detail {
+    padding-inline: 0;
+  }
+
+  .appearance-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  ion-modal.post-comments-modal {
+    --height: min(94dvh, 860px);
+  }
+
+  .settings-messages-button {
+    right: max(var(--space-3), env(safe-area-inset-right, var(--space-0)));
+    bottom: calc(var(--space-7) + env(safe-area-inset-bottom, var(--space-0)));
+  }
+}
+
+@media (min-width: 640px) {
+  .screen-shell {
+    padding: var(--space-5);
+  }
+
+  .profile-page-shell {
+    padding-inline: var(--space-4);
+  }
+
+  .profile-top {
+    padding: var(--space-5);
+  }
+
+  .settings-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+    gap: var(--space-5);
+    padding: var(--space-5);
+  }
+
+  .settings-home,
+  .settings-detail {
+    min-width: 0;
+  }
+
+  .settings-home-simple {
+    padding: 0;
+  }
+
+  .settings-layout.mobile-detail-open .settings-home {
+    display: block;
+  }
+
+  .settings-detail {
+    display: block;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+}
+
+@media (min-width: 768px) {
+  ion-content:not(.login-content):not(.create-account-content) {
+    --padding-bottom: var(--space-6);
+  }
+
+  .profile-top {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-5);
+    padding: var(--space-6);
+  }
+
+  .profile-identity {
+    grid-column: 1 / -1;
+  }
+
+  .profile-content-panel {
+    padding: var(--space-5) var(--space-6);
+  }
+
+  .settings-layout {
+    grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .settings-home {
+    position: sticky;
+    top: var(--space-4);
+  }
+
+  .settings-detail {
+    min-height: 60vh;
+  }
+
+  .community-card-list,
+  .created-groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .community-card-list {
+    overflow: visible;
+    border: 0;
+    background: var(--transparent);
+  }
+
+  .community-card,
+  .group-card {
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+  }
+}
+
+@media (min-width: 1024px) {
+  ion-app.has-main-nav .app-main {
+    width: calc(100% - var(--nav-rail-width));
+    margin-inline-start: 72px;
+  }
+
+  .screen-shell {
+    width: min(100%, 620px);
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .home-header ion-toolbar {
+    width: min(calc(100% - var(--space-8)), 620px);
+    margin-inline: auto;
+  }
+
+  .profile-page-shell {
+    width: min(calc(100% - var(--space-8)), 1120px);
+    padding-inline: 0;
+  }
+
+  .profile-hero {
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+  }
+
+  .profile-top {
+    grid-template-columns: auto minmax(0, 1fr) minmax(220px, 320px);
+    align-items: center;
+  }
+
+  .profile-stats-card {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .profile-identity {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .profile-content-panel {
+    max-width: 760px;
+  }
+
+  .settings-layout {
+    width: min(calc(100% - var(--space-8)), 1180px);
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: var(--space-6);
+    padding: var(--space-6) 0;
+  }
+
+  .settings-home {
+    top: var(--space-6);
+  }
+
+  .settings-detail {
+    padding: var(--space-6);
+  }
+
+  .messages-content .page-content,
+  .groups-content .groups-page,
+  .search-content .page-content {
+    width: min(100%, 1120px);
+    margin-inline: auto;
+  }
+}
+
+@media (min-width: 1280px) {
+  .created-groups {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .community-card-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  button:not(:disabled):hover,
+  ion-button:not([disabled]):hover::part(native) {
+    transform: translateY(-1px);
+  }
+
+  ion-button:not([disabled]):hover::part(native) {
+    box-shadow: var(--shadow-button);
+  }
+
+  .post-card:hover,
+  .group-card:hover,
+  .community-card:hover,
+  .appearance-option:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+    box-shadow: var(--shadow-soft);
+  }
+
+  a[href] {
+    text-decoration-line: none;
+  }
+
+  a[href]:hover {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+  }
+
+  .design-skeleton {
+    animation: skeleton-shimmer 1.6s linear infinite;
+  }
+
+  .post-card,
+  .group-card,
+  .community-card,
+  .settings-simple-row {
+    animation: card-enter var(--dur-base) var(--ease-out) both;
+  }
+
+  .post-card:nth-child(2),
+  .group-card:nth-child(2),
+  .community-card:nth-child(2) {
+    animation-delay: 60ms;
+  }
+
+  .post-card:nth-child(3),
+  .group-card:nth-child(3),
+  .community-card:nth-child(3) {
+    animation-delay: 120ms;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  to { background-position: -200% 0; }
+}
+
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+
+  html.app-theme-transition,
+  html.app-theme-transition body,
+  html.app-theme-transition ion-app,
+  html.app-theme-transition ion-content,
+  html.app-theme-transition ion-toolbar,
+  html.app-theme-transition .post-card,
+  html.app-theme-transition .page-nav {
+    transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }
 
 html.app-reduce-motion *,
 html.app-reduce-motion *::before,
 html.app-reduce-motion *::after {
-	scroll-behavior: auto !important;
-	animation-duration: .01ms !important;
-	animation-iteration-count: 1 !important;
-	transition-duration: .01ms !important;
-}
-
-@media (min-width: 768px) {
-	.composer-card { width: min(100%, 1040px) !important; min-height: 456px !important; padding: 56px 80px 48px !important; }
-	.composer-card > ion-textarea { min-height: 136px !important; margin-top: 20px !important; font-size: 1rem !important; }
-	.author-avatar { width: 64px !important; height: 64px !important; flex-basis: 64px !important; }
-	.close-button { width: 42px !important; height: 42px !important; }
-	.close-button ion-icon { font-size: 1.5rem !important; }
-	.composer-tools { min-height: 48px !important; margin-top: 16px !important; }
-	.tool-actions { gap: 16px !important; }
-	.tool-button { width: 30px !important; height: 38px !important; font-size: 1.2rem !important; }
-	.publish-button { min-height: 52px !important; padding: 0 32px !important; font-size: 1rem !important; }
-}
-
-.page-nav {
-	position: relative;
-	display: grid;
-	pointer-events: auto;
-	width: min(calc(100% - 48px), 480px);
-	height: 60px;
-	margin: 0 auto;
-	padding: 0;
-	grid-template-columns: repeat(5, minmax(0, 1fr));
-	overflow: visible;
-	align-items: center;
-	justify-items: center;
-	border: 1px solid var(--page-border);
-	border-radius: 20px;
-	background: var(--page-surface);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
-}
-
-ion-footer.page-footer,
-ion-footer.home-footer {
-	position: fixed !important;
-	height: 72px !important;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 20;
-	--background: transparent !important;
-	--border-color: transparent !important;
-	background: transparent !important;
-	border: 0 !important;
-	box-shadow: none !important;
-	overflow: visible !important;
-	pointer-events: none;
-}
-
-ion-footer.page-footer ion-toolbar,
-ion-footer.home-footer ion-toolbar {
-	height: 72px !important;
-	min-height: 72px !important;
-	--min-height: 72px !important;
-	--padding-top: 0 !important;
-	--padding-bottom: 0 !important;
-	padding: 0 10px !important;
-	--background: transparent !important;
-	--border-color: transparent !important;
-	--border-width: 0;
-	background: transparent !important;
-	box-shadow: none !important;
-	overflow: visible !important;
-	pointer-events: none;
-}
-
-ion-footer.page-footer ion-toolbar::part(content),
-ion-footer.home-footer ion-toolbar::part(content) {
-	display: flex;
-	height: 100%;
-	align-items: center;
-	justify-content: center;
-}
-
-html.app-light body ion-footer.page-footer,
-html.app-light body ion-footer.home-footer,
-html.app-light body ion-footer.page-footer ion-toolbar,
-html.app-light body ion-footer.home-footer ion-toolbar {
-	--background: transparent !important;
-	--border-color: transparent !important;
-	background: transparent !important;
-	border-color: transparent !important;
-}
-
-ion-content.page-content,
-ion-content.home-content {
-	--padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
-}
-
-.page-nav::before {
-	display: none;
-	position: absolute;
-	top: -9px;
-	left: calc(10% - 35px);
-	width: 70px;
-	height: 70px;
-	border-radius: 50%;
-	background: var(--page-bg);
-	content: '';
-}
-
-.page-nav.messages-nav::before { left: calc(30% - 35px); }
-.page-nav.add-post-nav::before { left: calc(50% - 35px); }
-.page-nav.suggestions-nav::before { left: calc(70% - 35px); }
-.page-nav.profile-nav::before { left: calc(90% - 35px); }
-
-.page-nav > ion-button { position: relative; z-index: 1; }
-body .page-nav ion-button {
-	pointer-events: auto !important;
-	position: relative;
-	top: -10px !important;
-	align-self: center;
-	display: grid;
-	width: 44px !important;
-	min-width: 44px !important;
-	height: 44px !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	place-items: center;
-	--padding-start: 0;
-	--padding-end: 0;
-	--padding-top: 0;
-	--padding-bottom: 0;
-	--background: transparent !important;
-	--background-activated: transparent !important;
-	--background-focused: transparent !important;
-	--background-hover: transparent !important;
-	--color: rgba(255, 255, 255, .88) !important;
-	--border-radius: 50%;
-	--box-shadow: none;
-	font-size: 1rem;
-}
-body .page-nav ion-button::part(native) {
-	display: grid;
-	opacity: 1;
-	width: 44px;
-	height: 44px;
-	min-height: 44px;
-	padding: 0;
-	place-items: center;
-	border: 0;
-	border-radius: 50%;
-	background: transparent !important;
-	box-shadow: none !important;
-}
-body .page-nav svg.nav-icon {
-	display: block !important;
-	visibility: visible !important;
-	width: 24px !important;
-	height: 24px !important;
-	fill: none !important;
-	stroke: #ffffff !important;
-	stroke-width: 1.9 !important;
-	stroke-linecap: round !important;
-	stroke-linejoin: round !important;
-	color: #ffffff !important;
-	opacity: .88;
-	flex: 0 0 24px;
-	align-self: center;
-	justify-self: center;
-}
-body .page-nav ion-button:not(.compose-button) svg.nav-icon,
-body .page-nav ion-button:not(.compose-button):active svg.nav-icon,
-body .page-nav ion-button:not(.compose-button):focus-visible svg.nav-icon,
-body .page-nav ion-button:not(.compose-button).active-tab svg.nav-icon {
-	visibility: visible !important;
-	stroke: #ffffff !important;
-	color: #ffffff !important;
-	opacity: 1 !important;
-}
-body .page-nav ion-button:not(.compose-button) svg.nav-icon path,
-body .page-nav ion-button:not(.compose-button) svg.nav-icon circle {
-	fill: none !important;
-	stroke: #ffffff !important;
-	stroke-width: 1.9 !important;
-	stroke-linecap: round !important;
-	stroke-linejoin: round !important;
-}
-body .page-nav ion-button:not(.compose-button)::part(native) {
-	background: transparent !important;
-	color: #ffffff !important;
-	-webkit-text-fill-color: #ffffff !important;
-}
-body .page-nav ion-button.active-tab:not(.compose-button) {
-	--background: #ffffff !important;
-	--background-activated: #ffffff !important;
-	--color: #111111 !important;
-}
-body .page-nav ion-button.active-tab:not(.compose-button)::part(native) {
-	background: #ffffff !important;
-	color: #111111 !important;
-	-webkit-text-fill-color: #111111 !important;
-	outline: none;
-}
-body .page-nav ion-button.active-tab:not(.compose-button) svg.nav-icon,
-body .page-nav ion-button.active-tab:not(.compose-button) svg.nav-icon path,
-body .page-nav ion-button.active-tab:not(.compose-button) svg.nav-icon circle {
-	stroke: #111111 !important;
-	color: #111111 !important;
-	opacity: 1 !important;
-}
-body .page-nav ion-button.compose-button { --color: #ffffff !important; }
-body .page-nav .nav-plus-circle {
-	display: grid;
-	width: 40px;
-	height: 40px;
-	place-items: center;
-	border-radius: 50%;
-	background: #ffffff;
-	color: var(--app-primary, #1d3fbf);
-}
-body .page-nav .nav-plus-icon {
-	display: block;
-	width: 20px;
-	height: 20px;
-	fill: none;
-	stroke: currentColor;
-	stroke-width: 2.25;
-	stroke-linecap: round;
-	stroke-linejoin: round;
-}
-
-body .page-nav ion-button.compose-button:active .nav-plus-circle,
-body .page-nav ion-button.compose-button:focus-visible .nav-plus-circle {
-	outline: 2px solid rgba(255, 255, 255, .88);
-	outline-offset: 2px;
-}
-.page-nav .notification-badge { z-index: 2; }
-
-.composer-tools { position: relative; }
-.audience-menu { position: absolute; z-index: 10; bottom: calc(100% + 10px); left: 0; width: min(260px, calc(100vw - 64px)); padding: 6px; border: 1px solid var(--page-border); border-radius: 8px; background: var(--page-surface); box-shadow: 0 10px 28px rgba(0, 0, 0, .18); }
-.audience-menu button { display: flex; width: 100%; min-height: 40px; align-items: center; justify-content: space-between; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--page-text); font: inherit; font-size: .9rem; text-align: left; cursor: pointer; }
-.audience-menu button.is-selected { background: color-mix(in srgb, var(--ion-color-primary) 12%, transparent); }
-.audience-menu button:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: -2px; }
-.audience-menu ion-icon { color: var(--ion-color-primary); font-size: 1rem; }
-.audience-picker { display: grid; max-height: 160px; gap: 8px; overflow: auto; margin-top: 12px; padding: 10px; border: 1px solid var(--page-border); border-radius: 8px; background: var(--page-bg); color: var(--page-text); }
-.audience-picker h2 { margin: 0; font-size: .82rem; }
-.audience-picker p { margin: 0; color: var(--page-muted); font-size: .75rem; }
-.audience-person { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-.audience-person input { accent-color: var(--ion-color-primary); }
-.audience-person span { display: grid; gap: 2px; }
-.audience-person strong { font-size: .8rem; }
-.audience-person small { color: var(--page-muted); font-size: .7rem; }
-
-/* Keep the account flow's transparent navigation chrome independent of app theme. */
-html body ion-header.auth-header,
-html.app-light body ion-header.auth-header {
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 20;
-	width: 100%;
-	background: transparent !important;
-	--background: transparent !important;
-	--color: #e6edfd !important;
-	--border-color: transparent !important;
-}
-
-html body ion-header.auth-header ion-toolbar,
-html.app-light body ion-header.auth-header ion-toolbar {
-	background: transparent !important;
-	--background: transparent !important;
-	--color: #e6edfd !important;
-	--border-color: transparent !important;
-}
-
-html body ion-header.auth-header ion-back-button,
-html.app-light body ion-header.auth-header ion-back-button {
-	--color: #e6edfd !important;
-}
-
-html body ion-content.select-content ion-list,
-html body ion-content.more-content ion-list,
-html.app-light body ion-content.select-content ion-list,
-html.app-light body ion-content.more-content ion-list {
-	--ion-item-background: transparent !important;
-	background: rgba(0, 0, 0, .84) !important;
-}
-
-html body ion-content.select-content ion-item,
-html body ion-content.more-content ion-item,
-html.app-light body ion-content.select-content ion-item,
-html.app-light body ion-content.more-content ion-item {
-	--background: rgba(0, 0, 0, .78) !important;
-	--ion-item-background: rgba(0, 0, 0, .78) !important;
-	--color: #e6edfd !important;
-}
-
-html body ion-content.select-content ion-item::part(native),
-html body ion-content.more-content ion-item::part(native),
-html.app-light body ion-content.select-content ion-item::part(native),
-html.app-light body ion-content.more-content ion-item::part(native) {
-	background: rgba(0, 0, 0, .78) !important;
-	color: #e6edfd !important;
-}
-
-html body ion-content.login-content ion-item.login-field ion-input::part(native),
-html.app-light body ion-content.login-content ion-item.login-field ion-input::part(native) {
-	background: transparent !important;
-	background-color: transparent !important;
-	color: #e6edfd !important;
-	-webkit-text-fill-color: #e6edfd !important;
-	background-color: transparent !important;
-	-webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-	box-shadow: none !important;
-	transition: background-color 99999s ease-out 0s;
-}
-
-@media (min-width: 1024px) {
-	html.app-web-shell body {
-		margin: 0;
-		background: var(--page-bg);
-	}
-
-	html.app-web-shell ion-app {
-		background: var(--page-bg);
-	}
-
-	html.app-web-shell ion-router-outlet {
-		position: relative;
-		flex: 1 1 auto;
-		width: 100%;
-		max-width: none;
-		height: 100vh;
-		margin: 0;
-		background: var(--page-bg);
-		box-shadow: none;
-	}
-}
-
-ion-modal.post-comments-modal {
-	--width: min(1120px, calc(100vw - 48px));
-	--height: min(920px, calc(100vh - 36px));
-	--border-radius: 10px;
-	--backdrop-opacity: .68;
-}
-
-ion-modal.post-comments-modal::part(content) {
-	overflow: hidden;
-	background: var(--page-surface);
-	border: 1px solid var(--app-border);
-	box-shadow: 0 18px 56px rgba(0, 0, 0, .36);
-}
-
-html.app-light ion-modal.post-comments-modal::part(content) {
-	border-color: #000;
-	box-shadow: 0 0 0 2px #000, 0 18px 56px rgba(0, 0, 0, .2);
-}
-
-.notification-nav-button { position: relative; }
-.notification-badge { position: absolute; top: 2px; right: 2px; display: grid; min-width: 17px; height: 17px; place-items: center; padding: 0 4px; border: 2px solid var(--page-bg); border-radius: 999px; background: #b93b4b; color: #fff; font-size: .62rem; font-weight: 700; line-height: 1; }
-
-html.app-web-shell .home-account-row,
-html.app-web-shell .conversation-entry,
-html.app-web-shell .settings-section,
-html.app-web-shell .profile-sections { border-color: var(--page-border); }
-
-html.app-web-shell .post-avatar,
-html.app-web-shell .profile-avatar,
-html.app-web-shell .author-avatar,
-html.app-web-shell .profile-top ion-avatar,
-html.app-web-shell .edit-profile-avatar,
-html.app-web-shell .person-row ion-avatar,
-html.app-web-shell .suggestion-row ion-avatar {
-	border-color: var(--page-border);
-	background: color-mix(in srgb, var(--page-surface) 72%, #1a3bb0);
-	color: var(--page-text);
-}
-
-html.app-web-shell .notification-badge { background: #1a3bb0; color: #e6edfd; }
-html.app-web-shell .post-attachments .attachment-arrow { border-color: var(--page-border); background: rgba(0, 0, 0, .84); color: #e6edfd; }
-html.app-web-shell .profile-content-panel app-post-card .post-card {
-	border-color: var(--page-border);
-	background: var(--page-surface);
-	color: var(--page-text);
-	box-shadow: 0 8px 22px rgba(0, 0, 0, .2);
-}
-html.app-web-shell .profile-content-panel app-post-card .post-card .identity-row strong,
-html.app-web-shell .profile-content-panel app-post-card .post-card .post-body { color: var(--page-text); }
-html.app-web-shell .profile-content-panel app-post-card .post-card .post-time,
-html.app-web-shell .profile-content-panel app-post-card .post-card .post-handle,
-html.app-web-shell .profile-content-panel app-post-card .post-card .action-button { color: var(--page-muted); }
-html.app-web-shell .profile-content-panel app-post-card .post-card .action-button.is-active { color: var(--ion-color-primary); }
-@media (max-width: 560px) {
-	html.app-web-shell .profile-content-panel .profile-posts-feed app-post-card { margin: 0; }
-	html.app-web-shell .profile-content-panel .profile-posts-feed app-post-card .post-card { width: 100%; margin: 0; }
-}
-html.app-web-shell ion-modal.post-comments-modal::part(content) {
-	border: 1px solid var(--page-border);
-	border-radius: 14px;
-	box-shadow: 0 18px 56px rgba(0, 0, 0, .4);
-}
-
-@media (max-width: 720px) {
-	ion-modal.post-comments-modal {
-		--width: 100vw;
-		--height: 100dvh;
-		--border-radius: 0;
-	}
-}
-
-.message-bubble { cursor: pointer; }
-.message-mention { padding: 0; border: 0; background: transparent; color: #82c7ff; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
-.everyone-mention { color: #ffd166; }
-.message-action-menu { position: absolute; z-index: 9; top: 100%; right: 4px; display: flex; gap: 3px; padding: 5px; border: 1px solid var(--page-border); border-radius: 12px; background: var(--page-surface); box-shadow: 0 8px 24px #0005; }
-.message-action-menu button { padding: 7px 9px; border: 0; border-radius: 8px; background: transparent; color: var(--page-text); font-size: .76rem; cursor: pointer; }
-.message-action-menu button:hover { background: var(--page-hover); }
-.message-action-menu .delete-message-action { color: #ff777d; }
-.chat-input-wrap { position: relative; display: flex; min-width: 0; flex: 1 1 auto; }
-.chat-input-wrap .chat-text-input { width: 100%; min-width: 0; flex: 1 1 auto; }
-.mention-suggestions { position: fixed; z-index: 1400; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); left: max(16px, min(240px, calc(50vw - 460px))); display: grid; width: min(280px, calc(100vw - 32px)); max-height: min(300px, 48vh); overflow: auto; padding: 5px; border: 1px solid var(--page-border); border-radius: 12px; background: var(--page-surface); box-shadow: 0 12px 32px #0005; }
-.mention-suggestions button { display: flex; min-height: 44px; align-items: center; justify-content: flex-start; gap: 10px; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--page-text); text-align: left; cursor: pointer; }
-.mention-suggestions button:hover, .mention-suggestions button:focus-visible { outline: 0; background: var(--page-hover); }
-.mention-avatar { display: grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; overflow: hidden; border-radius: 50%; background: var(--page-bg); color: var(--page-muted); font-size: 1.8rem; }
-.mention-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.mention-avatar.everyone-avatar { background: transparent; color: var(--page-text); font-size: 1.25rem; }
-.mention-option-copy { display: grid; min-width: 0; gap: 2px; }
-.mention-option-copy strong { overflow: hidden; font-size: .82rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.mention-option-copy small { overflow: hidden; color: var(--page-muted); font-size: .72rem; text-overflow: ellipsis; white-space: nowrap; }
-.mention-empty { margin:0;padding:12px;color:var(--page-muted);font-size:.82rem; }
-
-/* Ultramarine visual system from the supplied palette. */
-:root {
-  --app-bg-dark: var(--app-background-top);
-  --app-surface-dark: var(--app-surface);
-  --app-text-dark: var(--app-text);
-  --app-muted-dark: var(--app-text-muted);
-  --app-border-dark: var(--app-border);
-  --app-bg-light: #e6edfd;
-  --app-surface-light: #afc5f8;
-  --app-text-light: #071039;
-  --app-muted-light: #1a3bb0;
-  --app-border-light: rgba(26, 59, 176, .2);
-}
-html, html:not(.app-light), html.app-web-shell:not(.app-light) {
-  --page-bg: var(--app-background-bottom);
-  --page-surface: var(--app-surface);
-  --page-text: var(--app-text);
-  --page-muted: var(--app-text-muted);
-  --page-border: var(--app-border);
-  --ion-color-primary: var(--app-primary);
-  --ion-color-primary-rgb: 29, 63, 191;
-  --ion-color-primary-contrast: var(--app-text);
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #1936a3;
-  --ion-color-primary-tint: #3657c8;
-  --ion-color-medium: var(--app-text-muted);
-  --ion-color-medium-rgb: 157, 176, 217;
-  --ion-color-medium-contrast: var(--app-background-top);
-  --ion-background-color: var(--app-background-top);
-  --ion-text-color: var(--app-text);
-  --ion-toolbar-background: var(--app-background-top);
-  --ion-item-background: var(--app-surface);
-  --ion-color-step-50: var(--app-background-bottom);
-  --ion-color-step-100: var(--app-surface);
-  --ion-color-step-150: var(--app-surface-alt);
-  --ion-color-step-200: var(--app-text-muted);
-}
-html.app-light, html.app-web-shell.app-light {
-  --page-bg: #e6edfd;
-  --page-surface: #afc5f8;
-  --page-text: #071039;
-  --page-muted: #1a3bb0;
-  --page-border: rgba(26, 59, 176, .2);
-  --ion-color-primary: #1a3bb0;
-  --ion-color-primary-rgb: 26, 59, 176;
-  --ion-color-primary-contrast: #e6edfd;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #0f2270;
-  --ion-color-primary-tint: #2e5de6;
-  --ion-color-medium: #1a3bb0;
-  --ion-color-medium-rgb: 26, 59, 176;
-  --ion-color-medium-contrast: #e6edfd;
-  --ion-background-color: #e6edfd;
-  --ion-text-color: #071039;
-  --ion-toolbar-background: #e6edfd;
-  --ion-item-background: #afc5f8;
-  --ion-color-step-50: #e6edfd;
-  --ion-color-step-100: #afc5f8;
-  --ion-color-step-150: #6e92f2;
-  --ion-color-step-200: #1a3bb0;
-}
-
-/* Keep auth screens, Ionic surfaces and custom inline pages on the shared palette. */
-:root { --auth-ink: #000000; --auth-wine: #0f2270; --auth-paper: #e6edfd; --auth-taupe: #afc5f8; --auth-earth: #1a3bb0; }
-html body ion-content.auth-screen { --background: var(--app-background-gradient) !important; --color: var(--app-text) !important; }
-html body ion-content.auth-screen::part(background) {
-  background: radial-gradient(ellipse at 50% 8%, color-mix(in srgb, var(--app-primary) 36%, transparent), transparent 42%), var(--app-background-gradient) !important;
-}
-html body .login-wrapper, html body .create-account-card, html body .account-list,
-html body .more-content ion-list, html body .auth-empty-state {
-  border-color: rgba(175,197,248,.24) !important; background-color: rgba(15,34,112,.9) !important;
-  color: #e6edfd !important; box-shadow: 0 24px 70px rgba(0,0,0,.38), 0 0 36px rgba(46,93,230,.12) !important;
-}
-html body ion-item.login-field, html body .create-account-field, html body ion-content.auth-screen ion-item {
-  --background: rgba(26,59,176,.34) !important; --ion-item-background: rgba(26,59,176,.34) !important;
-  --color: #e6edfd !important; border-color: rgba(175,197,248,.22) !important; color: #e6edfd !important;
-}
-html body .login-field ion-input::part(native), html body .create-account-field input:-webkit-autofill,
-html body .create-account-field input:autofill {
-  background-color: transparent !important; -webkit-text-fill-color: #e6edfd !important;
-  -webkit-box-shadow: 0 0 0 1000px transparent inset !important; box-shadow: none !important;
-  transition: background-color 99999s ease-out 0s;
-}
-html body .login-button, html body .create-account-button {
-  --background: #2e5de6 !important; --background-activated: #2852ca !important;
-  --color: #e6edfd !important; --box-shadow: 0 10px 28px rgba(46,93,230,.32) !important;
-}
-html body .login-link-button, html body .create-account-footer a { --color: #afc5f8 !important; color: #afc5f8 !important; }
-html body .groups-page { --background: #000000 !important; --color: #e6edfd !important; }
-html body .groups-page main { color: #e6edfd; }
-html body .groups-hero, html body .created-groups article {
-  background: #0f2270 !important; border-color: rgba(175,197,248,.2) !important; color: #e6edfd !important;
-}
-html body .groups-hero h2, html body .created-groups h2, html body .created-groups article strong { color: #e6edfd !important; }
-html body .groups-hero input, html body .groups-hero textarea {
-  background: #000000 !important; color: #e6edfd !important; border-color: rgba(175,197,248,.25) !important;
-}
-html body .groups-hero ion-button { --background: #2e5de6 !important; --color: #e6edfd !important; }
-html body .group-mark, html body .group-tile { background: #1a3bb0 !important; color: #e6edfd !important; }
-
-/* Keep post cards and the composer on the shared dark blue surface. */
-html:not(.app-light) app-post-card .post-card {
-  --page-surface: var(--app-surface);
-  --page-bg: var(--app-background-bottom);
-  --page-text: var(--app-text);
-  --page-muted: var(--app-text-muted);
-  --page-border: var(--app-border);
-  --ion-color-primary: var(--app-primary);
-  --ion-color-primary-contrast: var(--app-text);
-  background: var(--app-surface) !important;
-  color: var(--app-text) !important;
-}
-
-html:not(.app-light) .composer-card {
-  --page-surface: var(--app-surface);
-  --page-bg: var(--app-background-bottom);
-  --page-text: var(--app-text);
-  --page-muted: var(--app-text-muted);
-  --page-border: var(--app-border);
-  --ion-color-primary: var(--app-primary);
-  --ion-color-primary-contrast: var(--app-text);
-  background: var(--app-surface) !important;
-  color: var(--app-text) !important;
-}
-html:not(.app-light) .composer-card > ion-textarea {
-  --background: var(--app-surface-alt) !important;
-  --color: var(--app-text) !important;
-  --placeholder-color: var(--app-placeholder) !important;
-}
-html:not(.app-light) .composer-card .tool-button { color: var(--app-text-muted) !important; }
-
-/* Keep profile details legible on the dark ultramarine header. */
-html:not(.app-light) .profile-hero .stats-row strong { color: #afc5f8 !important; }
-html:not(.app-light) .profile-hero .profile-top > ion-button,
-html:not(.app-light) .profile-hero .profile-actions ion-button:not(.message-profile-button) {
-  --color: #afc5f8 !important;
-  --border-color: rgba(175,197,248,.7) !important;
-}
-
-/* Lift dark-mode profile surfaces one step brighter than the black page base. */
-html:not(.app-light) .profile-top ion-avatar {
-	background: #000000;
-	color: #ffffff;
-}
-html:not(.app-light) .profile-sections button {
-  border-color: transparent;
-  background: transparent;
-  color: #ffffff;
-}
-html:not(.app-light) .profile-sections button.active {
-  border-color: transparent;
-  border-bottom-color: #ffffff;
-  background: transparent;
-  color: #ffffff;
-}
-
-/* Dark blue headers and profile hero in light mode, with pale foregrounds. */
-html.app-light body ion-header.page-header,
-html.app-light body ion-header.page-header ion-toolbar,
-html.app-light body ion-header.home-header,
-html.app-light body ion-header.home-header ion-toolbar {
-  --background: #1a3bb0 !important;
-  --color: #e6edfd !important;
-  --border-color: rgba(230,237,253,.2) !important;
-  background: #1a3bb0 !important;
-  color: #e6edfd !important;
-}
-html.app-light body ion-header.page-header h1,
-html.app-light body ion-header.page-header ion-button,
-html.app-light body ion-header.page-header ion-back-button,
-html.app-light body ion-header.home-header ion-button,
-html.app-light body ion-header.home-header ion-icon {
-  --color: #e6edfd !important;
-  color: #e6edfd !important;
-}
-html.app-light body .profile-hero {
-  background: #1a3bb0 !important;
-  color: #e6edfd !important;
-}
-html.app-light body .profile-hero .profile-top ion-avatar {
-  border-color: rgba(230,237,253,.7) !important;
-  background: #0f2270 !important;
-  color: #e6edfd !important;
-}
-html.app-light body .profile-hero h2,
-html.app-light body .profile-hero .profile-bio,
-html.app-light body .profile-hero .stats-row span {
-  color: #e6edfd !important;
-}
-html.app-light body .profile-hero .profile-top > p,
-html.app-light body .profile-hero .stats-row strong {
-  color: #afc5f8 !important;
-}
-html.app-light body .profile-hero .profile-top > ion-button,
-html.app-light body .profile-hero .profile-actions ion-button:not(.message-profile-button) {
-  --color: #e6edfd !important;
-  --border-color: rgba(230,237,253,.65) !important;
-}
-html.app-light body ion-content.messages-content:not(.chat-mode) ion-searchbar,
-html.app-light body ion-content.page-content:not(.chat-mode) ion-searchbar {
-  --background: #1a3bb0 !important;
-  --color: #e6edfd !important;
-  --icon-color: #e6edfd !important;
-  --placeholder-color: #afc5f8 !important;
-  color: #e6edfd !important;
-}
-
-/* In dark mode, give form controls and labeled actions white surfaces. */
-html:not(.app-light) body ion-searchbar {
-  --background: #ffffff !important;
-  --color: #071039 !important;
-  --icon-color: #1a3bb0 !important;
-  --placeholder-color: #64748b !important;
-}
-html:not(.app-light) ion-popover {
-  --background: var(--app-surface);
-  --color: var(--app-text);
-}
-html:not(.app-light) ion-popover::part(content),
-html:not(.app-light) ion-alert::part(container),
-html:not(.app-light) ion-action-sheet::part(container) {
-  border: 1px solid var(--app-border);
-  background: var(--app-surface);
-  color: var(--app-text);
-}
-html:not(.app-light) ion-alert {
-  --background: var(--app-surface);
-  --color: var(--app-text);
-  --ion-text-color: var(--app-text);
-}
-html:not(.app-light) ion-action-sheet {
-  --background: var(--app-surface);
-  --color: var(--app-text);
-  --button-background: var(--app-surface);
-  --button-background-selected: var(--app-surface-alt);
-  --button-color: var(--app-text);
-}
-/* Match dark-mode app headers to the ultramarine profile hero. */
-html:not(.app-light) body ion-header.page-header:not(:has(.message-list-header)):not(:has(.chat-toolbar-row)),
-html:not(.app-light) body ion-header.page-header:not(:has(.message-list-header)):not(:has(.chat-toolbar-row)) ion-toolbar,
-html:not(.app-light) body ion-header.home-header,
-html:not(.app-light) body ion-header.home-header ion-toolbar {
-  --background: #1a3bb0 !important;
-  --color: #e6edfd !important;
-  --border-color: rgba(230, 237, 253, .2) !important;
-  background: #1a3bb0 !important;
-  color: #e6edfd !important;
-}
-html:not(.app-light) body ion-header.page-header:not(:has(.message-list-header)):not(:has(.chat-toolbar-row)) h1,
-html:not(.app-light) body ion-header.home-header ion-title,
-html:not(.app-light) body ion-header.page-header:not(:has(.message-list-header)):not(:has(.chat-toolbar-row)) ion-button,
-html:not(.app-light) body ion-header.home-header ion-button,
-html:not(.app-light) body ion-header.page-header:not(:has(.message-list-header)):not(:has(.chat-toolbar-row)) ion-icon,
-html:not(.app-light) body ion-header.home-header ion-icon {
-  --color: #e6edfd !important;
-  color: #e6edfd !important;
-}
-html:not(.app-light) body ion-input,
-html:not(.app-light) body ion-textarea,
-html:not(.app-light) body select {
-  --background: var(--app-surface-alt) !important;
-  --color: var(--app-text) !important;
-  --placeholder-color: var(--app-placeholder) !important;
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-}
-html:not(.app-light) body ion-input::part(native),
-html:not(.app-light) body ion-textarea::part(native) {
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-  -webkit-text-fill-color: var(--app-text) !important;
-}
-html:not(.app-light) body input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
-html:not(.app-light) body textarea,
-html:not(.app-light) body select {
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-  -webkit-text-fill-color: var(--app-text) !important;
-  caret-color: var(--app-text) !important;
-}
-html:not(.app-light) body input::placeholder,
-html:not(.app-light) body textarea::placeholder {
-  color: var(--app-placeholder) !important;
-  -webkit-text-fill-color: var(--app-placeholder) !important;
-}
-html:not(.app-light) body ion-button:not([fill="clear"]) {
-  --background: #ffffff !important;
-  --background-activated: #e6edfd !important;
-  --color: #071039 !important;
-  --border-color: #ffffff !important;
-}
-html:not(.app-light) body ion-button:not([fill="clear"])::part(native) {
-  background: #ffffff !important;
-  color: #071039 !important;
-}
-html:not(.app-light) body ion-button[fill="clear"] {
-  --background: transparent !important;
-  --color: var(--page-text) !important;
-}
-html:not(.app-light) body button {
-  border-color: var(--app-border);
-  background: transparent;
-  color: var(--app-text);
-}
-/* Settings use transparent, outlined navigation and Account Center buttons. */
-html:not(.app-light) body ion-content.settings-content button.settings-row,
-html:not(.app-light) body ion-content.settings-content button.account-profiles-card,
-html:not(.app-light) body ion-content.settings-content button.account-setting-row {
-  border-color: rgba(230, 237, 253, .42) !important;
-  background: transparent !important;
-  color: #e6edfd !important;
-  box-shadow: none !important;
-}
-html:not(.app-light) body ion-content.settings-content button.settings-row {
-  border-radius: 12px !important;
-}
-html:not(.app-light) body ion-content.settings-content button.settings-row.active {
-  border-color: #afc5f8 !important;
-  background: transparent !important;
-  color: #ffffff !important;
-}
-html body .profile-content-panel .profile-sections button {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: #ffffff !important;
-}
-html body .profile-content-panel .profile-sections button.active {
-  border-bottom-color: #ffffff !important;
-  background: transparent !important;
-  color: #ffffff !important;
-}
-html body .profile-circle-btn,
-html:not(.app-light) body .profile-circle-btn {
-  border: 0 !important;
-  border-color: transparent !important;
-  background: transparent !important;
-  color: #ffffff !important;
-  box-shadow: none !important;
-}
-html:not(.app-light) body button.conversation-indicator-button {
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-html:not(.app-light) body button.conversation-pin-indicator {
-  color: #ffca32 !important;
-}
-html:not(.app-light) body button.conversation-mute-indicator {
-  color: #ff817a !important;
-}
-/* Conversation rows are clickable content, not form controls. Keep the row transparent in dark mode. */
-html:not(.app-light) body button.conversation-row,
-html:not(.app-light) body button.account-choice {
-  border-color: var(--page-border) !important;
-  background: transparent !important;
-  color: var(--page-text) !important;
-}
-html:not(.app-light) body .settings-categories {
-  gap: 8px !important;
-}
-html:not(.app-light) body .settings-categories button {
-  min-height: 48px;
-  border: 1px solid rgba(230, 237, 253, .62) !important;
-  border-radius: 12px !important;
-  background: transparent !important;
-  color: #e6edfd !important;
-  box-shadow: none;
-}
-html:not(.app-light) body .settings-categories button.active {
-  border-color: #6e92f2 !important;
-  background: rgba(46, 93, 230, .24) !important;
-  color: #ffffff !important;
-}
-html:not(.app-light) body .settings-categories button ion-icon {
-  color: #afc5f8 !important;
-}
-html:not(.app-light) body .settings-categories button.logout-category {
-  color: #ff9b9b !important;
-}
-html:not(.app-light) body .feed-tabs .feed-tab {
-  border: 0 !important;
-  border-bottom: 2px solid transparent !important;
-  background: transparent !important;
-  color: var(--app-muted) !important;
-}
-html:not(.app-light) body .feed-tabs .feed-tab.is-active {
-  border-bottom-color: var(--app-primary) !important;
-  color: var(--app-text) !important;
-}
-html:not(.app-light) body .activity-switcher button,
-html:not(.app-light) body .suggestion-tabs button,
-html:not(.app-light) body .message-tabs ion-button,
-html:not(.app-light) body .filter-menu button:not(.selected-option) {
-  --background: #ffffff !important;
-  --color: #071039 !important;
-  border-color: #ffffff !important;
-  background: #ffffff !important;
-  color: #071039 !important;
-}
-html:not(.app-light) body .message-tabs ion-button::part(native) {
-  background: #ffffff !important;
-  color: #071039 !important;
-}
-html:not(.app-light) body .message-tabs ion-button {
-  --border-radius: 16px !important;
-  --box-shadow: 0 3px 12px rgba(7, 16, 57, .12) !important;
-  border: 1px solid #dbe5ff !important;
-}
-html:not(.app-light) body .message-tabs ion-button::part(native) {
-  border-radius: 16px !important;
-  box-shadow: 0 3px 12px rgba(7, 16, 57, .12) !important;
-}
-html:not(.app-light) body .action-button,
-html:not(.app-light) body .post-more,
-html:not(.app-light) body .attachment-arrow,
-html:not(.app-light) body .stats-row button,
-html:not(.app-light) body .close-button,
-html:not(.app-light) body .tool-button,
-html:not(.app-light) body .remove-attachment,
-html:not(.app-light) body .profile-circle-btn,
-html:not(.app-light) body .page-nav ion-button[fill="clear"] {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: #ffffff !important;
-}
-/* Post cards use a pale surface, so their controls need dark blue contrast. */
-html:not(.app-light) body app-post-card .post-card .action-button:not(.is-active),
-html:not(.app-light) body app-post-card .post-card .post-more {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: var(--app-primary) !important;
-}
-html:not(.app-light) body app-post-card .post-card .action-button.is-active {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: var(--app-primary) !important;
-}
-html:not(.app-light) body app-post-card .post-card .action-button:first-child.is-active {
-  color: #e24d61 !important;
-}
-html:not(.app-light) body button.notification-row {
-  border-color: rgba(230, 237, 253, .8) !important;
-  background: transparent !important;
-  color: #e6edfd !important;
-}
-html:not(.app-light) body .notification-row .notification-copy,
-html:not(.app-light) body .notification-row .notification-copy strong {
-  color: #e6edfd !important;
-}
-html:not(.app-light) body .notification-row .notification-preview,
-html:not(.app-light) body .notification-row .notification-copy time {
-  color: #afc5f8 !important;
-}
-html:not(.app-light) body .notification-row .notification-avatar {
-  border-color: var(--app-avatar-outline) !important;
-  background: var(--app-avatar-fill) !important;
-  color: var(--app-text-muted) !important;
-}
-html:not(.app-light) body .composer-card .close-button,
-html:not(.app-light) body .composer-card .tool-button,
-html:not(.app-light) body .composer-card .remove-attachment {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: #1a3bb0 !important;
-}
-html:not(.app-light) body .composer-card .publish-button {
-  border-color: #1a3bb0 !important;
-  background: #1a3bb0 !important;
-  color: #e6edfd !important;
-}
-html:not(.app-light) body .profile-actions .message-profile-button .message-button-label,
-html:not(.app-light) body .profile-actions .message-profile-button ion-icon {
-  color: #071039 !important;
-}
-/* The composer textarea gets a soft blue editor surface instead of the global white form fill. */
-.composer-card > ion-textarea {
-  --background: var(--app-surface-alt) !important;
-  --color: var(--app-text) !important;
-  --placeholder-color: var(--app-placeholder) !important;
-  --highlight-color: var(--app-primary) !important;
-  --highlight-color-focused: var(--app-primary) !important;
-  --highlight-color-valid: var(--app-primary) !important;
-  --padding-start: 16px !important;
-  --padding-end: 16px !important;
-  --padding-top: 14px !important;
-  --padding-bottom: 14px !important;
-  border: 1px solid var(--app-border) !important;
-  border-radius: 16px !important;
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-}
-.composer-card > ion-textarea::part(native) {
-  border-radius: 15px !important;
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-  -webkit-text-fill-color: var(--app-text) !important;
-}
-html:not(.app-light) body .composer-card > ion-textarea::part(native) {
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-  -webkit-text-fill-color: var(--app-text) !important;
-}
-html:not(.app-light) body .chat-search-field,
-html:not(.app-light) body .forward-search,
-html:not(.app-light) body .nickname-control input,
-html:not(.app-light) body .attachment-preview {
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-}
-html:not(.app-light) body .chat-search-field ion-icon,
-html:not(.app-light) body .forward-search ion-icon {
-  color: var(--app-primary) !important;
-}
-html:not(.app-light) body .post-media,
-html:not(.app-light) body .profile-gallery img,
-html:not(.app-light) body .profile-gallery video,
-html:not(.app-light) body .attachment-preview img,
-html:not(.app-light) body .attachment-preview video,
-html:not(.app-light) body .suggestion-post img,
-html:not(.app-light) body .suggestion-post video {
-  background: var(--app-surface-alt) !important;
-}
-/* A consistent, calmer treatment for generated (no-photo) profile avatars. */
-html:not(.app-light) body :is(
-  .profile-top ion-avatar,
-  .edit-profile-avatar,
-  .profile-avatar,
-  .post-avatar,
-  .author-avatar,
-  .chat-profile-avatar,
-  .incoming-avatar,
-  .conversation-avatar,
-  .account-choice-avatar,
-  .quick-chat-avatar,
-  .comment-avatar,
-  .suggestion-row ion-avatar,
-  .person-row ion-avatar
-):has(ion-icon) {
-  border-color: var(--app-text-muted) !important;
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text-muted) !important;
-}
-html.app-light body :is(
-  .profile-top ion-avatar,
-  .edit-profile-avatar,
-  .profile-avatar,
-  .post-avatar,
-  .author-avatar,
-  .chat-profile-avatar,
-  .incoming-avatar,
-  .conversation-avatar,
-  .account-choice-avatar,
-  .quick-chat-avatar,
-  .comment-avatar,
-  .suggestion-row ion-avatar,
-  .person-row ion-avatar
-):has(ion-icon) {
-  border-color: #afc5f8 !important;
-  background: #dbe5ff !important;
-  color: #1a3bb0 !important;
-}
-/* Authentication screens use translucent fields and blue actions, not white controls. */
-html:not(.app-light) body ion-content.auth-screen .login-field ion-input::part(native) {
-  background: var(--app-surface-alt) !important;
-  background-color: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-  -webkit-text-fill-color: var(--app-text) !important;
-  box-shadow: none !important;
-}
-html:not(.app-light) body ion-content.auth-screen ion-item.login-field,
-html:not(.app-light) body ion-content.auth-screen ion-item.login-field::part(native) {
-  --background: var(--app-surface-alt) !important;
-  --ion-item-background: var(--app-surface-alt) !important;
-  background: var(--app-surface-alt) !important;
-}
-html:not(.app-light) body ion-content.auth-screen ion-item.login-field ion-input {
-  --background: var(--app-surface-alt) !important;
-  --color: var(--app-text) !important;
-  --placeholder-color: var(--app-placeholder) !important;
-  color: var(--app-text) !important;
-  background: var(--app-surface-alt) !important;
-}
-html:not(.app-light) body ion-content.auth-screen ion-item.login-field ion-input::part(native) {
-  background: var(--app-surface-alt) !important;
-  background-color: var(--app-surface-alt) !important;
-}
-html:not(.app-light) body ion-content.auth-screen input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]) {
-  background: var(--app-surface-alt) !important;
-  color: var(--app-text) !important;
-  -webkit-text-fill-color: var(--app-text) !important;
-  caret-color: var(--app-text) !important;
-}
-html:not(.app-light) body ion-content.auth-screen ion-button.login-button,
-html:not(.app-light) body ion-content.auth-screen ion-button.create-account-button {
-  --background: #2e5de6 !important;
-  --background-activated: #2852ca !important;
-  --color: #e6edfd !important;
-  --border-color: #2e5de6 !important;
-  --box-shadow: 0 8px 22px rgba(46, 93, 230, .2) !important;
-}
-html:not(.app-light) body ion-content.auth-screen ion-button.login-button::part(native),
-html:not(.app-light) body ion-content.auth-screen ion-button.create-account-button::part(native) {
-  background: #2e5de6 !important;
-  color: #e6edfd !important;
-}
-html:not(.app-light) body ion-content.auth-screen button.account-more-button {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: #afc5f8 !important;
-}
-html:not(.app-light) body ion-content.auth-screen .account-action-menu button {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: #e6edfd !important;
-}
-html body .logout-confirm-actions button {
-  border: 1px solid rgba(230, 237, 253, .8) !important;
-  background: transparent !important;
-  color: #e6edfd !important;
-}
-html body .logout-confirm-actions button.logout-save-button {
-  border-color: #6e92f2 !important;
-  background: rgba(46, 93, 230, .24) !important;
-  color: #e6edfd !important;
-}
-
-/* Keep the profile edit action readable over the blue hero in light mode. */
-html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button,
-html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button::part(native) {
-  --color: #fff !important;
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button span,
-html.app-light body .profile-hero .profile-top > ion-button.edit-profile-button ion-icon {
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-/* Keep settings search text on its dark pill instead of the global white input fill. */
-html:not(.app-light) body ion-content.settings-content #settings-search-input {
-  background: transparent !important;
-  background-color: transparent !important;
-  color: #e6edfd !important;
-  -webkit-text-fill-color: #e6edfd !important;
-  caret-color: #e6edfd !important;
-  box-shadow: none !important;
+  scroll-behavior: auto !important;
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
 }

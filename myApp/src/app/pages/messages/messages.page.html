@@ -16,7 +16,6 @@
           <button type="button" class="chat-group-title" aria-label="Open group info" (click)="openGroupInfo()"><span>{{ conversationTitle(conversation) }}</span><small>{{ conversation.memberIds.length }} members{{ showGroupInfo ? ' · Group info' : '' }}</small></button>
         }
         <span class="chat-header-actions">
-          <ion-button fill="clear" aria-label="Video call" (click)="startVideoCall()"><ion-icon slot="icon-only" name="videocam-outline"></ion-icon></ion-button>
           <ion-button fill="clear" aria-label="Chat settings" (click)="openChatSettings()"><ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon></ion-button>
         </span>
       </div>
@@ -44,6 +43,9 @@
 </ion-header>
 
 <ion-content class="page-content" [class.chat-mode]="activeConversation !== null" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" [fullscreen]="true" [scrollEvents]="true" (ionScroll)="onThreadScroll($event)">
+  @if (messageService.loadError(); as messageLoadError) {
+    <section class="message-data-error" role="alert"><p>{{ messageLoadError }}</p><button type="button" (click)="retryLoadingMessages()">Retry</button></section>
+  }
   @if (activeConversation; as conversation) {
     @if (isActiveConversationRequest && activeChatAccount; as requester) {
       <section class="request-sender-intro" aria-label="Message request sender">
@@ -57,7 +59,7 @@
         <div class="request-profile-actions">
           <a [routerLink]="['/profile', requester.id]"><ion-icon name="person-circle-outline"></ion-icon><span>View profile</span></a>
         </div>
-        <p class="request-encryption-note">Messages and calls are secured with end-to-end encryption. Only people in this chat can read, listen to, or share them.</p>
+        <p class="request-encryption-note">Messages in this local version are saved in this browser. Avoid sharing sensitive information.</p>
       </section>
     }
     <section class="chat-thread" aria-live="polite" aria-label="Conversation messages">
@@ -450,7 +452,7 @@
 
           <section class="settings-block">
             <h3>Video call</h3>
-            <button type="button" class="settings-action-button video-call-setting" (click)="startVideoCall()"><ion-icon name="videocam-outline"></ion-icon> Start video call</button>
+            <p class="settings-description">Video calling needs a configured calling service.</p>
           </section>
 
           <section class="settings-block">
@@ -666,15 +668,6 @@
     }
   </ion-footer>
 } @else {
-  <ion-footer class="page-footer ion-no-border"><ion-toolbar>
-    <nav class="page-nav messages-nav" aria-label="Main navigation">
-      <ion-button fill="clear" routerLink="/home" (click)="viewState.handleTabTap('/home', 'tali-view-home')" aria-label="Home"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></ion-button>
-      <ion-button fill="solid" class="active-tab" routerLink="/messages" (click)="viewState.handleTabTap('/messages', 'tali-view-messages')" aria-label="Messages"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></ion-button>
-      <ion-button fill="clear" class="compose-button" routerLink="/add-post" (click)="viewState.handleTabTap('/add-post', 'tali-post-draft')" aria-label="Create post"><span class="nav-plus-circle"><svg class="nav-plus-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></ion-button>
-      <ion-button fill="clear" class="notification-nav-button" routerLink="/activity" (click)="viewState.handleTabTap('/activity', 'tali-view-activity')" aria-label="Activity"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>@if (unreadNotifications) { <span class="notification-badge">{{ unreadNotifications }}</span> }</ion-button>
-      <ion-button fill="clear" routerLink="/profile" (click)="viewState.handleTabTap('/profile', 'tali-view-profile:current')" aria-label="Profile"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="9" r="3"/><path d="M7 20a5 5 0 0 1 10 0"/></svg></ion-button>
-    </nav>
-  </ion-toolbar></ion-footer>
 }
 @if (showComposerEmojiPicker && activeConversation) {
   <emoji-picker class="composer-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onComposerEmojiSelected($event)"></emoji-picker>
@@ -682,13 +675,13 @@
 @if (mentionQuery !== null && activeConversation && !isActiveConversationRequest) {
   <div class="mention-suggestions" role="listbox" aria-label="Group chat members to mention">
     @for (person of mentionSuggestions; track person.id) {
-      <button type="button" role="option" (mousedown)="$event.preventDefault(); insertMention(person.username)">
+      <button type="button" role="option" (mousedown)="$event.preventDefault()" (click)="insertMention(person.username)">
         <span class="mention-avatar">@if (person.profileImage) { <img [src]="person.profileImage" [alt]="''" /> } @else { <ion-icon name="person-circle-outline"></ion-icon> }</span>
         <span class="mention-option-copy"><strong>{{ person.name }}</strong><small>{{ person.username }}</small></span>
       </button>
     }
     @if (canMentionEveryone) {
-      <button type="button" role="option" (mousedown)="$event.preventDefault(); insertMention('@everyone')">
+      <button type="button" role="option" (mousedown)="$event.preventDefault()" (click)="insertMention('@everyone')">
         <span class="mention-avatar everyone-avatar"><ion-icon name="people-outline"></ion-icon></span>
         <span class="mention-option-copy"><strong>everyone</strong><small>Mention everyone in this chat</small></span>
       </button>

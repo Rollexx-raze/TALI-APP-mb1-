@@ -75,6 +75,7 @@ export class MessageService {
   });
   readonly communities = signal<Community[]>([]);
   readonly communityDataReady = signal(false);
+  readonly loadError = signal<string | null>(null);
   readonly communityDataHydrated = new Promise<void>((resolve) => {
     this.resolveCommunityDataHydrated = resolve;
   });
@@ -84,26 +85,30 @@ export class MessageService {
   private changedBeforeHydration = false;
 
   constructor() {
-    void loadBrowserData(conversationsStorageKey, [], isStoredConversationList).then((saved) => {
+    void loadBrowserData(conversationsStorageKey, [], isStoredConversationList, () => {
+      this.loadError.set('Messages could not be loaded from this browser. Retry to check the saved data again.');
+    }).then((saved) => {
       const conversations = this.changedBeforeHydration
         ? mergeConversations(saved, this.conversations())
         : saved;
       this.conversations.set(conversations.map(restoreConversationDates));
       if (this.changedBeforeHydration) this.persistConversations();
-    }).catch((error: unknown) => {
-      console.error('Could not load conversations.', error);
+    }).catch(() => {
+      this.loadError.set('Messages could not be loaded from this browser. Retry to check the saved data again.');
     }).finally(() => {
       this.resolveConversationDataHydrated();
     });
-    void loadBrowserData(communitiesStorageKey, [], isStoredCommunityList).then((saved) => {
+    void loadBrowserData(communitiesStorageKey, [], isStoredCommunityList, () => {
+      this.loadError.set('Communities could not be loaded from this browser. Retry to check the saved data again.');
+    }).then((saved) => {
       this.communities.set(saved.map((community) => ({
         ...community,
         createdAt: new Date(community.createdAt),
       })));
       this.communityDataReady.set(true);
       this.resolveCommunityDataHydrated();
-    }).catch((error: unknown) => {
-      console.error('Could not load communities.', error);
+    }).catch(() => {
+      this.loadError.set('Communities could not be loaded from this browser. Retry to check the saved data again.');
       this.communityDataReady.set(true);
       this.resolveCommunityDataHydrated();
     });
@@ -391,8 +396,7 @@ export class MessageService {
         localStorage.setItem(communitiesStorageKey, JSON.stringify(snapshot));
         localStorageSaved = true;
       }
-    } catch (error) {
-      console.error('Could not save communities to local storage.', error);
+    } catch {
     }
     return saveBrowserDataResult(communitiesStorageKey, snapshot).then((saved) => saved || localStorageSaved);
   }

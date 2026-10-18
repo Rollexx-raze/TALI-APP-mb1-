@@ -39,7 +39,6 @@ export class GroupService {
     let browserLoadError: unknown;
     void loadBrowserData(groupsStorageKey, groups, isStoredGroupList, (error) => {
       browserLoadError = error;
-      console.error('Could not load saved groups from browser storage.', error);
     }).then(
       (savedGroups) => {
         const normalizedGroups = savedGroups
@@ -48,14 +47,12 @@ export class GroupService {
         const mergedGroups = mergeGroups(normalizedGroups, this.groups());
         this.groups.set(mergedGroups);
         this.loading.set(false);
-        console.log('Groups loaded', { groupCount: mergedGroups.length });
         if ((browserLoadError ?? localLoadError) !== undefined && mergedGroups.length === 0) {
           this.loadError.set('Groups could not be loaded. Check your browser storage and try again.');
         }
         if (this.changedBeforeHydration || savedGroups.some(groupNeedsMigration)) this.persistGroups();
       },
       (error: unknown) => {
-        console.error('Could not load saved groups.', error);
         this.loading.set(false);
         this.loadError.set('Groups could not be loaded. Check your browser storage and try again.');
       },
@@ -243,7 +240,6 @@ export class GroupService {
       const stored: unknown = JSON.parse(localStorage.getItem(groupsStorageKey) ?? '[]');
       if (!Array.isArray(stored)) {
         const error = new Error('Saved group data in local storage is not a list.');
-        console.error('Could not read saved groups from local storage.', error);
         return { groups: [], migratedLegacyGroups: false, error };
       }
       let migratedLegacyGroups = false;
@@ -259,7 +255,6 @@ export class GroupService {
       });
       return { groups, migratedLegacyGroups };
     } catch (error) {
-      console.error('Could not read saved groups from local storage.', error);
       return { groups: [], migratedLegacyGroups: false, error };
     }
   }
@@ -270,8 +265,7 @@ export class GroupService {
     if (typeof localStorage !== 'undefined') {
       try {
         localStorage.setItem(groupsStorageKey, JSON.stringify(snapshot));
-      } catch (error) {
-        console.error('Could not save groups to local storage.', error);
+      } catch {
         return false;
       }
     }

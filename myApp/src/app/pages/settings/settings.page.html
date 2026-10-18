@@ -6,73 +6,21 @@
 </ion-header>
 <ion-content class="settings-content" [fullscreen]="true">
   <div class="settings-layout" [class.mobile-detail-open]="mobileDetailOpen">
-      <main class="settings-home">
-        <label class="settings-search">
-          <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
-          <input id="settings-search-input" type="search" placeholder="Search" aria-label="Search settings" [(ngModel)]="searchText">
-        </label>
-
-        @if (isSearching) {
-          <div class="settings-group search-results">
-            <h2>Search results</h2>
-            @for (result of filteredSettings; track result.label) {
-              <button class="settings-row" [class.active]="activeSection === result.section" type="button" (click)="openSection(result.section)"><ion-icon [name]="result.icon" aria-hidden="true"></ion-icon><span>{{ result.label }}</span></button>
-            } @empty { <p class="settings-empty-result">No settings found for “{{ searchText.trim() }}”.</p> }
-          </div>
-        } @else {
-          <div class="settings-group account-group">
-          <div class="group-heading"><span>Your account</span></div>
-            <button class="settings-row account-center-row" [class.active]="activeSection === 'account'" type="button" (click)="openSection('account')">
-              <img class="settings-image-icon" src="assets/user-shield.png" alt="">
-              <span><strong>Accounts Center</strong><small>Password, security, personal details,<br class="wide-break"> connected experiences, ad preferences</small></span>
-            </button>
-          </div>
-
-          <div class="settings-group">
-            <h2>How you use Tali</h2>
-            <button class="settings-row" [class.active]="activeSection === 'profile'" type="button" (click)="openSection('profile')"><img class="settings-image-icon" src="assets/user.png" alt=""><span>Edit profile</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'notifications'" type="button" (click)="openSection('notifications')"><img class="settings-image-icon" src="assets/bell.png" alt=""><span>Notifications</span></button>
-          </div>
-
-          <div class="settings-group">
-            <h2>Who can see your content</h2>
-            <button class="settings-row" [class.active]="activeSection === 'privacy'" type="button" (click)="openSection('privacy')"><ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon><span>Privacy</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'connections'" type="button" (click)="openSection('connections')"><img class="settings-image-icon" src="assets/handshake.png" alt=""><span>Close Friends</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'blocked'" type="button" (click)="openSection('blocked')"><img class="settings-image-icon" src="assets/shield-ban.png" alt=""><span>Blocked</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'story-privacy'" type="button" (click)="openSection('story-privacy')"><ion-icon name="eye-off-outline" aria-hidden="true"></ion-icon><span>Story, live and location</span></button>
-          </div>
-
-          <div class="settings-group">
-            <h2>Family Center</h2>
-            <button class="settings-row" [class.active]="activeSection === 'family'" type="button" (click)="openSection('family')"><ion-icon name="people-outline" aria-hidden="true"></ion-icon><span>Supervision for Teen Accounts</span></button>
-          </div>
-
-          <div class="settings-group">
-            <h2>What you see</h2>
-            <button class="settings-row" [class.active]="activeSection === 'muted'" type="button" (click)="openSection('muted')"><ion-icon name="notifications-outline" aria-hidden="true"></ion-icon><span>Muted accounts</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'content'" type="button" (click)="openSection('content')"><ion-icon name="document-text-outline" aria-hidden="true"></ion-icon><span>Content preferences</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'like-counts'" type="button" (click)="openSection('like-counts')"><ion-icon name="card-outline" aria-hidden="true"></ion-icon><span>Like and share counts</span></button>
-          </div>
-
-          <div class="settings-group">
-            <h2>How others can interact with you</h2>
-            <button class="settings-row" [class.active]="activeSection === 'messages'" type="button" (click)="openSection('messages')"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon><span>Messages and story replies</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'tags'" type="button" (click)="openSection('tags')"><ion-icon name="person-outline" aria-hidden="true"></ion-icon><span>Tags and mentions</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'comments'" type="button" (click)="openSection('comments')"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon><span>Comments</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'sharing'" type="button" (click)="openSection('sharing')"><ion-icon name="people-outline" aria-hidden="true"></ion-icon><span>Sharing</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'blocked'" type="button" (click)="openSection('blocked')"><ion-icon name="ban-outline" aria-hidden="true"></ion-icon><span>Restricted accounts</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'hidden-words'" type="button" (click)="openSection('hidden-words')"><ion-icon name="eye-off-outline" aria-hidden="true"></ion-icon><span>Hidden Words</span></button>
-          </div>
-          <div class="settings-group">
-            <h2>Your activity</h2>
-            <button class="settings-row" [class.active]="activeSection === 'archive'" type="button" (click)="openSection('archive')"><ion-icon name="archive-outline" aria-hidden="true"></ion-icon><span>Archive</span></button>
-            <button class="settings-row" [class.active]="activeSection === 'trash'" type="button" (click)="openSection('trash')"><ion-icon name="trash-outline" aria-hidden="true"></ion-icon><span>Trash</span></button>
-          </div>
-          <button class="settings-row logout-category" type="button" (click)="logout()"><ion-icon name="log-out-outline" aria-hidden="true"></ion-icon><span>Log out</span></button>
-        }
+        <main class="settings-home settings-home-simple" data-surface="surface">
+          <nav class="settings-simple-list" aria-label="Settings">
+            <button class="settings-simple-row" type="button" (click)="openSection('account')"><ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon><span>Account</span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="settings-simple-row" type="button" (click)="openSection('notifications')"><ion-icon name="notifications-outline" aria-hidden="true"></ion-icon><span>Notification</span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="settings-simple-row" type="button" (click)="openSection('appearance')"><ion-icon name="color-palette-outline" aria-hidden="true"></ion-icon><span>Appearance</span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="settings-simple-row" type="button" (click)="openSection('privacy')"><ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon><span>Privacy</span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="settings-simple-row" type="button" (click)="openSection('help')"><ion-icon name="help-circle-outline" aria-hidden="true"></ion-icon><span>Help</span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="settings-simple-row" type="button" (click)="logout()"><ion-icon name="log-out-outline" aria-hidden="true"></ion-icon><span>Logout</span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+          </nav>
       </main>
 
-    <section class="settings-detail">
+    <section class="settings-detail" data-surface="surface">
+      @if (preferenceMessage) { <p class="settings-action-feedback" role="alert" aria-live="assertive">{{ preferenceMessage }}</p> }
+      @if (activeSection === 'profile' && profileSettingsMessage) { <p class="settings-action-feedback" role="status" aria-live="polite">{{ profileSettingsMessage }}</p> }
+      @if (activeSection === 'notifications' && notificationMessage) { <p class="settings-action-feedback" role="status" aria-live="polite">{{ notificationMessage }}</p> }
       @if (activeSection === 'profile') {
         <h2>Edit profile</h2>
         <form class="profile-settings-form" (ngSubmit)="saveProfileSettings()">
@@ -93,6 +41,7 @@
             <p class="name-change-note">{{ nameChangeCooldownMessage }}</p>
           </div>
           <label class="profile-field"><strong>Bio</strong><textarea maxlength="150" [(ngModel)]="profileBio" name="bio" placeholder="Bio"></textarea><small>{{ profileBio.length }} / 150</small></label>
+          <label class="profile-field"><strong>Website</strong><input type="url" [(ngModel)]="profileWebsite" name="website" autocomplete="url" placeholder="https://example.com"></label>
           <div class="profile-field gender-field"><strong>Gender</strong>
             <div class="gender-picker">
               <button type="button" class="gender-picker-trigger" [attr.aria-expanded]="genderMenuOpen" (click)="genderMenuOpen = !genderMenuOpen">{{ genderLabel }}<ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon></button>
@@ -128,9 +77,6 @@
             <button class="account-setting-row" type="button" (click)="openSection('security')"><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon><span>Password and security</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="account-setting-row" type="button" (click)="openSection('messages')"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon><span>Connected experiences</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="account-setting-row" type="button" (click)="openSection('permissions')"><ion-icon name="document-text-outline" aria-hidden="true"></ion-icon><span>Your information and permissions</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
-            <button class="account-setting-row" type="button" (click)="openSection('ads')"><ion-icon name="megaphone-outline" aria-hidden="true"></ion-icon><span>Ad preferences</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
-            <button class="account-setting-row" type="button" (click)="openSection('payments')"><ion-icon name="card-outline" aria-hidden="true"></ion-icon><span>Meta Pay</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
-            <button class="account-setting-row" type="button" (click)="openSection('payments')"><ion-icon name="time-outline" aria-hidden="true"></ion-icon><span>Subscriptions</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="account-setting-row" type="button" routerLink="/more-accounts"><ion-icon name="people-outline" aria-hidden="true"></ion-icon><span>Manage accounts</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
           </div>
         </section>
@@ -167,7 +113,7 @@
           } @empty { <p class="detail-copy">There are no other accounts to manage yet.</p> }
         </section>
       }
-      @if (activeSection === 'family') { <h2>Supervision for Teen Accounts</h2><section class="settings-info-card"><p class="detail-copy">Family Center tools help parents and teens support safer account experiences.</p></section> }
+      @if (activeSection === 'family') { <h2>Supervision for Teen Accounts</h2><section class="settings-info-card"><p class="detail-copy">Family supervision needs parent and teen account linking, which is not connected in this local version.</p></section> }
       @if (activeSection === 'muted') {
         <h2>Muted accounts</h2><p class="detail-copy">Muted conversations won’t send message notifications.</p>
         <section class="account-safety-list">
@@ -198,21 +144,21 @@
         @if (passwordMessage) { <p class="detail-copy" role="status">{{ passwordMessage }}</p> }
       }
       @if (activeSection === 'notifications') {
-        <h2>Notifications</h2><div class="notification-settings-card"><ion-item class="notification-setting-row" lines="none"><ion-label>Push notifications</ion-label><ion-toggle slot="end" [(ngModel)]="notifications" (ionChange)="onNotificationsChanged()"></ion-toggle></ion-item></div>
+        <h2>Notifications</h2><div class="notification-settings-card"><ion-item class="notification-setting-row" lines="none"><ion-label>Browser notifications</ion-label><ion-toggle slot="end" [(ngModel)]="notifications" (ionChange)="onNotificationsChanged()"></ion-toggle></ion-item></div>
       }
       @if (activeSection === 'messages') {
         <h2>Messages and Calls</h2>
         <div class="notification-settings-card">
         <ion-item lines="none"><ion-label>Message alerts</ion-label><ion-toggle slot="end" [(ngModel)]="messageAlerts" (ionChange)="savePreferences()"></ion-toggle></ion-item>
-        <ion-item lines="none"><ion-label>Call alerts</ion-label><ion-toggle slot="end" [(ngModel)]="callAlerts" (ionChange)="savePreferences()"></ion-toggle></ion-item>
         <ion-item lines="none"><ion-label>Read receipts</ion-label><ion-toggle slot="end" [(ngModel)]="readReceipts" (ionChange)="savePreferences()"></ion-toggle></ion-item>
+        <p class="detail-copy">Calling alerts will be available when a calling service is connected.</p>
         </div>
       }
       @if (activeSection === 'content') {
         <h2>Content Preferences</h2>
         <div class="notification-settings-card">
-        <ion-item lines="none"><ion-label>Show sensitive content</ion-label><ion-toggle slot="end" [(ngModel)]="sensitiveContent" (ionChange)="savePreferences()"></ion-toggle></ion-item>
         <ion-item lines="none"><ion-label>Autoplay videos</ion-label><ion-toggle slot="end" [(ngModel)]="autoplayVideos" (ionChange)="savePreferences()"></ion-toggle></ion-item>
+        <p class="detail-copy">Sensitive-content filtering is not available because posts are not classified in this local version.</p>
         </div>
       }
       @if (activeSection === 'connections') {
@@ -233,7 +179,7 @@
         </section>
       }
       @if (activeSection === 'activity') {
-        <h2>Your Activity</h2><section class="settings-info-card activity-settings-card"><ion-item lines="none"><ion-label><strong>Activity status</strong><p>Show whether you are currently active.</p></ion-label><ion-toggle slot="end" [(ngModel)]="activityStatus" (ionChange)="savePreferences()"></ion-toggle></ion-item><p class="detail-copy">{{ ownPosts.length }} posts from this account.</p>
+        <h2>Your Activity</h2><section class="settings-info-card activity-settings-card"><p class="detail-copy">{{ ownPosts.length }} posts from this account.</p><p class="detail-copy">Presence sharing is not available in this local version.</p>
         @for (post of ownPosts; track post.id) { <article class="activity-post"><p>{{ post.body || 'Media post' }}</p><time>{{ post.createdAt | date:'medium' }}</time></article> } @empty { <p class="detail-copy">No activity to show yet.</p> }
         </section>
       }
@@ -252,7 +198,25 @@
         </div>
       }
       @if (activeSection === 'appearance') {
-        <h2>Appearance</h2><div class="notification-settings-card"><ion-item lines="none"><ion-label>Dark mode</ion-label><ion-toggle slot="end" [(ngModel)]="darkMode" (ionChange)="savePreferences()"></ion-toggle></ion-item></div>
+        <h2>Appearance</h2>
+        <p class="detail-copy">Choose how Tali looks on this device.</p>
+        <div class="appearance-options" role="group" aria-label="Choose appearance">
+          <button type="button" class="appearance-option" [class.selected]="appearanceMode === 'system'" [attr.aria-pressed]="appearanceMode === 'system'" (click)="setAppearance('system')">
+            <span class="appearance-preview system-preview" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="appearance-option-copy"><ion-icon name="desktop-outline" aria-hidden="true"></ion-icon><span>System</span></span>
+            @if (appearanceMode === 'system') { <ion-icon class="appearance-check" name="checkmark-outline" aria-hidden="true"></ion-icon> }
+          </button>
+          <button type="button" class="appearance-option" [class.selected]="appearanceMode === 'light'" [attr.aria-pressed]="appearanceMode === 'light'" (click)="setAppearance('light')">
+            <span class="appearance-preview light-preview" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="appearance-option-copy"><ion-icon name="sunny-outline" aria-hidden="true"></ion-icon><span>Light</span></span>
+            @if (appearanceMode === 'light') { <ion-icon class="appearance-check" name="checkmark-outline" aria-hidden="true"></ion-icon> }
+          </button>
+          <button type="button" class="appearance-option" [class.selected]="appearanceMode === 'dark'" [attr.aria-pressed]="appearanceMode === 'dark'" (click)="setAppearance('dark')">
+            <span class="appearance-preview dark-preview" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="appearance-option-copy"><ion-icon name="moon-outline" aria-hidden="true"></ion-icon><span>Dark</span></span>
+            @if (appearanceMode === 'dark') { <ion-icon class="appearance-check" name="checkmark-outline" aria-hidden="true"></ion-icon> }
+          </button>
+        </div>
       }
       @if (activeSection === 'accessibility') {
         <h2>Accessibility</h2>
@@ -261,20 +225,14 @@
         <ion-item lines="none"><ion-label>Reduce motion</ion-label><ion-toggle slot="end" [(ngModel)]="reduceMotion" (ionChange)="savePreferences()"></ion-toggle></ion-item>
         </div>
       }
-      @if (activeSection === 'language') {
-        <h2>Language</h2><div class="notification-settings-card"><ion-item lines="none"><ion-label>App language</ion-label><ion-select [(ngModel)]="language" (ionChange)="savePreferences()"><ion-select-option value="en">English</ion-select-option><ion-select-option value="fil">Filipino</ion-select-option></ion-select></ion-item></div>
-      }
       @if (activeSection === 'data') {
         <h2>Data and Storage</h2><section class="settings-info-card"><p class="detail-copy">Accounts in this session: {{ accountService.accounts().length }}</p><p class="detail-copy">Posts in this session: {{ postService.posts().length }}</p><ion-item lines="none"><ion-label>Data saver preference</ion-label><ion-toggle slot="end" [(ngModel)]="dataSaver" (ionChange)="savePreferences()"></ion-toggle></ion-item></section>
       }
       @if (activeSection === 'permissions') {
         <h2>Permissions</h2><section class="settings-info-card"><p class="detail-copy">These app preferences do not replace device-level permissions.</p><ion-item lines="none"><ion-label>Allow media attachments</ion-label><ion-toggle slot="end" [(ngModel)]="mediaPermission" (ionChange)="savePreferences()"></ion-toggle></ion-item></section>
       }
-      @if (activeSection === 'ads') {
-        <h2>Ads &amp; Recommendations</h2><div class="notification-settings-card"><ion-item lines="none"><ion-label>Personalized recommendations</ion-label><ion-toggle slot="end" [(ngModel)]="personalizedRecommendations" (ionChange)="savePreferences()"></ion-toggle></ion-item></div>
-      }
-      @if (activeSection === 'payments') { <h2>Subscriptions &amp; Payments</h2><section class="settings-info-card"><p class="detail-copy">No subscriptions or payment methods are connected.</p></section> }
       @if (activeSection === 'about') { <h2>About</h2><section class="settings-info-card"><p class="detail-copy">Tali · Version 0.0.1</p><p class="detail-copy">A space for people and communities to connect.</p></section> }
+      @if (activeSection === 'help') { <h2>Help</h2><section class="settings-info-card"><h3>How can we help?</h3><p class="detail-copy">Manage your account, privacy, and notifications from Settings. For sign-in help, use the account recovery option on the login screen.</p></section> }
     </section>
   </div>
 </ion-content>
