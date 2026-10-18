@@ -62,3 +62,10 @@ ion-label p { color: var(--text) !important; }
 .more-back-button { border:1px solid #e4e9f2; background:#fff; color:#5d58e9; }
 @media (max-width:560px) { .more-heading { padding-top:calc(env(safe-area-inset-top,0px) + 64px); } }
 :host-context(html.app-light) .more-content { --background:#f9faff; }
+
+@media (min-width:768px) {
+  .more-content { width:100%; max-width:none; margin:0; }
+  .more-content::part(scroll) { display:flex; min-height:100%; box-sizing:border-box; flex-direction:column; justify-content:center; align-items:center; padding-block:var(--space-5); }
+  .more-heading { width:min(100%, 560px); box-sizing:border-box; padding-top:var(--space-4); }
+  .more-content ion-list, .more-content .auth-empty-state { flex:0 0 auto; }
+}

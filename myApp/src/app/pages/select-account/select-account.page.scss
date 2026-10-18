@@ -77,3 +77,9 @@ ion-label p { color:#8491aa!important; font-size:10px; }
 .more-link { width:min(calc(100% - 36px),460px); min-height:42px; margin:7px auto 0; }
 .select-footer-note { margin:12px 0 0; color:#8491aa; font-size:9px; text-align:center; }
 .auth-empty-state + .continue-account-button { display:none; }
+
+@media (min-width:768px) {
+  .select-content { width:100%; max-width:none; margin:0; }
+  .select-content::part(scroll) { display:flex; min-height:100%; box-sizing:border-box; flex-direction:column; justify-content:center; align-items:center; padding-block:var(--space-5); }
+  .select-header { width:min(100%, 560px); box-sizing:border-box; padding-top:var(--space-4); }
+}

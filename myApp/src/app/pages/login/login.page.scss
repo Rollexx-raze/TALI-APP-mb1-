@@ -178,3 +178,8 @@
 .login-button, .login-button::part(native) { min-height:40px; }
 .login-links { margin-top:0; }
 .login-link-button { min-height:40px; }
+
+@media (min-width:768px) {
+  .login-content { width:100%; max-width:none; margin:0; }
+  .login-content::part(scroll) { align-items:center; }
+}
