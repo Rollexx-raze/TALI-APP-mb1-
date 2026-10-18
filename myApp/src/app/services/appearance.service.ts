@@ -14,6 +14,7 @@ export class AppearanceService {
   }
 
   setMode(mode: AppearanceMode) {
+    const changed = this.mode() !== mode;
     this.mode.set(mode);
     try {
       if (typeof localStorage !== 'undefined') {
@@ -24,7 +25,15 @@ export class AppearanceService {
     } catch {
       // Keep the selected appearance applied for this session if storage is unavailable.
     }
-    this.applyMode(mode);
+    if (changed && typeof document !== 'undefined' && typeof window !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.add('app-theme-transition');
+      void root.offsetWidth;
+      this.applyMode(mode);
+      window.setTimeout(() => root.classList.remove('app-theme-transition'), 300);
+    } else {
+      this.applyMode(mode);
+    }
   }
 
   private readMode(): AppearanceMode {

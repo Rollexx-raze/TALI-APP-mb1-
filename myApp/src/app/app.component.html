@@ -1,4 +1,6 @@
-<ion-app data-surface="base">
-  <ion-router-outlet [animated]="false"></ion-router-outlet>
+<ion-app data-surface="base" [class.has-main-nav]="showBottomNav()">
+  <main class="app-main">
+    <ion-router-outlet [animated]="false"></ion-router-outlet>
+  </main>
   @if (showBottomNav()) { <app-bottom-nav /> }
 </ion-app>
