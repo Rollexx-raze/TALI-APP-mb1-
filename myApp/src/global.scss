@@ -112,6 +112,53 @@ ion-button[fill="outline"] {
   --border-width: 1px;
 }
 
+ion-button.button-primary,
+button.button-primary {
+  --background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  --color: var(--on-primary);
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: var(--on-primary);
+}
+
+ion-button.button-secondary,
+button.button-secondary {
+  --background: var(--surface);
+  --color: var(--primary);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--primary);
+}
+
+ion-button.button-danger,
+button.button-danger {
+  --background: var(--danger);
+  --color: var(--surface);
+  border-color: var(--danger);
+  background: var(--danger);
+  color: var(--surface);
+}
+
+ion-button.button-ghost,
+button.button-ghost {
+  --background: var(--transparent);
+  --color: var(--text-muted);
+  border-color: var(--transparent);
+  background: var(--transparent);
+  color: var(--text-muted);
+}
+
+.button-loading::after {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-inline-start: var(--space-2);
+  border: 2px solid currentColor;
+  border-right-color: var(--transparent);
+  border-radius: var(--radius-circle);
+  content: "";
+}
+
 button,
 input,
 textarea,
@@ -236,9 +283,9 @@ ion-icon {
   transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 
-.page-header,
-.home-header,
-.settings-header {
+ion-header.page-header,
+ion-header.home-header,
+ion-header.settings-header {
   --background: color-mix(in srgb, var(--surface) 92%, var(--transparent));
   --border-color: var(--border);
   position: sticky;
@@ -250,9 +297,9 @@ ion-icon {
   -webkit-backdrop-filter: blur(12px);
 }
 
-.page-header ion-toolbar,
-.home-header ion-toolbar,
-.settings-header ion-toolbar {
+ion-header.page-header ion-toolbar,
+ion-header.home-header ion-toolbar,
+ion-header.settings-header ion-toolbar {
   --background: var(--transparent);
   --color: var(--text);
   --border-color: var(--transparent);
@@ -263,6 +310,17 @@ ion-icon {
 .settings-header h1 {
   color: var(--text);
   font-size: var(--font-20);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+ion-header.page-header h1,
+ion-header.settings-header h1 {
+  font-size: var(--font-page-title);
+}
+
+ion-content.settings-content .settings-detail > h2 {
+  font-size: var(--font-24);
   font-weight: 700;
   letter-spacing: -0.03em;
 }
@@ -301,10 +359,21 @@ html.app-dark .home-brand-mark .logo-on-light {
   margin-inline: auto;
 }
 
+.search-filters,
+.section-block {
+  width: min(100%, 720px);
+  margin-inline: auto;
+}
+
 .screen-shell {
   width: min(100%, 620px);
   padding: var(--space-4);
   background: var(--bg);
+}
+
+ion-content.home-content .screen-shell {
+  width: min(100%, 620px);
+  padding-inline: var(--space-4);
 }
 
 .home-content,
@@ -322,6 +391,10 @@ html.app-dark .home-brand-mark .logo-on-light {
 .profile-page-shell {
   width: min(100%, 960px);
   padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom, var(--space-0)));
+}
+
+ion-content.profile-content .profile-page-shell {
+  width: min(100%, 960px);
 }
 
 .profile-hero {
@@ -351,6 +424,12 @@ html.app-dark .home-brand-mark .logo-on-light {
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-4);
+}
+
+ion-content.profile-content .profile-top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
 }
 
 .profile-avatar-wrap ion-avatar {
@@ -450,6 +529,10 @@ html.app-dark .home-brand-mark .logo-on-light {
   padding: var(--space-4);
 }
 
+ion-content.settings-content .settings-layout {
+  width: min(100%, 1200px);
+}
+
 .settings-home-simple {
   width: 100%;
   max-width: none;
@@ -508,6 +591,10 @@ html.app-dark .home-brand-mark .logo-on-light {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-4);
   margin-top: var(--space-4);
+}
+
+.settings-layout .appearance-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .appearance-option {
@@ -688,6 +775,17 @@ html.app-dark .home-brand-mark .logo-on-light {
   color: var(--primary);
 }
 
+.feed-tabs .feed-tab[aria-selected="true"],
+.profile-sections button[aria-pressed="true"] {
+  color: var(--primary);
+}
+
+.notification-count,
+.group-chat-count,
+.unread-dot {
+  accent-color: var(--primary);
+}
+
 .search-result,
 .conversation-row,
 .account-choice,
@@ -853,6 +951,15 @@ ion-modal.post-comments-modal {
     padding-inline: var(--space-4);
   }
 
+  ion-content.home-content .screen-shell {
+    width: 100%;
+  }
+
+  ion-content.profile-content .profile-page-shell,
+  ion-content.settings-content .settings-layout {
+    width: 100%;
+  }
+
   .profile-top {
     grid-template-columns: auto minmax(0, 1fr);
     gap: var(--space-3);
@@ -883,6 +990,10 @@ ion-modal.post-comments-modal {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .settings-layout .appearance-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   ion-modal.post-comments-modal {
     --height: min(94dvh, 860px);
   }
@@ -890,6 +1001,10 @@ ion-modal.post-comments-modal {
   .settings-messages-button {
     right: max(var(--space-3), env(safe-area-inset-right, var(--space-0)));
     bottom: calc(var(--space-7) + env(safe-area-inset-bottom, var(--space-0)));
+  }
+
+  ion-content.page-content .chat-footer {
+    --chat-nav-offset: calc(var(--space-0) - var(--mobile-nav-height) - env(safe-area-inset-bottom, var(--space-0)));
   }
 }
 
@@ -906,32 +1021,12 @@ ion-modal.post-comments-modal {
     padding: var(--space-5);
   }
 
-  .settings-layout {
-    display: grid;
-    grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
-    gap: var(--space-5);
-    padding: var(--space-5);
-  }
-
-  .settings-home,
-  .settings-detail {
-    min-width: 0;
+  ion-content.profile-content .profile-top {
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .settings-home-simple {
     padding: 0;
-  }
-
-  .settings-layout.mobile-detail-open .settings-home {
-    display: block;
-  }
-
-  .settings-detail {
-    display: block;
-    padding: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
-    background: var(--surface);
   }
 }
 
@@ -954,9 +1049,34 @@ ion-modal.post-comments-modal {
     padding: var(--space-5) var(--space-6);
   }
 
-  .settings-layout {
+  ion-content.settings-content .settings-layout {
+    display: grid;
     grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
     align-items: start;
+    gap: var(--space-5);
+    padding: var(--space-5);
+  }
+
+  .settings-home,
+  .settings-detail {
+    min-width: 0;
+  }
+
+  .settings-home-simple {
+    padding: 0;
+  }
+
+  .settings-layout.mobile-detail-open .settings-home {
+    display: block;
+  }
+
+  .settings-detail {
+    display: block;
+    min-height: 60vh;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
   }
 
   .settings-home {
@@ -1012,6 +1132,10 @@ ion-modal.post-comments-modal {
     padding-inline: 0;
   }
 
+  ion-content.profile-content .profile-page-shell {
+    width: min(calc(100% - var(--space-8)), 1120px);
+  }
+
   .profile-hero {
     border-radius: 0 0 var(--radius-card) var(--radius-card);
   }
@@ -1019,6 +1143,10 @@ ion-modal.post-comments-modal {
   .profile-top {
     grid-template-columns: auto minmax(0, 1fr) minmax(220px, 320px);
     align-items: center;
+  }
+
+  ion-content.profile-content .profile-top {
+    grid-template-columns: auto minmax(0, 1fr) minmax(220px, 320px);
   }
 
   .profile-stats-card {
@@ -1055,6 +1183,11 @@ ion-modal.post-comments-modal {
   .search-content .page-content {
     width: min(100%, 1120px);
     margin-inline: auto;
+  }
+
+  ion-content.page-content .chat-footer {
+    --chat-nav-offset: var(--space-0);
+    transform: none;
   }
 }
 
@@ -1165,6 +1298,16 @@ ion-modal.post-comments-modal {
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
   }
+
+  .app-main > ion-router-outlet > .ion-page {
+    animation-name: page-fade;
+    transform: none;
+  }
+
+  .app-main [data-reveal-state="pending"],
+  .app-main [data-reveal-state="visible"] {
+    transform: none;
+  }
 }
 
 html.app-reduce-motion *,
@@ -1174,4 +1317,27 @@ html.app-reduce-motion *::after {
   animation-duration: 1ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 1ms !important;
+}
+
+html.app-reduce-motion .app-main > ion-router-outlet > .ion-page {
+  animation-name: page-fade;
+  transform: none;
+}
+
+html.app-reduce-motion .app-main [data-reveal-state="pending"],
+html.app-reduce-motion .app-main [data-reveal-state="visible"] {
+  transform: none;
+}
+
+html.app-reduce-motion button:hover,
+html.app-reduce-motion ion-button:hover::part(native),
+html.app-reduce-motion .post-card:hover,
+html.app-reduce-motion .group-card:hover,
+html.app-reduce-motion .community-card:hover {
+  transform: none !important;
+}
+
+@keyframes page-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

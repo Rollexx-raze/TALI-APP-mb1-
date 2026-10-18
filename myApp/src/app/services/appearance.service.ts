@@ -8,6 +8,7 @@ const legacyAppearanceStorageKey = 'tali-setting-darkMode';
 @Injectable({ providedIn: 'root' })
 export class AppearanceService {
   readonly mode = signal<AppearanceMode>(this.readMode());
+  private systemColorScheme?: MediaQueryList;
 
   constructor() {
     this.applyMode(this.mode());
@@ -52,8 +53,19 @@ export class AppearanceService {
   private applyMode(mode: AppearanceMode) {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;
-    root.classList.toggle('app-dark', mode === 'dark');
-    root.classList.toggle('app-light', mode === 'light');
+    if (mode === 'system' && typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      this.systemColorScheme ??= window.matchMedia('(prefers-color-scheme: dark)');
+      const applySystemClass = (isDark: boolean) => {
+        if (this.mode() !== 'system') return;
+        root.classList.toggle('app-dark', isDark);
+        root.classList.toggle('app-light', !isDark);
+      };
+      applySystemClass(this.systemColorScheme.matches);
+      if (!this.systemColorScheme.onchange) this.systemColorScheme.onchange = (event) => applySystemClass(event.matches);
+    } else {
+      root.classList.toggle('app-dark', mode === 'dark');
+      root.classList.toggle('app-light', mode === 'light');
+    }
     root.style.colorScheme = mode === 'system' ? 'light dark' : mode;
   }
 }
