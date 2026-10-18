@@ -1,5 +1,5 @@
-<ion-header class="page-header activity-page-header ion-no-border"><ion-toolbar><h1>Activity</h1></ion-toolbar></ion-header>
-<ion-content class="page-content" [fullscreen]="true">
+<ion-header class="page-header activity-page-header ion-no-border"><ion-toolbar><h1 slot="start">Activity</h1><button type="button" slot="end" class="activity-settings" routerLink="/settings" aria-label="Settings"><ion-icon name="options-outline" aria-hidden="true"></ion-icon></button></ion-toolbar></ion-header>
+<ion-content class="page-content activity-content" [fullscreen]="true">
   <nav class="activity-switcher" aria-label="Activity sections">
     <button type="button" [class.active]="selectedSection === 'suggestions'" (click)="setSection('suggestions')">Suggestions</button>
     <button type="button" [class.active]="selectedSection === 'notifications'" (click)="setSection('notifications')">
@@ -16,16 +16,27 @@
 
   @if (selectedSection === 'suggestions') {
     @if (selectedCategory === 'people') {
-      <section class="intro"><h2>People to meet</h2></section>
+      <section class="intro"><h2>People to meet</h2><p>New connections and familiar interests.</p></section>
       @for (person of people; track person.id) {
         <article class="suggestion-row">
           <a class="person-profile-link" [routerLink]="['/profile', person.id]">
-            <ion-avatar><ion-icon name="person-circle-outline"></ion-icon></ion-avatar>
-            <div class="suggestion-copy"><strong>{{ person.name }}</strong><span>{{ person.username }}</span></div>
+            <ion-avatar>@if (personImage(person); as image) { <img [src]="image" alt=""> } @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }</ion-avatar>
+            <div class="suggestion-copy"><strong>{{ person.name }}</strong><span>{{ connectionContext(person) }}</span></div>
           </a>
           <ion-button [fill]="isFollowing(person) ? 'clear' : 'outline'" size="small" (click)="toggleFollow(person)"><ion-icon slot="start" [name]="isFollowing(person) ? 'person-circle-outline' : 'person-add-outline'"></ion-icon>{{ isFollowing(person) ? 'Following' : 'Follow' }}</ion-button>
         </article>
       } @empty { <p class="empty-suggestions">No other accounts to suggest yet.</p> }
+      @if (groups[0]; as featuredGroup) {
+        <section class="activity-group-spotlight">
+          <h2>A little more your world</h2>
+          <a class="activity-featured-group" [routerLink]="['/groups', featuredGroup.id]">
+            @if (featuredGroup.photo) { <img [src]="featuredGroup.photo" [alt]="featuredGroup.name"> }
+            @else { <span class="activity-group-placeholder"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span> }
+            <span class="activity-group-copy"><small>COMMUNITY GROUP</small><strong>{{ featuredGroup.name }}</strong><span>{{ featuredGroup.description || 'Discover a community around shared interests.' }}</span></span>
+            <span class="activity-group-cta">Explore group</span>
+          </a>
+        </section>
+      }
     }
     @if (selectedCategory === 'posts') {
       <section class="intro"><h2>Posts to explore</h2></section>
@@ -71,7 +82,7 @@
 
   @if (selectedSection === 'notifications') {
     <section class="notification-heading">
-      <div><h2>Notifications</h2><p>Updates about activity on your account.</p></div>
+      <div><h2>Your latest connections</h2><p>Updates from your community.</p></div>
       <div class="notification-actions">
         @if (unreadNotifications) { <button type="button" class="mark-read-button" (click)="markAllNotificationsRead()">Mark all read</button> }
         @if (notifications.length) { <button type="button" class="mark-read-button" (click)="clearNotifications()">Clear all</button> }
@@ -82,7 +93,7 @@
     } @else {
       @for (notification of notifications; track notification.id) {
         <button type="button" class="notification-row" [class.unread]="!notification.read" (click)="markNotificationRead(notification)">
-          <span class="notification-avatar"><ion-icon [name]="notification.type === 'like' ? 'heart-outline' : notification.type === 'comment' || notification.type === 'message_request' ? 'chatbubble-outline' : notification.type === 'follow' ? 'person-add-outline' : notification.type === 'mention' ? 'at-outline' : notification.type === 'share' ? 'share-outline' : 'repeat-outline'"></ion-icon></span>
+          <span class="notification-avatar">@if (notificationImage(notification); as image) { <img [src]="image" alt=""> } @else { <ion-icon [name]="notification.type === 'like' ? 'heart-outline' : notification.type === 'comment' || notification.type === 'message_request' ? 'chatbubble-outline' : notification.type === 'follow' ? 'person-add-outline' : notification.type === 'mention' ? 'at-outline' : notification.type === 'share' ? 'share-outline' : 'repeat-outline'"></ion-icon> }</span>
           <span class="notification-copy">
             <span><strong>{{ notification.actorName }}</strong> {{ notificationMessage(notification) }}</span>
             @if (notification.postPreview) { <span class="notification-preview">“{{ notification.postPreview }}”</span> }

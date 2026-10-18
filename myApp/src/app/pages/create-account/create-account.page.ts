@@ -125,8 +125,6 @@ export class CreateAccountPage {
         password: this.password,
       });
       this.created = true;
-      await new Promise<void>((resolve) => setTimeout(resolve, 500));
-      await this.router.navigateByUrl('/home');
     } catch (error) {
       if (error instanceof AuthError && error.code === 'account_exists') this.accountError = error.message;
       else if (error instanceof AuthError && error.code === 'network') this.accountError = 'We could not reach the sign-up service. Check your connection and try again.';

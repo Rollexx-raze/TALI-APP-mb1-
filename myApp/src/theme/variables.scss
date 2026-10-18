@@ -26,6 +26,8 @@
   --font-24: 24px;
   --font-30: 30px;
   --font-36: 36px;
+  --font-control: 14px;
+  --icon-size: 20px;
   --font-body: var(--font-16);
   --font-caption: var(--font-12);
   --font-subheading: var(--font-20);
@@ -78,6 +80,8 @@
   --radius-inner: 8px;
   --radius-pill: 999px;
   --radius-circle: 50%;
+  --control-height: 44px;
+  --control-radius: var(--radius-sm);
   --r0: var(--radius-none);
   --r8: var(--radius-sm);
   --r16: var(--radius-md);

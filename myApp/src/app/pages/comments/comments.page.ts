@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { IonButton, IonContent, IonIcon, IonTextarea, ModalController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { chevronBackOutline, chevronForwardOutline, closeOutline, imageOutline, personCircleOutline } from 'ionicons/icons';
+import { chatbubbleOutline, chevronBackOutline, chevronForwardOutline, closeOutline, heart, heartOutline, imageOutline, personCircleOutline, repeatOutline, shareOutline } from 'ionicons/icons';
 import { AccountService } from '../../services/account.service';
 import { Post, PostAttachment, PostService } from '../../services/post.service';
 
@@ -24,10 +24,11 @@ export class CommentsPage implements OnChanges {
 
   commentDraft = '';
   commentError = '';
+  actionMessage = '';
   selectedMediaIndex = 0;
 
   constructor() {
-    addIcons({ chevronBackOutline, chevronForwardOutline, closeOutline, imageOutline, personCircleOutline });
+    addIcons({ chatbubbleOutline, chevronBackOutline, chevronForwardOutline, closeOutline, heart, heartOutline, imageOutline, personCircleOutline, repeatOutline, shareOutline });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -61,6 +62,55 @@ export class CommentsPage implements OnChanges {
 
   get commentsEnabled() {
     return this.readSetting('commentsEnabled', true);
+  }
+
+  get isLiked() {
+    const accountId = this.accountService.selectedAccount()?.id;
+    return accountId !== undefined && (this.post?.likes.includes(accountId) ?? false);
+  }
+
+  get isReposted() {
+    const accountId = this.accountService.selectedAccount()?.id;
+    return accountId !== undefined && (this.post?.reposts.includes(accountId) ?? false);
+  }
+
+  get hideLikeCounts() { return this.readSetting('hideLikeCounts', false); }
+  get hideShareCounts() { return this.readSetting('hideShareCounts', false); }
+  get sharingEnabled() { return this.readSetting('sharingEnabled', true); }
+
+  toggleLike() {
+    const account = this.accountService.selectedAccount();
+    if (!account) { this.actionMessage = 'Select an account to interact with posts.'; return; }
+    this.actionMessage = '';
+    this.postService.toggleLike(this.postId, account);
+  }
+
+  toggleRepost() {
+    const account = this.accountService.selectedAccount();
+    if (!account) { this.actionMessage = 'Select an account to interact with posts.'; return; }
+    if (!this.sharingEnabled && !this.isReposted) return;
+    this.actionMessage = '';
+    this.postService.toggleRepost(this.postId, account);
+  }
+
+  async sharePost() {
+    if (!this.sharingEnabled) return;
+    const currentPost = this.post;
+    if (!currentPost) return;
+    const url = new URL(window.location.href);
+    url.hash = `post-${currentPost.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${currentPost.authorName} on Tali`, text: currentPost.body, url: url.toString() });
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url.toString());
+        this.actionMessage = 'Post link copied.';
+      } else this.actionMessage = 'Sharing is not available in this browser.';
+      const account = this.accountService.selectedAccount();
+      if (account) this.postService.recordShare(currentPost.id, account);
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === 'AbortError')) this.actionMessage = 'Could not share this post.';
+    }
   }
 
   get visibleComments() {

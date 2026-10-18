@@ -26,3 +26,84 @@
 .group-form-actions ion-button:last-child { --background: var(--app-primary); --color: var(--on-primary); }
 .photo-picker:focus-visible, .remove-photo:focus-visible { outline: 2px solid var(--app-text-muted); outline-offset: 2px; }
 @media (max-width: 420px) { .create-group-content { padding: var(--space-4) var(--space-4) var(--space-7); } .create-group-card { padding: var(--space-5); } }
+
+.create-group-content {
+  display: block;
+  min-height: 100%;
+  padding: 0 16px 28px;
+}
+.page-header .group-page-title {
+  position: static;
+  width: auto;
+  padding: 0;
+  transform: none;
+  text-align: left;
+  pointer-events: auto;
+}
+.create-group-card {
+  width: 100%;
+  padding: 20px 0 24px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+.create-group-card .eyebrow { display: none; }
+.create-group-card h2 {
+  font-size: 24px;
+  line-height: 1.18;
+  text-align: left;
+}
+.form-intro {
+  margin: 6px 0 18px;
+  font-size: 13px;
+  text-align: left;
+}
+.group-field {
+  gap: 8px;
+  margin: 14px 0;
+  font-size: 12px;
+  text-align: left;
+}
+.group-field input:not([type="file"]),
+.group-field textarea {
+  min-height: 42px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  background: var(--app-surface);
+  font-size: 13px;
+  text-align: left;
+}
+.group-field textarea { min-height: 94px; }
+.photo-picker {
+  justify-content: flex-start;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 11px;
+  background: var(--app-surface);
+  color: var(--app-primary);
+}
+.group-form-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 24px;
+}
+.group-form-actions ion-button {
+  min-height: 44px;
+  margin: 0;
+  border: 1px solid var(--app-border);
+  border-radius: 11px;
+  --border-radius: 11px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.group-form-actions ion-button:first-child { --color: var(--app-primary); }
+.group-form-actions ion-button:last-child { --background: var(--app-primary); --color: var(--on-primary); }
+.photo-preview { justify-content: flex-start; }
+.photo-preview img { width: 100%; height: auto; max-height: 190px; border-radius: 12px; object-fit: cover; }
+@media (max-width: 420px) {
+  .create-group-content { padding: 0 16px 24px; }
+  .create-group-card { padding: 18px 0 24px; }
+}

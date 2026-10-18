@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1600" preserveAspectRatio="xMidYMid slice">
-  <rect width="900" height="1600" fill="var(--text)"/>
-  <g fill="none" stroke="var(--text)" stroke-width="185" stroke-linecap="round" stroke-linejoin="round" opacity=".12">
+  <rect width="900" height="1600" fill="#f9faff"/>
+  <g fill="none" stroke="#5955df" stroke-width="185" stroke-linecap="round" stroke-linejoin="round" opacity=".08">
     <path d="M-150 250 C160 80 5-80 180-180 S480 15 375 230 190 520 380 600 530 370 700 320 970 420 920 600"/>
     <path d="M-140 1180 C90 1060 60 890 240 850 S420 990 360 1150 270 1350 480 1380 650 1250 780 1290 960 1440 1040 1320"/>
   </g>

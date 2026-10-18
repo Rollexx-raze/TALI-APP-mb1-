@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonIcon, IonTextarea, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, micOutline, notificationsOutline, personCircleOutline, stopCircleOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, chevronForwardOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, imageOutline, micOutline, notificationsOutline, peopleOutline, personCircleOutline, stopCircleOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
 import { AccountService } from '../../services/account.service';
 import { PostAttachment, PostAudience, PostService } from '../../services/post.service';
 import { MediaAttachmentService } from '../../services/media-attachment.service';
@@ -70,7 +70,7 @@ export class AddPostPage implements OnDestroy {
   ];
 
   constructor() {
-    addIcons({ addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, micOutline, notificationsOutline, personCircleOutline, stopCircleOutline, trendingUpOutline, videocamOutline });
+    addIcons({ addCircle, attachOutline, chatbubbleOutline, checkmarkOutline, chevronForwardOutline, closeCircleOutline, closeOutline, documentOutline, ellipsisVertical, homeOutline, imageOutline, micOutline, notificationsOutline, peopleOutline, personCircleOutline, stopCircleOutline, trendingUpOutline, videocamOutline });
     void loadBrowserData<PostDraft | null>(postDraftKey, null, (value): value is PostDraft | null => value === null || isPostDraft(value)).then((draft) => {
       if (!this.draftEdited && draft) {
         this.message = draft.message;

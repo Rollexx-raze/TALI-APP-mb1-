@@ -3,7 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonAvatar, IonButton, IonContent, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, ellipsisHorizontal, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { Account, AccountService } from '../../services/account.service';
 import { PostService } from '../../services/post.service';
@@ -39,7 +39,7 @@ export class ProfilePage {
   }
 
   constructor() {
-    addIcons({ addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline });
+    addIcons({ addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, ellipsisHorizontal, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline });
     const saved = this.viewState.read<Partial<{ activeSection: 'posts' | 'photos' | 'videos' | 'reposts' | 'archive' | 'trash'; connectionsView: 'followers' | 'following' | null }>>(this.profileStateKey, {});
     if (saved.activeSection && saved.activeSection !== 'archive' && saved.activeSection !== 'trash' && saved.activeSection !== 'photos') this.activeSection = saved.activeSection;
     this.connectionsView = saved.connectionsView ?? null;
@@ -91,6 +91,10 @@ export class ProfilePage {
     if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, '')} Million`;
     if (value >= 1_000) return `${(value / 1_000).toFixed(value >= 10_000 ? 0 : 1).replace(/\.0$/, '')}K`;
     return String(value);
+  }
+
+  formatWebsite(value: string) {
+    return value.replace(/^https?:\/\//, '').replace(/\/$/, '');
   }
 
   get profileVideos() {

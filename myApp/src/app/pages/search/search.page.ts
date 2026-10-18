@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { IonAvatar, IonContent, IonHeader, IonIcon, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircle, chatbubbleOutline, homeOutline, notificationsOutline, peopleOutline, personCircleOutline, searchOutline, trendingUpOutline } from 'ionicons/icons';
+import { addCircle, chatbubbleOutline, chevronBackOutline, chevronForwardOutline, homeOutline, notificationsOutline, peopleOutline, personCircleOutline, searchOutline, trendingUpOutline } from 'ionicons/icons';
 import { AccountService } from '../../services/account.service';
 import { GroupService } from '../../services/group.service';
 import { NotificationService } from '../../services/notification.service';
@@ -32,7 +32,7 @@ export class SearchPage {
   }
 
   constructor() {
-    addIcons({ addCircle, chatbubbleOutline, homeOutline, notificationsOutline, peopleOutline, personCircleOutline, searchOutline, trendingUpOutline });
+    addIcons({ addCircle, chatbubbleOutline, chevronBackOutline, chevronForwardOutline, homeOutline, notificationsOutline, peopleOutline, personCircleOutline, searchOutline, trendingUpOutline });
     this.query = this.viewState.read(this.stateKey, '');
   }
 
@@ -70,5 +70,13 @@ export class SearchPage {
     return person && this.accountService.canViewProfileImage(person, this.accountService.selectedAccount())
       ? person.profileImage
       : undefined;
+  }
+
+  connectionContext(person: ReturnType<typeof this.accountService.accounts>[number]) {
+    const viewer = this.accountService.selectedAccount();
+    if (!viewer) return person.bio || 'Suggested for you';
+    const mutual = person.followingIds.filter((id) => viewer.followingIds.includes(id)).length;
+    if (mutual) return `${mutual} mutual connection${mutual === 1 ? '' : 's'}`;
+    return person.bio || 'Suggested for you';
   }
 }

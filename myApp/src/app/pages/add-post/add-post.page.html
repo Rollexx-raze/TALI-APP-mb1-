@@ -1,6 +1,7 @@
 <ion-header class="page-header composer-page-header ion-no-border">
   <ion-toolbar>
     <h1>Create Post</h1>
+    <a class="composer-close-top" routerLink="/home" aria-label="Close composer"><ion-icon name="close-outline" aria-hidden="true"></ion-icon></a>
   </ion-toolbar>
 </ion-header>
 
@@ -23,12 +24,10 @@
             </div>
           </div>
         }
-        <a class="close-button" routerLink="/home" aria-label="Close composer" title="Close">
-          <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
-        </a>
       </header>
 
-      <ion-textarea [(ngModel)]="message" (ngModelChange)="onDraftTextChange()" placeholder="What's new?" [autoGrow]="true" [maxlength]="500" aria-label="Write your post"></ion-textarea>
+      <p class="composer-prompt">What’s new?</p>
+      <ion-textarea [(ngModel)]="message" (ngModelChange)="onDraftTextChange()" placeholder="Share a thought with your community…" [autoGrow]="true" [maxlength]="500" aria-label="Write your post"></ion-textarea>
 
       <input #mediaInput class="media-input" type="file" multiple [disabled]="!mediaPermissionEnabled" (change)="onFilesSelected($event)" aria-label="Choose photos, videos, or files" />
       @if (mediaUploading) { <p class="media-error" role="status">Uploading attachments... {{ mediaUploadProgress }}%</p> }
@@ -69,32 +68,33 @@
         </section>
       }
 
+      <button class="audience-control" type="button" aria-haspopup="menu" [attr.aria-expanded]="showAudienceMenu" (click)="showAudienceMenu = !showAudienceMenu; persistDraft()" [attr.aria-label]="'Choose audience. Current audience: ' + selectedAudienceLabel"><span class="audience-control-icon"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span><span><strong>Audience</strong><small>{{ selectedAudienceLabel }} · Choose who can see your post</small></span><ion-icon class="audience-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+      @if (showAudienceMenu) {
+        <div class="audience-menu" role="menu" aria-label="Who can see this post">
+          @for (option of audienceOptions; track option.value) {
+            <button type="button" role="menuitemradio" [attr.aria-checked]="audience === option.value" [class.is-selected]="audience === option.value" (click)="selectAudience(option.value)">
+              <span>{{ option.label }}</span>
+              @if (audience === option.value) { <ion-icon name="checkmark-outline" aria-hidden="true"></ion-icon> }
+            </button>
+          }
+        </div>
+      }
       <footer class="composer-tools">
         <div class="tool-actions">
-          <button class="tool-button" type="button" [disabled]="!mediaPermissionEnabled && !isRecordingVoice" [attr.aria-label]="isRecordingVoice ? 'Stop voice recording' : 'Start voice recording'" [attr.aria-pressed]="isRecordingVoice" [title]="isRecordingVoice ? 'Stop voice recording' : 'Start voice recording'" (click)="toggleVoiceRecording()">
-            <ion-icon [name]="isRecordingVoice ? 'stop-circle-outline' : 'mic-outline'" aria-hidden="true"></ion-icon>
-          </button>
           <button class="tool-button" type="button" [disabled]="!mediaPermissionEnabled" (click)="mediaInput.click()" aria-label="Add a photo or video" title="Add a photo or video">
-            <ion-icon name="videocam-outline" aria-hidden="true"></ion-icon>
+            <ion-icon name="image-outline" aria-hidden="true"></ion-icon><span>Photo</span>
+          </button>
+          <button class="tool-button" type="button" [disabled]="!mediaPermissionEnabled" (click)="mediaInput.click()" aria-label="Add a video" title="Add a video">
+            <ion-icon name="videocam-outline" aria-hidden="true"></ion-icon><span>Video</span>
           </button>
           <button class="tool-button" type="button" [disabled]="!mediaPermissionEnabled" (click)="mediaInput.click()" aria-label="Attach a file" title="Attach a file">
-            <ion-icon name="attach-outline" aria-hidden="true"></ion-icon>
+            <ion-icon name="attach-outline" aria-hidden="true"></ion-icon><span>File</span>
           </button>
-          <button class="tool-button" type="button" aria-haspopup="menu" [attr.aria-expanded]="showAudienceMenu" (click)="showAudienceMenu = !showAudienceMenu; persistDraft()" [attr.aria-label]="'Choose audience. Current audience: ' + selectedAudienceLabel" [title]="'Audience: ' + selectedAudienceLabel">
-            <ion-icon name="ellipsis-vertical" aria-hidden="true"></ion-icon>
+          <button class="tool-button" type="button" [disabled]="!mediaPermissionEnabled && !isRecordingVoice" [attr.aria-label]="isRecordingVoice ? 'Stop voice recording' : 'Start voice recording'" [attr.aria-pressed]="isRecordingVoice" [title]="isRecordingVoice ? 'Stop voice recording' : 'Start voice recording'" (click)="toggleVoiceRecording()">
+            <ion-icon [name]="isRecordingVoice ? 'stop-circle-outline' : 'mic-outline'" aria-hidden="true"></ion-icon><span>Voice</span>
           </button>
         </div>
-        @if (message.length > 0) { <span class="character-count">{{ message.length }}/500</span> }
-        @if (showAudienceMenu) {
-          <div class="audience-menu" role="menu" aria-label="Who can see this post">
-            @for (option of audienceOptions; track option.value) {
-              <button type="button" role="menuitemradio" [attr.aria-checked]="audience === option.value" [class.is-selected]="audience === option.value" (click)="selectAudience(option.value)">
-                <span>{{ option.label }}</span>
-                @if (audience === option.value) { <ion-icon name="checkmark-outline" aria-hidden="true"></ion-icon> }
-              </button>
-            }
-          </div>
-        }
+        <span class="character-count">{{ message.length }}/500 characters</span>
         <button class="publish-button" type="button" [disabled]="!canPublish || mediaUploading || isPublishing || isRecordingVoice" [attr.aria-busy]="isPublishing" (click)="publish()">@if (isPublishing) { <span class="auth-spinner" aria-hidden="true"></span> } Publish</button>
       </footer>
       @if (publishError) { <p class="publish-error" role="alert">{{ publishError }}</p> }

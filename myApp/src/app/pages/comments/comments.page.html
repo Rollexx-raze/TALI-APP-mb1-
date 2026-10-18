@@ -1,8 +1,20 @@
 <ion-content class="comments-modal-content" [fullscreen]="true">
   @if (post; as currentPost) {
     <div class="comments-dialog">
-      <section class="comments-media" aria-label="Post media">
-        @if (selectedMedia; as media) {
+      <header class="comments-page-header"><h1>Post</h1><button type="button" aria-label="Close post" (click)="close()"><ion-icon name="close-outline" aria-hidden="true"></ion-icon></button></header>
+      <article class="post-detail-author">
+        <a class="comment-avatar-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()" [attr.aria-label]="'View ' + currentPost.authorName + ' profile'">
+          <div class="comment-avatar">@if (authorImage; as image) { <img [src]="image" alt=""> } @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }</div>
+        </a>
+        <div class="post-detail-author-copy">
+          <a class="comment-profile-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()"><strong>{{ currentPost.authorName }}</strong><span>{{ currentPost.authorUsername }}</span></a>
+          <time>{{ currentPost.createdAt | date:'short' }}</time>
+        </div>
+        @if (currentPost.body) { <p class="post-detail-caption">{{ currentPost.body }}</p> }
+      </article>
+      @if (mediaAttachments.length) {
+        <section class="comments-media" aria-label="Post media">
+          @if (selectedMedia; as media) {
           @if (media.type.startsWith('image/')) {
             <img class="comments-media-image" [src]="media.dataUrl" [alt]="media.name" />
           } @else {
@@ -13,56 +25,20 @@
             <button type="button" class="media-arrow media-next" aria-label="Next image" (click)="moveMedia(1)"><ion-icon name="chevron-forward-outline"></ion-icon></button>
             <span class="media-counter">{{ selectedMediaIndex + 1 }} / {{ mediaAttachments.length }}</span>
           }
-        } @else {
-          <article class="comments-text-post">
-            <a class="comment-avatar-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()" [attr.aria-label]="'View ' + currentPost.authorName + ' profile'">
-              <div class="comment-avatar">
-              @if (authorImage; as image) { <img [src]="image" alt="" /> }
-              @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
-              </div>
-            </a>
-            <div class="comments-text-post-copy">
-              <a class="comment-profile-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()">
-                <strong>{{ currentPost.authorName }}</strong>
-                <span>{{ currentPost.authorUsername }}</span>
-              </a>
-              @if (currentPost.body) { <p>{{ currentPost.body }}</p> }
-              <time>{{ currentPost.createdAt | date:'short' }}</time>
-            </div>
-          </article>
-        }
-      </section>
-
-      <section class="comments-panel" aria-label="Comments">
-        <header class="comments-author">
-          <a class="comment-avatar-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()" [attr.aria-label]="'View ' + currentPost.authorName + ' profile'">
-            <div class="comment-avatar">
-            @if (authorImage; as image) { <img [src]="image" alt="" /> }
-            @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
-            </div>
-          </a>
-          <div class="comments-author-copy">
-            <a class="comment-profile-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()">
-              <strong>{{ currentPost.authorName }}</strong><span>{{ currentPost.authorUsername }}</span>
-            </a>
-          </div>
-          <button type="button" class="comments-close" aria-label="Close comments" (click)="close()"><ion-icon name="close-outline"></ion-icon></button>
-        </header>
-
-        <h2 class="comments-heading">Comments</h2>
-        <div class="comments-scroll">
-          @if (currentPost.body && mediaAttachments.length) {
-            <article class="comment-entry post-caption">
-              <a class="comment-avatar-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()" [attr.aria-label]="'View ' + currentPost.authorName + ' profile'">
-                <div class="comment-avatar">
-                @if (authorImage; as image) { <img [src]="image" alt="" /> }
-                @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
-                </div>
-              </a>
-              <div><a class="comment-profile-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()"><strong>{{ currentPost.authorName }}</strong></a><p>{{ currentPost.body }}</p><time>{{ currentPost.createdAt | date:'short' }}</time></div>
-            </article>
           }
+        </section>
+      }
 
+      <div class="post-detail-actions" aria-label="Post actions">
+        <button type="button" [class.is-active]="isLiked" [attr.aria-pressed]="isLiked" [attr.aria-label]="isLiked ? 'Unlike post' : 'Like post'" (click)="toggleLike()"><ion-icon [name]="isLiked ? 'heart' : 'heart-outline'" aria-hidden="true"></ion-icon>@if (!hideLikeCounts) { <span>{{ currentPost.likes.length }}</span> }</button>
+        <span class="post-action-count"><ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon><span>{{ currentPost.comments.length }}</span></span>
+        <button type="button" [class.is-active]="isReposted" [attr.aria-pressed]="isReposted" aria-label="Repost" (click)="toggleRepost()"><ion-icon name="repeat-outline" aria-hidden="true"></ion-icon>@if (!hideShareCounts) { <span>{{ currentPost.reposts.length }}</span> }</button>
+        <button type="button" aria-label="Share post" (click)="sharePost()"><ion-icon name="share-outline" aria-hidden="true"></ion-icon></button>
+      </div>
+      @if (actionMessage) { <p class="post-action-message" role="status">{{ actionMessage }}</p> }
+      <section class="comments-panel" aria-label="Comments">
+        <h2 class="comments-heading"><span>Comments</span><small>{{ currentPost.comments.length }} comments</small></h2>
+        <div class="comments-scroll">
           @if (!visibleComments.length) {
             <p class="comments-empty">No comments yet. Start the conversation.</p>
           }

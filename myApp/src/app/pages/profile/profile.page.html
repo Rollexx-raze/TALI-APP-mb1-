@@ -2,15 +2,12 @@
   @if (profileAccount; as profile) {
     <div class="profile-page-shell">
       <section class="profile-hero">
-        <div class="profile-floating-header">
-          <button type="button" class="profile-circle-btn back-button" (click)="goBack()" aria-label="Back">
-            <ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon>
-          </button>
+        <div class="profile-page-header">
+          @if (!isOwnProfile) { <button type="button" class="profile-header-back" (click)="goBack()" aria-label="Back"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></button> }
+          <h1>{{ isOwnProfile ? 'My profile' : profile.name }}</h1>
           @if (isOwnProfile) {
-            <button type="button" class="profile-circle-btn settings-button" routerLink="/settings" aria-label="Settings">
-              <ion-icon name="settings-outline" aria-hidden="true"></ion-icon>
-            </button>
-          }
+            <button type="button" class="profile-header-more" routerLink="/settings" aria-label="Settings"><ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon></button>
+          } @else { <span class="profile-header-more-static" aria-hidden="true">···</span> }
         </div>
         @if (isOwnProfile) {
           <button type="button" class="profile-cover profile-cover-button" [class.has-cover-image]="profile.coverImage" (click)="coverPhotoInput.click()" aria-label="Upload a profile cover photo">
@@ -39,6 +36,10 @@
               }
             </ion-avatar>
           </div>
+          <div class="profile-identity">
+            <h2>{{ profile.name }} @if (profile.verified) { <ion-icon class="verified-badge" name="checkmark-circle" aria-label="Verified account"></ion-icon> }</h2>
+            <p class="profile-handle">@{{ profile.username }}</p>
+          </div>
           <section class="profile-stats-card" aria-label="Profile statistics">
             <div class="stats-row">
               <div><strong>{{ formatProfileCount(ownPosts.length) }}</strong><span>Posts</span></div>
@@ -46,24 +47,22 @@
               <button type="button" (click)="setConnectionsView('following')"><strong>{{ formatProfileCount(following.length) }}</strong><span>Following</span></button>
             </div>
           </section>
-          <div class="profile-identity">
-            <h2>{{ profile.name }} @if (profile.verified) { <ion-icon class="verified-badge" name="checkmark-circle" aria-label="Verified account"></ion-icon> }</h2>
-            <div class="profile-bio">
-              @if (profile.bio) { <p>{{ profile.bio }}</p> }
-              @if (profile.website) { <p>Visit us: <a [href]="profile.website" target="_blank" rel="noopener noreferrer">{{ profile.website }}</a></p> }
-              @if (!profile.bio && !profile.website && isOwnProfile) { <p class="bio-placeholder">Add a bio</p> }
-            </div>
-            @if (!isOwnProfile) {
-              <div class="profile-actions">
-                <button type="button" class="follow-btn" [class.is-following]="isFollowingProfile" (click)="toggleFollowProfile()">{{ isFollowingProfile ? 'Following' : 'Follow' }}</button>
-                <ion-button fill="solid" size="small" class="message-profile-button" (click)="messageProfile()"><ion-icon slot="start" name="chatbubble-outline"></ion-icon><span class="message-button-label">Message</span></ion-button>
-              </div>
-            }
+          <div class="profile-description">
+            @if (profile.bio) { <p>{{ profile.bio }}</p> }
+            @if (profile.website) { <p class="profile-website"><a [href]="profile.website.startsWith('http') ? profile.website : 'https://' + profile.website" target="_blank" rel="noopener noreferrer">{{ formatWebsite(profile.website) }}</a></p> }
+            @if (!profile.bio && !profile.website && isOwnProfile) { <p class="bio-placeholder">Add a bio</p> }
           </div>
+          @if (isOwnProfile) {
+            <ion-button class="edit-profile-button" expand="block" [routerLink]="['/settings']" [queryParams]="{ section: 'profile' }">Edit profile</ion-button>
+          } @else {
+            <div class="profile-actions">
+              <button type="button" class="follow-btn" [class.is-following]="isFollowingProfile" (click)="toggleFollowProfile()">{{ isFollowingProfile ? 'Following' : 'Follow' }}</button>
+              <ion-button fill="solid" class="message-profile-button" (click)="messageProfile()"><span class="message-button-label">Message</span></ion-button>
+            </div>
+          }
         </div>
       </section>
       <div class="profile-content-panel">
-      <h2 class="profile-section-heading">Posts and activity</h2>
       <nav class="profile-sections" aria-label="Profile content">
       <button type="button" aria-label="Posts" title="Posts" [class.active]="activeSection === 'posts'" [attr.aria-pressed]="activeSection === 'posts'" (click)="setProfileSection('posts')"><ion-icon name="grid-outline" aria-hidden="true"></ion-icon><span>Posts</span></button>
       <button type="button" aria-label="Videos" title="Videos" [class.active]="activeSection === 'videos'" [attr.aria-pressed]="activeSection === 'videos'" (click)="setProfileSection('videos')"><ion-icon name="videocam-outline" aria-hidden="true"></ion-icon><span>Videos</span></button>

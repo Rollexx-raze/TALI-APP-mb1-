@@ -53,6 +53,7 @@ export class MessagesPage {
   activeFilter = 'All';
   showFilters = false;
   composeMode: 'menu' | 'direct' | 'group' | 'community' | 'community-chat' | 'join-community' | null = null;
+  composeSearch = '';
   selectedCommunityId: string | null = null;
   communityNameDraft = '';
   communityChatNameDraft = '';
@@ -272,6 +273,11 @@ export class MessagesPage {
     return this.otherAccounts().filter((account) => !query || account.name.toLowerCase().includes(query) || account.username.toLowerCase().includes(query));
   }
 
+  get composeAccounts() {
+    const query = this.composeSearch.trim().toLowerCase();
+    return this.otherAccounts().filter((account) => !query || account.name.toLowerCase().includes(query) || account.username.toLowerCase().includes(query));
+  }
+
   get forwardConversations() {
     const query = this.forwardSearch.trim().toLowerCase();
     return this.conversations().filter((item) => item.id !== this.activeConversationId && item.memberIds.includes(this.selectedAccount()?.id ?? -1))
@@ -351,11 +357,13 @@ export class MessagesPage {
 
   openComposeMenu() {
     this.composeMode = 'menu';
+    this.composeSearch = '';
     this.saveViewState();
   }
 
   closeCompose() {
     this.composeMode = null;
+    this.composeSearch = '';
     this.selectedMemberIds = [];
     this.groupName = '';
     this.groupMemberSearch = '';

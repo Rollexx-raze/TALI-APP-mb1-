@@ -2,8 +2,8 @@
   <ion-toolbar>
     <div class="home-toolbar-row">
       <div class="home-brand-mark"><img class="logo-on-dark" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="Tali" /><img class="logo-on-light" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="" aria-hidden="true" /></div>
-      <ion-button fill="clear" class="search-button" aria-label="Search" routerLink="/search">
-        <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+      <ion-button fill="clear" class="search-button" aria-label="Explore" routerLink="/search">
+        <ion-icon slot="icon-only" name="options-outline"></ion-icon>
       </ion-button>
     </div>
   </ion-toolbar>
@@ -11,6 +11,7 @@
 
 <ion-content class="home-content" [scrollEvents]="true" (ionScroll)="saveScroll($event)">
   <div class="screen-shell">
+    <button type="button" class="home-search-prompt" routerLink="/search"><ion-icon name="search-outline" aria-hidden="true"></ion-icon><span>Search Tali</span></button>
     @if (accountService.selectedAccount(); as account) {
       <section class="home-account-row" aria-label="Current account">
         <ion-avatar class="profile-avatar">
@@ -21,9 +22,10 @@
           }
         </ion-avatar>
         <div class="home-account-copy">
-          <strong>{{ account.name }}</strong>
-          <span>{{ account.username }}</span>
+          <span class="home-greeting">Good morning, {{ account.name.split(' ')[0] }}</span>
+          <strong>What’s your story today?</strong>
         </div>
+        <button type="button" class="home-compose-shortcut" routerLink="/add-post" aria-label="Create a post"><ion-icon name="create-outline" aria-hidden="true"></ion-icon></button>
       </section>
     }
 
