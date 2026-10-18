@@ -1,46 +1,46 @@
-.page-header ion-toolbar { min-height: 56px; padding: 0 16px; }
+.page-header ion-toolbar { min-height: 56px; padding: 0 var(--space-4); }
 .page-header h1 { margin: 0; font-size: var(--font-subheading); font-weight: 650; }
-.page-footer ion-toolbar { min-height: 62px; padding: 8px 8px 8px; }
+.page-footer ion-toolbar { min-height: 62px; padding: var(--space-2) var(--space-2) var(--space-2); }
 .page-footer ion-button { width: 42px; height: 42px; margin: 0; --color: var(--page-muted); font-size: var(--font-subheading); }
 .page-footer .active-tab, .page-footer .compose-button { --color: var(--ion-color-primary); }
 .page-footer .compose-button { font-size: var(--font-display); }
-.composer-stage { display: grid; min-height: 100%; place-items: center; padding: 24px 16px; background: var(--page-bg); }
-.composer-card { width: min(100%, 350px); padding: 24px 24px 16px; border: 1px solid var(--page-border); border-radius: var(--radius-card); background: var(--page-surface); color: var(--page-text); box-shadow: var(--shadow-soft); }
+.composer-stage { display: grid; min-height: 100%; place-items: center; padding: var(--space-5) var(--space-4); background: var(--page-bg); }
+.composer-card { width: min(100%, 350px); padding: var(--space-5) var(--space-5) var(--space-4); border: 1px solid var(--page-border); border-radius: var(--radius-card); background: var(--page-surface); color: var(--page-text); box-shadow: var(--shadow-soft); }
 .composer-header, .composer-identity, .composer-tools, .tool-actions { display: flex; align-items: center; }
-.composer-header { justify-content: space-between; gap: 8px; }
-.composer-identity { min-width: 0; gap: 8px; }
-.author-avatar { display: grid; width: 40px; height: 40px; flex: 0 0 40px; overflow: hidden; place-items: center; border-radius: 50%; background: var(--page-bg); color: var(--ion-color-primary); }
+.composer-header { justify-content: space-between; gap: var(--space-2); }
+.composer-identity { min-width: 0; gap: var(--space-2); }
+.author-avatar { display: grid; width: 40px; height: 40px; flex: 0 0 40px; overflow: hidden; place-items: center; border-radius: var(--radius-circle); background: var(--page-bg); color: var(--ion-color-primary); }
 .author-avatar img, .author-avatar ion-icon { width: 100%; height: 100%; object-fit: cover; }
-.author-copy { display: grid; min-width: 0; gap: 8px; }
+.author-copy { display: grid; min-width: 0; gap: var(--space-2); }
 .author-copy strong, .author-copy span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .author-copy strong { color: var(--page-text); font-size: var(--font-body); font-weight: 700; }
 .author-copy span { color: var(--page-muted); font-size: var(--font-body); }
 .close-button, .tool-button, .remove-attachment { display: grid; flex: 0 0 auto; place-items: center; border: 0; background: var(--transparent); color: var(--page-muted); cursor: pointer; text-decoration: none; }
 .close-button { width: 44px; height: 44px; color: var(--page-text); }
 .close-button ion-icon { font-size: var(--font-subheading); }
-.composer-card > ion-textarea { min-height: 56px; margin-top: 8px; border-bottom: 1px solid var(--page-border); color: var(--page-text); --background: var(--transparent); --color: var(--page-text); --placeholder-color: var(--page-muted); --padding-start: 0; --padding-end: 0; --padding-top: 16px; --padding-bottom: 16px; font-size: var(--font-body); line-height: 1.45; }
+.composer-card > ion-textarea { min-height: 56px; margin-top: var(--space-2); border-bottom: 1px solid var(--page-border); color: var(--page-text); --background: var(--transparent); --color: var(--page-text); --placeholder-color: var(--page-muted); --padding-start: 0; --padding-end: 0; --padding-top: var(--space-4); --padding-bottom: var(--space-4); font-size: var(--font-body); line-height: 1.45; }
 .media-input { display: none; }
-.attachment-list { display: grid; gap: 8px; margin-top: 8px; }
-.attachment-preview { position: relative; display: flex; min-height: 44px; align-items: center; gap: 8px; overflow: hidden; border: 1px solid var(--page-border); border-radius: var(--radius-inner); background: var(--page-bg); color: var(--page-text); }
+.attachment-list { display: grid; gap: var(--space-2); margin-top: var(--space-2); }
+.attachment-preview { position: relative; display: flex; min-height: 44px; align-items: center; gap: var(--space-2); overflow: hidden; border: 1px solid var(--page-border); border-radius: var(--radius-inner); background: var(--page-bg); color: var(--page-text); }
 .attachment-preview img, .attachment-preview video { display: block; width: 100%; max-height: 220px; object-fit: contain; }
-.attachment-preview > ion-icon { margin-left: 8px; font-size: var(--font-subheading); }
-.attachment-preview > span { overflow: hidden; padding: 8px 48px 8px 0; text-overflow: ellipsis; white-space: nowrap; }
-.remove-attachment { position: absolute; top: 3px; right: 3px; width: 30px; height: 30px; color: var(--page-text); }
+.attachment-preview > ion-icon { margin-left: var(--space-2); font-size: var(--font-subheading); }
+.attachment-preview > span { overflow: hidden; padding: var(--space-2) var(--space-7) var(--space-2) 0; text-overflow: ellipsis; white-space: nowrap; }
+.remove-attachment { position: absolute; top: var(--space-1); right: var(--space-1); width: 30px; height: 30px; color: var(--page-text); }
 .remove-attachment ion-icon { font-size: var(--font-subheading); }
-.media-error { margin: 8px 0 0; color: var(--ion-color-danger); font-size: var(--font-body); line-height: 1.45; }
+.media-error { margin: var(--space-2) 0 0; color: var(--ion-color-danger); font-size: var(--font-body); line-height: 1.45; }
 .media-error a { color: var(--ion-color-primary); }
-.account-notice { margin-top: 8px; margin-bottom: 8px; color: var(--page-muted); font-size: var(--font-body); }
-.composer-tools { min-height: 34px; gap: 8px; margin-top: 8px; }
-.tool-actions { gap: 8px; }
+.account-notice { margin-top: var(--space-2); margin-bottom: var(--space-2); color: var(--page-muted); font-size: var(--font-body); }
+.composer-tools { min-height: 34px; gap: var(--space-2); margin-top: var(--space-2); }
+.tool-actions { gap: var(--space-2); }
 .tool-button { width: 44px; height: 44px; padding: 0; font-size: var(--font-body); }
 .tool-button:disabled { opacity: .55; cursor: not-allowed; }
 .close-button:focus-visible, .tool-button:focus-visible, .remove-attachment:focus-visible, .publish-button:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: 2px; }
 .character-count { margin-left: auto; color: var(--page-muted); font-size: var(--font-body); font-variant-numeric: tabular-nums; }
-.publish-button { display:flex; min-height: 44px; align-items:center; justify-content:center; gap:8px; margin-left: auto; padding: 0 16px; border: 0; border-radius: 999px; background: var(--page-text); color: var(--page-bg); font: inherit; font-size: var(--font-body); font-weight: 700; cursor: pointer; }
+.publish-button { display:flex; min-height: 44px; align-items:center; justify-content:center; gap: var(--space-2); margin-left: auto; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-pill); background: var(--page-text); color: var(--page-bg); font: inherit; font-size: var(--font-body); font-weight: 700; cursor: pointer; }
 .publish-button:disabled { opacity: .68; cursor: not-allowed; }
-.publish-button .auth-spinner { width:16px; height:16px; box-sizing:border-box; border:2px solid currentColor; border-right-color:var(--transparent); border-radius:50%; animation:auth-spin 700ms linear infinite; }
-.publish-error { margin: 8px 0 0; color: var(--ion-color-danger); font-size: var(--font-body); line-height: 1.4; }
-@media (max-width: 380px) { .composer-card { padding: 24px 16px 16px; border-radius: var(--radius-card); } }
+.publish-button .auth-spinner { width:16px; height:16px; box-sizing:border-box; border:2px solid currentColor; border-right-color:var(--transparent); border-radius: var(--radius-circle); animation:auth-spin 700ms linear infinite; }
+.publish-error { margin: var(--space-2) 0 0; color: var(--ion-color-danger); font-size: var(--font-body); line-height: 1.4; }
+@media (max-width: 380px) { .composer-card { padding: var(--space-5) var(--space-4) var(--space-4); border-radius: var(--radius-card); } }
 @media (max-width: 560px) {
 	.author-copy strong { font-size: var(--font-body); }
 	.author-copy span { font-size: var(--font-body); }
@@ -54,12 +54,12 @@
 /* Keep the composer controls inside the card on phone-sized screens. */
 .composer-stage {
   min-height: 100%;
-  padding: 24px 12px calc(96px + env(safe-area-inset-bottom, 0px));
+  padding: var(--space-5) var(--space-3) calc(var(--space-8) + env(safe-area-inset-bottom, var(--space-0)));
 }
 .composer-card {
   width: min(100%, 520px);
   min-width: 0;
-  padding: clamp(16px, 5vw, 24px);
+  padding: clamp(var(--space-4), 5vw, var(--space-5));
 }
 .composer-header,
 .composer-identity,
@@ -68,10 +68,10 @@
   width: 100%;
   box-sizing: border-box;
   min-width: 0;
-  margin-top: 12px;
-  padding: 8px 12px;
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border-control);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--surface) !important;
   --background: var(--surface);
   --padding-start: 0;
@@ -95,15 +95,15 @@
 @media (max-width: 560px) {
   .composer-stage {
     place-items: start center;
-    padding: 16px 12px calc(100px + env(safe-area-inset-bottom, 0px));
+    padding: var(--space-4) var(--space-3) calc(var(--space-8) + env(safe-area-inset-bottom, var(--space-0)));
   }
   .composer-card { width: min(100%, 460px); }
   .composer-tools {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    column-gap: 8px;
-    row-gap: 4px;
+    column-gap: var(--space-2);
+    row-gap: var(--space-1);
     width: 100%;
   }
   .tool-actions {
@@ -112,7 +112,7 @@
     width: 100%;
     grid-template-columns: repeat(4, minmax(36px, 44px));
     justify-content: space-between;
-    gap: 4px;
+    gap: var(--space-1);
   }
   .tool-button { width: 40px; height: 40px; }
   .character-count {
@@ -120,7 +120,7 @@
     grid-row: 2;
     margin: 0;
     justify-self: start;
-    font-size: 13px;
+    font-size: var(--font-12);
     white-space: nowrap;
   }
   .publish-button {
@@ -129,16 +129,16 @@
     min-width: 92px;
     min-height: 40px;
     margin: 0;
-    padding-inline: 14px;
+    padding-inline: var(--space-3);
   }
-  .composer-card > ion-textarea { font-size: 16px; }
+  .composer-card > ion-textarea { font-size: var(--font-16); }
 }
 
 @media (max-width: 360px) {
-  .composer-stage { padding-inline: 8px; }
-  .composer-card { padding: 14px; }
+  .composer-stage { padding-inline: var(--space-2); }
+  .composer-card { padding: var(--space-3); }
   .tool-actions { grid-template-columns: repeat(4, minmax(32px, 40px)); }
   .tool-button { width: 36px; height: 40px; }
-  .publish-button { min-width: 84px; padding-inline: 10px; }
-  .character-count { font-size: 12px; }
+  .publish-button { min-width: 84px; padding-inline: var(--space-2); }
+  .character-count { font-size: var(--font-12); }
 }
