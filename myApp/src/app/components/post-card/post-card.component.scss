@@ -8,10 +8,10 @@
   min-width: 0;
   grid-template-columns: 38px minmax(0, 1fr);
   align-items: start;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
-.post-avatar-link { display: block; width: 38px; height: 38px; margin-top: 16px; color: inherit; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: var(--transparent); }
+.post-avatar-link { display: block; width: 38px; height: 38px; margin-top: var(--space-4); color: inherit; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: var(--transparent); }
 .post-avatar-link:active, .post-profile-link:active { opacity: .68; transform: scale(.97); }
 .post-avatar-link:focus-visible, .post-profile-link:focus-visible { border-radius: var(--radius-inner); outline: 2px solid var(--ion-color-primary); outline-offset: 2px; }
 
@@ -20,7 +20,7 @@
   width: 100%;
   min-width: 0;
   margin: 0;
-  padding: 16px 16px 8px;
+  padding: var(--space-4) var(--space-4) var(--space-2);
   border: 1px solid var(--app-border);
   border-radius: var(--radius-inner);
   background: var(--app-surface);
@@ -42,8 +42,8 @@
   align-items: center;
 }
 
-.post-topline { position: relative; gap: 8px; }
-.post-profile-link { display: flex; flex: 1; min-width: 0; align-items: center; gap: 8px; color: inherit; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: var(--transparent); }
+.post-topline { position: relative; gap: var(--space-2); }
+.post-profile-link { display: flex; flex: 1; min-width: 0; align-items: center; gap: var(--space-2); color: inherit; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: var(--transparent); }
 
 .post-avatar {
   display: grid;
@@ -53,7 +53,7 @@
   overflow: hidden;
   place-items: center;
   border: 2px solid var(--page-surface);
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   border-color: var(--app-avatar-outline);
   background: var(--app-avatar-fill);
   box-shadow: 0 0 0 1px var(--app-divider);
@@ -63,12 +63,12 @@
 .post-avatar ion-icon { width: 100%; height: 100%; object-fit: cover; }
 
 .post-user-details { flex: 1; min-width: 0; }
-.identity-row { gap: 8px; }
+.identity-row { gap: var(--space-2); }
 .identity-row strong { overflow: hidden; color: var(--app-text); font-size: var(--font-body); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .post-time,
 .post-handle { color: var(--app-text-muted); font-size: var(--font-body); }
-.post-handle { display: block; margin-top: 8px; }
-.post-group-link { display: inline-block; margin-top: 8px; color: var(--app-text-muted); font-size: var(--font-body); text-decoration: none; }
+.post-handle { display: block; margin-top: var(--space-2); }
+.post-group-link { display: inline-block; margin-top: var(--space-2); color: var(--app-text-muted); font-size: var(--font-body); text-decoration: none; }
 .post-group-link:hover, .post-group-link:focus-visible { color: var(--app-primary); text-decoration: underline; }
 
 .post-more {
@@ -78,38 +78,38 @@
   flex: 0 0 32px;
   place-items: center;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--transparent);
   color: var(--app-primary);
   cursor: pointer;
 }
 
 .post-more ion-icon { font-size: var(--font-subheading); }
-.post-options-menu { position: absolute; z-index: 8; top: 38px; right: 0; display: grid; width: min(290px, calc(100vw - 72px)); padding: 8px; border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface); color: var(--app-text); box-shadow: var(--shadow-soft); }
-.post-options-menu button { min-height: 42px; padding: 8px 8px; border: 0; border-radius: var(--radius-inner); background: var(--transparent); color: var(--app-text); font: inherit; font-size: var(--font-body); text-align: left; cursor: pointer; }
+.post-options-menu { position: absolute; z-index: 8; top: var(--space-6); right: 0; display: grid; width: min(290px, calc(100vw - 72px)); padding: var(--space-2); border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface); color: var(--app-text); box-shadow: var(--shadow-soft); }
+.post-options-menu button { min-height: 42px; padding: var(--space-2) var(--space-2); border: 0; border-radius: var(--radius-inner); background: var(--transparent); color: var(--app-text); font: inherit; font-size: var(--font-body); text-align: left; cursor: pointer; }
 .post-options-menu button:hover, .post-options-menu button:focus-visible { background: var(--surface-2); outline: none; }
 .post-options-menu .destructive-option { color: var(--text-muted); }
-.post-edit-form { display: grid; gap: 8px; margin: 8px 0 0; }
-.post-edit-form textarea { width: 100%; min-height: 96px; padding: 8px; border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface-alt); color: var(--app-text); font: inherit; resize: vertical; }
-.post-edit-form > div { display: flex; justify-content: flex-end; gap: 8px; }
-.post-edit-form button { min-height: 34px; padding: 0 8px; border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface); color: var(--app-text); cursor: pointer; }
+.post-edit-form { display: grid; gap: var(--space-2); margin: var(--space-2) 0 0; }
+.post-edit-form textarea { width: 100%; min-height: 96px; padding: var(--space-2); border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface-alt); color: var(--app-text); font: inherit; resize: vertical; }
+.post-edit-form > div { display: flex; justify-content: flex-end; gap: var(--space-2); }
+.post-edit-form button { min-height: 34px; padding: 0 var(--space-2); border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface); color: var(--app-text); cursor: pointer; }
 .post-edit-form button:last-child { border-color: var(--ion-color-primary); background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); }
-.post-trash-note { margin: 8px 0 0; color: var(--page-muted); font-size: var(--font-body); }
-.post-body { margin: 8px 0 0; color: var(--app-text); font-size: var(--font-body); line-height: 1.5; overflow-wrap: anywhere; }
+.post-trash-note { margin: var(--space-2) 0 0; color: var(--page-muted); font-size: var(--font-body); }
+.post-body { margin: var(--space-2) 0 0; color: var(--app-text); font-size: var(--font-body); line-height: 1.5; overflow-wrap: anywhere; }
 .post-body a { color: var(--app-text-muted); text-decoration: underline; text-underline-offset: 2px; }
 
 .post-media-carousel {
   position: relative;
   min-width: 0;
-  margin: 8px 0 0;
+  margin: var(--space-2) 0 0;
 }
 
 .post-attachments {
   display: flex;
-  gap: 16px;
+  gap: var(--space-4);
   overflow-x: auto;
   margin: 0;
-  padding: 0 0 8px;
+  padding: 0 0 var(--space-2);
   scroll-snap-type: x proximity;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
@@ -119,7 +119,7 @@
 
 .attachment-arrow {
   position: absolute;
-  top: 50%;
+  top: var(--radius-circle);
   z-index: 2;
   display: grid;
   width: 38px;
@@ -127,15 +127,15 @@
   place-items: center;
   transform: translateY(-50%);
   border: 1px solid var(--border);
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--bg);
   color: var(--text);
   cursor: pointer;
 }
 
 .attachment-arrow ion-icon { font-size: var(--font-subheading); }
-.attachment-arrow-previous { left: 10px; }
-.attachment-arrow-next { right: 10px; }
+.attachment-arrow-previous { left: var(--space-2); }
+.attachment-arrow-next { right: var(--space-2); }
 
 .post-media {
   display: block;
@@ -151,7 +151,7 @@
   object-fit: cover;
 }
 
-.post-file { display: flex; min-width: 220px; max-width: calc(100vw - 100px); flex: 0 0 auto; align-items: center; gap: 8px; padding: 8px 8px; border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface-alt); color: var(--app-text); text-decoration: none; }
+.post-file { display: flex; min-width: 220px; max-width: calc(100vw - 100px); flex: 0 0 auto; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-2); border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface-alt); color: var(--app-text); text-decoration: none; }
 .post-file ion-icon { flex: 0 0 auto; font-size: var(--font-subheading); }
 .post-file span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -160,13 +160,13 @@
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: clamp(16px, 5vw, 32px);
-  margin: 8px 0 0;
+  gap: clamp(var(--space-4), 5vw, var(--space-6));
+  margin: var(--space-2) 0 0;
   padding-top: 0;
   border-top: 0;
 }
 
-.action-button { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; gap: 8px; padding: 0; border: 0; background: var(--transparent); color: var(--app-text-muted); font: inherit; font-size: var(--font-body); cursor: pointer; }
+.action-button { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; gap: var(--space-2); padding: 0; border: 0; background: var(--transparent); color: var(--app-text-muted); font: inherit; font-size: var(--font-body); cursor: pointer; }
 .action-button ion-icon { font-size: var(--font-heading); }
 .action-button.is-active { color: var(--ion-color-primary); }
 .action-button:first-child.is-active { color: var(--text); }
@@ -174,15 +174,15 @@
 .post-more:focus-visible,
 .comment-form button:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: 2px; }
 
-.action-message { margin: 8px 0 0; color: var(--page-muted); font-size: var(--font-body); }
+.action-message { margin: var(--space-2) 0 0; color: var(--page-muted); font-size: var(--font-body); }
 
 @media (max-width: 380px) {
-  .post-card { padding-inline: 8px; }
+  .post-card { padding-inline: var(--space-2); }
 }
 
 @media (max-width: 560px) {
-  .post-card { width: 100%; margin: 0; padding: 8px; }
-  .post-attachments { gap: 8px; }
+  .post-card { width: 100%; margin: 0; padding: var(--space-2); }
+  .post-attachments { gap: var(--space-2); }
   .post-media { max-height: min(38vh, 320px); }
   .identity-row strong { font-size: var(--font-body); font-weight: 600; }
   .post-time, .post-handle { font-size: var(--font-body); }
