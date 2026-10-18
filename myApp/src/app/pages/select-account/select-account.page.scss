@@ -70,7 +70,45 @@ ion-label p { color:#8491aa!important; font-size:10px; }
 @media (max-width:560px) {
  .select-header { padding-top:calc(env(safe-area-inset-top,0px) + 73px); }
 }
-:host-context(html.app-light) .select-content { --background:#f9faff; }
+/* Theme-aware overrides */
+:host-context(html.app-dark) .select-content {
+  --bg: #0B1120 !important;
+  --surface: #131C31 !important;
+  --text: #F1F5F9 !important;
+  --text-muted: #94A3B8 !important;
+  --border: #26334D !important;
+  --surface-2: #1B2740 !important;
+  background: var(--bg) !important;
+  --background: var(--bg) !important;
+}
+:host-context(html.app-dark) .select-content::part(background) { background: var(--bg) !important; }
+:host-context(html.app-dark) .select-header h1,
+:host-context(html.app-dark) .auth-empty-state h1,
+:host-context(html.app-dark) ion-label h2 {
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .select-header p,
+:host-context(html.app-dark) .auth-empty-state p,
+:host-context(html.app-dark) ion-label p,
+:host-context(html.app-dark) .select-footer-note,
+:host-context(html.app-dark) .select-eyebrow {
+  color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .account-list,
+:host-context(html.app-dark) .auth-empty-state {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+:host-context(html.app-dark) ion-item,
+:host-context(html.app-dark) ion-item::part(native) {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .account-avatar { background: var(--surface-2) !important; color: var(--primary) !important; }
+:host-context(html.app-dark) .more-link { background: var(--primary-soft) !important; color: var(--primary) !important; border-color: var(--border) !important; }
+:host-context(html.app-dark) .continue-account-button { background: var(--primary) !important; color: var(--on-primary) !important; }
+:host-context(html.app-dark) .auth-header ion-back-button { --color: var(--text-muted) !important; }
+
 .auth-header ion-toolbar { display:flex; justify-content:flex-start; padding:0 10px; }
 .auth-header ion-back-button { --color:#66738e; }
 .continue-account-button { display:block; width:min(calc(100% - 36px),460px); min-height:46px; margin:15px auto 8px; border:0; border-radius:10px; background:#5955df; color:#fff; font:inherit; font-size:11px; font-weight:700; }

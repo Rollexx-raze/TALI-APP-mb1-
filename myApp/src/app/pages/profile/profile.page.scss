@@ -460,6 +460,28 @@
 	.stats-row strong { font-size: var(--font-body); }
 	.stats-row span { font-size: var(--font-body); }
 }
+
+:host-context(html.app-dark) .profile-page-shell,
+:host-context(html.app-dark) .profile-hero,
+:host-context(html.app-dark) .profile-content-panel { background:var(--bg)!important; color:var(--text)!important; }
+:host-context(html.app-dark) .profile-page-header,
+:host-context(html.app-dark) .profile-page-header ion-toolbar { --background:var(--surface)!important; background:var(--surface)!important; }
+:host-context(html.app-dark) .profile-page-header h1,
+:host-context(html.app-dark) .profile-header-back,
+:host-context(html.app-dark) .profile-header-more,
+:host-context(html.app-dark) .profile-header-more-static,
+:host-context(html.app-dark) .profile-top h2,
+:host-context(html.app-dark) .profile-description { color:var(--text)!important; }
+:host-context(html.app-dark) .profile-handle,
+:host-context(html.app-dark) .profile-description .bio-placeholder { color:var(--text-muted)!important; }
+:host-context(html.app-dark) .profile-cover { background:var(--surface-alt)!important; }
+:host-context(html.app-dark) .profile-top ion-avatar,
+:host-context(html.app-dark) .profile-stats-card,
+:host-context(html.app-dark) .profile-sections,
+:host-context(html.app-dark) .profile-content-panel { border-color:var(--border)!important; background:var(--surface)!important; }
+:host-context(html.app-dark) .profile-sections button { color:var(--text-muted)!important; }
+:host-context(html.app-dark) .profile-sections button.active { background:var(--surface-alt)!important; color:var(--primary)!important; }
+:host-context(html.app-dark) .profile-actions .follow-btn { background:var(--surface-alt)!important; color:var(--text)!important; }
 main
 .profile-privacy-settings { display:grid;gap: var(--space-2);margin: var(--space-4) 0;padding: var(--space-4);border:1px solid var(--app-border);border-radius: var(--radius-inner);background:var(--app-surface); }
 .profile-privacy-settings h3 { margin: 0;color:var(--app-text);font-size: var(--font-body); }

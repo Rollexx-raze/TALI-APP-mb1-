@@ -187,5 +187,64 @@
   .login-content::part(scroll) { align-items:center; }
 }
 
-:host-context(html.app-light) .login-brand h1,
-:host-context(html.app-light) .login-field label { color:#202b45; }
+/* Theme-aware auth overrides */
+:host-context(html.app-dark) .login-content,
+:host-context(html:not(.app-light):not(.app-dark)) body.dark .login-content,
+:host-context(html.app-dark) {
+  --bg: #0B1120 !important;
+  --surface: #131C31 !important;
+  --text: #F1F5F9 !important;
+  --text-muted: #94A3B8 !important;
+  --border: #26334D !important;
+  --border-control: #26334D !important;
+  --surface-2: #1B2740 !important;
+}
+:host-context(html.app-dark) .login-content {
+  background: var(--bg) !important;
+  --background: var(--bg) !important;
+}
+:host-context(html.app-dark) { background:var(--bg)!important; }
+:host-context(html.app-dark) .login-content::part(background) { background:var(--bg)!important; }
+:host-context(html.app-dark) .login-content::part(scroll) { min-height:100%; background:var(--bg)!important; }
+:host-context(html.app-dark) .login-wrapper {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .login-brand h1,
+:host-context(html.app-dark) .login-field label,
+:host-context(html.app-dark) .login-welcome {
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .login-brand p,
+:host-context(html.app-dark) .login-footer-note,
+:host-context(html.app-dark) .login-field input::placeholder,
+:host-context(html.app-dark) .login-link-button {
+  color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .login-field {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+}
+:host-context(html.app-dark) .login-field input {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+:host-context(html.app-dark) .login-link-button {
+  border-color: var(--border) !important;
+  background: var(--surface-2) !important;
+}
+:host-context(html.app-dark) .login-link-button:first-child {
+  border-color: var(--border) !important;
+  background: var(--primary-soft) !important;
+  color: var(--primary) !important;
+}
+:host-context(html.app-dark) .login-password-toggle {
+  --color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .login-brand-mark .logo-on-light,
+:host-context(html.app-dark) .login-brand-mark .logo-on-dark {
+  filter: brightness(0) invert(1) !important;
+}
+

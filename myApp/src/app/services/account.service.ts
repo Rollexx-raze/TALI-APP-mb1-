@@ -338,7 +338,11 @@ export class AccountService {
   private persistAccounts() {
     this.changedBeforeHydration = true;
     void saveBrowserData(accountsStorageKey, this.accounts());
-    if (typeof localStorage === 'undefined') return;
+    // IndexedDB is the primary store. Mirroring the full account list to
+    // localStorage serializes all account data synchronously on the UI thread
+    // (including any large profile/cover images), which can freeze signup.
+    // Keep the legacy fallback only for browsers without IndexedDB.
+    if (typeof indexedDB !== 'undefined' || typeof localStorage === 'undefined') return;
     try {
       localStorage.setItem(accountsStorageKey, JSON.stringify(this.accounts()));
     } catch {

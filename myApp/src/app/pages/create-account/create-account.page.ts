@@ -116,7 +116,6 @@ export class CreateAccountPage {
 
     this.isSubmitting = true;
     try {
-      await new Promise<void>((resolve) => typeof requestAnimationFrame === 'function' ? requestAnimationFrame(() => resolve()) : setTimeout(resolve, 0));
       await this.auth.register({
         firstName: this.firstName,
         lastName: this.lastName,

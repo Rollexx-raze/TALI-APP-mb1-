@@ -155,7 +155,58 @@
 .signup-success-icon { display:grid; width:44px; height:44px; place-items:center; margin:32px 0 16px; border-radius:14px; background:#e4f4f0; color:#278e87; font-size:24px; }
 .signup-success-note { margin:13px 0; color:#8491aa; font-size:10px; }
 .create-account-heading[role="status"] { text-align:left; }
-:host-context(html.app-light) .auth-header h1 { color:#202b45; }
+/* Theme-aware auth overrides */
+:host-context(html.app-dark) .create-account-content {
+  --bg: #0B1120 !important;
+  --surface: #131C31 !important;
+  --text: #F1F5F9 !important;
+  --text-muted: #94A3B8 !important;
+  --border: #26334D !important;
+  --border-control: #26334D !important;
+  --surface-2: #1B2740 !important;
+  background: var(--bg) !important;
+  --background: var(--bg) !important;
+}
+:host-context(html.app-dark) .create-account-content::part(background) { background: var(--bg) !important; }
+:host-context(html.app-dark) .create-account-card {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .create-account-heading h1,
+:host-context(html.app-dark) .auth-header h1,
+:host-context(html.app-dark) .signup-progress-steps .is-current {
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .create-account-heading p,
+:host-context(html.app-dark) .create-account-footer,
+:host-context(html.app-dark) .signup-progress-steps,
+:host-context(html.app-dark) .create-account-field label,
+:host-context(html.app-dark) .signup-success-note {
+  color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .create-account-field {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+:host-context(html.app-dark) .create-account-field input {
+  color: var(--text) !important;
+  background: transparent !important;
+  -webkit-text-fill-color: var(--text) !important;
+  box-shadow: none !important;
+  border-color: var(--border) !important;
+}
+:host-context(html.app-dark) .create-account-field input::placeholder { color: var(--text-muted) !important; }
+:host-context(html.app-dark) .signup-progress-bars span { background: var(--border) !important; }
+:host-context(html.app-dark) .signup-progress-bars span.is-complete { background: var(--primary) !important; }
+:host-context(html.app-dark) .auth-brand img { filter: brightness(0) invert(1) !important; }
+:host-context(html.app-dark) .create-account-field input { color:var(--text)!important; -webkit-text-fill-color:var(--text)!important; }
+:host-context(html.app-dark) .create-account-field input:-webkit-autofill { -webkit-box-shadow:0 0 0 1000px var(--bg) inset!important; -webkit-text-fill-color:var(--text)!important; }
+:host-context(html.app-dark) .create-account-button::part(native),
+:host-context(html.app-dark) .signup-step-button::part(native) { background:var(--primary)!important; color:var(--on-primary)!important; }
+
 
 @media (min-width:768px) {
   .create-account-content { width:100%; max-width:none; margin:0; }

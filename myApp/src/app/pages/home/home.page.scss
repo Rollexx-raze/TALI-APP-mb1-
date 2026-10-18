@@ -581,3 +581,19 @@ main
 .feed-tab.is-active { background:#fff; color:#5d58e9; }
 .screen-shell > app-post-card { width:100%!important; margin:0 auto!important; }
 @media (max-width:420px) { .screen-shell { padding-inline:0; } .home-account-row { padding-inline:14px; } .feed-tabs { padding-inline:4px; } }
+
+:host-context(html.app-dark) .home-content,
+:host-context(html.app-dark) .screen-shell { --background:var(--bg)!important; background:var(--bg)!important; color:var(--text); }
+:host-context(html.app-dark) ion-header.home-header,
+:host-context(html.app-dark) ion-header.home-header ion-toolbar,
+:host-context(html.app-dark) .home-footer ion-toolbar { --background:var(--surface)!important; --color:var(--text)!important; background:var(--surface)!important; color:var(--text)!important; }
+:host-context(html.app-dark) .home-search-prompt,
+:host-context(html.app-dark) .feed-tabs { background:var(--surface-alt)!important; color:var(--text-muted)!important; }
+:host-context(html.app-dark) .home-account-copy .home-greeting { color:var(--text-muted)!important; }
+:host-context(html.app-dark) .home-account-copy strong,
+:host-context(html.app-dark) .home-title,
+:host-context(html.app-dark) .search-button { --color:var(--text)!important; color:var(--text)!important; }
+:host-context(html.app-dark) .feed-tab { color:var(--text-muted)!important; }
+:host-context(html.app-dark) .feed-tab.is-active { background:var(--surface)!important; color:var(--primary)!important; }
+:host-context(html.app-dark) .home-brand-mark .logo-on-light { display:none!important; }
+:host-context(html.app-dark) .home-brand-mark .logo-on-dark { display:block!important; }

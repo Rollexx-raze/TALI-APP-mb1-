@@ -53,14 +53,14 @@
             <div class="create-account-field" [class.field-invalid]="(submitted && !username.trim()) || !!usernameError">
               <div class="create-account-field-copy">
                 <label for="signup-username">Username</label>
-                <input id="signup-username" name="username" type="text" autocomplete="username" [(ngModel)]="username" placeholder="Choose a username" required [attr.aria-invalid]="(submitted && !username.trim()) || usernameError ? 'true' : null" aria-describedby="signup-username-error" (blur)="submitted = true" />
+                <input id="signup-username" name="username" type="text" autocomplete="username" [(ngModel)]="username" placeholder="Choose a username" required [attr.aria-invalid]="(submitted && !username.trim()) || usernameError ? 'true' : null" aria-describedby="signup-username-error" />
               </div>
             </div>
             @if (submitted && !username.trim() || usernameError) { <p id="signup-username-error" class="create-account-error" aria-live="polite">{{ usernameError || 'Enter a username.' }}</p> }
             <div class="create-account-field" [class.field-invalid]="(submitted && !emailOrNumber.trim()) || !!contactError">
               <div class="create-account-field-copy">
                 <label for="signup-contact">Email or number</label>
-                <input id="signup-contact" name="contact" type="text" autocomplete="email" [(ngModel)]="emailOrNumber" placeholder="Enter your email or number" required [attr.aria-invalid]="(submitted && !emailOrNumber.trim()) || contactError ? 'true' : null" aria-describedby="signup-contact-error" (blur)="submitted = true" />
+                <input id="signup-contact" name="contact" type="text" autocomplete="email" [(ngModel)]="emailOrNumber" placeholder="Enter your email or number" required [attr.aria-invalid]="(submitted && !emailOrNumber.trim()) || contactError ? 'true' : null" aria-describedby="signup-contact-error" />
               </div>
             </div>
             @if (submitted && !emailOrNumber.trim() || contactError) { <p id="signup-contact-error" class="create-account-error" aria-live="polite">{{ contactError || 'Enter your email or phone number.' }}</p> }
