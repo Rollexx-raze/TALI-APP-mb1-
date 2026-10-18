@@ -4,9 +4,9 @@
       <section class="profile-hero">
         <div class="profile-page-header">
           @if (!isOwnProfile) { <button type="button" class="profile-header-back" (click)="goBack()" aria-label="Back"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></button> }
-          <h1>{{ isOwnProfile ? 'My profile' : profile.name }}</h1>
+          <div class="profile-brand"><span>Profile</span></div>
           @if (isOwnProfile) {
-            <button type="button" class="profile-header-more" routerLink="/settings" aria-label="Settings"><ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon></button>
+            <button type="button" class="profile-header-more" routerLink="/settings" aria-label="Settings"><ion-icon name="settings-outline" aria-hidden="true"></ion-icon></button>
           } @else { <span class="profile-header-more-static" aria-hidden="true">···</span> }
         </div>
         @if (isOwnProfile) {
@@ -14,8 +14,7 @@
             @if (profile.coverImage) { <img [src]="profile.coverImage" alt="Profile cover photo" /> }
             @else {
               <div class="cover-empty-state">
-                <ion-icon name="camera-outline" aria-hidden="true"></ion-icon>
-                <span>Tap to add a cover photo</span>
+                <span class="cover-tagline">Here for the little things.</span>
               </div>
             }
           </button>
@@ -32,7 +31,7 @@
               @if (canViewProfileImage(profile)) {
                 <button type="button" class="view-profile-photo" (click)="openProfilePhoto(profile)" [attr.aria-label]="'View ' + profile.name + ' profile photo'"><img [src]="profile.profileImage" alt="Profile photo" /></button>
               } @else {
-                <ion-icon name="person-circle-outline"></ion-icon>
+                <span class="profile-initials" aria-hidden="true">{{ profileInitials(profile.name) }}</span>
               }
             </ion-avatar>
           </div>
@@ -53,7 +52,7 @@
             @if (!profile.bio && !profile.website && isOwnProfile) { <p class="bio-placeholder">Add a bio</p> }
           </div>
           @if (isOwnProfile) {
-            <ion-button class="edit-profile-button" expand="block" [routerLink]="['/settings']" [queryParams]="{ section: 'profile' }">Edit profile</ion-button>
+            <ion-button class="edit-profile-button" fill="outline" [routerLink]="['/settings']" [queryParams]="{ section: 'profile' }"><ion-icon name="create-outline" aria-hidden="true"></ion-icon>Edit profile</ion-button>
           } @else {
             <div class="profile-actions">
               <button type="button" class="follow-btn" [class.is-following]="isFollowingProfile" (click)="toggleFollowProfile()">{{ isFollowingProfile ? 'Following' : 'Follow' }}</button>

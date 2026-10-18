@@ -189,3 +189,82 @@
   .post-body { font-size: var(--font-body); line-height: 1.5; }
   .post-trash-note, .action-message { font-size: var(--font-body); }
 }
+
+:host-context(app-profile) .post-layout {
+  position: relative;
+  display: block;
+}
+:host-context(app-profile) .post-avatar-link {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+}
+:host-context(app-profile) .post-avatar {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: #eceefd;
+  box-shadow: none;
+}
+:host-context(app-profile) .post-card {
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fff;
+  color: #111827;
+  box-shadow: none;
+}
+:host-context(app-profile) .post-topline { min-height: 36px; }
+:host-context(app-profile) .post-profile-link {
+  min-height: 36px;
+  align-items: flex-start;
+  padding-left: 48px;
+}
+:host-context(app-profile) .identity-row {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0;
+}
+:host-context(app-profile) .identity-row strong {
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+}
+:host-context(app-profile) .post-time,
+:host-context(app-profile) .post-handle {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 18px;
+}
+:host-context(app-profile) .post-handle { margin-top: 0; }
+:host-context(app-profile) .post-more { color: #6b7280; }
+:host-context(app-profile) .post-more ion-icon { font-size: 20px; }
+:host-context(app-profile) .post-body {
+  margin: 16px 0 0;
+  color: #111827;
+  font-size: 15px;
+  line-height: 20px;
+}
+:host-context(app-profile) .post-body a { color: #4f46e5; }
+:host-context(app-profile) .post-actions {
+  justify-content: space-between;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+}
+:host-context(app-profile) .action-button {
+  min-width: 0;
+  min-height: 36px;
+  gap: 5px;
+  color: #6b7280;
+  font-size: 13px;
+}
+:host-context(app-profile) .action-button ion-icon { font-size: 20px; }
