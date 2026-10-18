@@ -11,9 +11,9 @@
 
 .profile-floating-header {
   position: absolute;
-  top: max(16px, env(safe-area-inset-top, 16px));
-  left: 16px;
-  right: 16px;
+  top: max(var(--space-4), env(safe-area-inset-top, var(--space-4)));
+  left: var(--space-4);
+  right: var(--space-4);
   z-index: 10;
   display: flex;
   align-items: center;
@@ -30,7 +30,7 @@
   padding: 0;
   border: 0 !important;
   border-color: var(--transparent) !important;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--bg) !important;
   color: var(--page-text, var(--text)) !important;
   box-shadow: none !important;
@@ -76,7 +76,7 @@
 	--padding-top: 0;
 	--padding-start: 0;
 	--padding-end: 0;
-	--padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+	--padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom, var(--space-0)));
 }
 .profile-page-shell {
 	box-sizing: border-box;
@@ -143,7 +143,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: var(--space-2);
 	color: var(--text);
 
 	ion-icon {
@@ -156,7 +156,7 @@
 		font-weight: 500;
 	}
 }
-.profile-top { display: grid; grid-template-columns: 116px minmax(0, 1fr); align-items: end; column-gap: 16px; row-gap: 16px; margin-top: 8px; padding: 0 16px 16px; text-align: left; }
+.profile-top { display: grid; grid-template-columns: 116px minmax(0, 1fr); align-items: end; column-gap: var(--space-4); row-gap: var(--space-4); margin-top: var(--space-2); padding: 0 var(--space-4) var(--space-4); text-align: left; }
 .profile-identity { grid-column: 1 / -1; min-width: 0; width: 100%; }
 .profile-avatar-wrap { position: relative; z-index: 1; grid-column: 1; grid-row: 1; width: 116px; height: 116px; margin: 0; }
 .profile-top ion-avatar {
@@ -166,7 +166,7 @@
 	place-items: center;
 	margin: 0;
 	border: 4px solid var(--border);
-	border-radius: 50%;
+	border-radius: var(--radius-circle);
 	overflow: hidden;
 	background: var(--bg);
 	color: var(--text);
@@ -176,12 +176,12 @@
 .profile-top ion-avatar img { width: 100%; height: 100%; border-radius: var(--radius-inner); object-fit: cover; }
 .view-profile-photo { display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: 0; border-radius: var(--radius-inner); background: var(--transparent); cursor: zoom-in; }
 .view-profile-photo img { display: block; }
-.profile-top h2 { margin: 0 0 8px; color: var(--text); font-size: var(--font-heading); font-weight: 700; }
-.profile-top p { margin: 0 0 8px; color: var(--text); font-size: var(--font-body); }
-.profile-top .verified-badge { display: inline-block; width: 14px; height: 14px; margin-left: 8px; vertical-align: -2px; color: var(--text); }
+.profile-top h2 { margin: 0 0 var(--space-2); color: var(--text); font-size: var(--font-heading); font-weight: 700; }
+.profile-top p { margin: 0 0 var(--space-2); color: var(--text); font-size: var(--font-body); }
+.profile-top .verified-badge { display: inline-block; width: 14px; height: 14px; margin-left: var(--space-2); vertical-align: -2px; color: var(--text); }
 .profile-top ion-button { --border-color: var(--page-border); font-size: var(--font-body); }
-.profile-actions { display: flex; align-items: center; justify-content: flex-start; gap: 8px; }
-.profile-actions ion-button { min-width: 92px; min-height: 36px; margin: 0; --border-radius: 999px; --border-width: 1px; font-size: var(--font-body); }
+.profile-actions { display: flex; align-items: center; justify-content: flex-start; gap: var(--space-2); }
+.profile-actions ion-button { min-width: 92px; min-height: 36px; margin: 0; --border-radius: var(--radius-pill); --border-width: 1px; font-size: var(--font-body); }
 .profile-actions ion-button:not(.message-profile-button) { --background: var(--bg); --color: var(--text); --border-color: var(--border); }
 .follow-btn {
   display: inline-flex;
@@ -190,9 +190,9 @@
   min-width: 92px;
   min-height: 36px;
   margin: 0;
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--transparent);
   color: var(--text);
   font-size: var(--font-body);
@@ -220,28 +220,28 @@
 .profile-actions .message-profile-button::part(native) { color: var(--text) !important; }
 .message-button-label { display: inline-block; color: var(--text) !important; opacity: 1 !important; visibility: visible !important; font-size: var(--font-body); font-weight: 600; line-height: 1; }
 
-.profile-stats-card { grid-column: 2; grid-row: 1; align-self: end; padding: 0 0 16px; border: 0; border-radius: var(--radius-inner); background: var(--transparent); }
+.profile-stats-card { grid-column: 2; grid-row: 1; align-self: end; padding: 0 0 var(--space-4); border: 0; border-radius: var(--radius-inner); background: var(--transparent); }
 .stats-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding: 0; border: 0; }
-.stats-row div, .stats-row button { position: relative; display: grid; min-width: 0; gap: 8px; padding: 0 8px; border: 0; background: var(--transparent); text-align: center; }
+.stats-row div, .stats-row button { position: relative; display: grid; min-width: 0; gap: var(--space-2); padding: 0 var(--space-2); border: 0; background: var(--transparent); text-align: center; }
 .stats-row > :not(:last-child)::after { position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: var(--surface); content: ""; }
 .stats-row button { cursor: pointer; }
 .stats-row strong { overflow: hidden; color: var(--text); font-size: var(--font-body); font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
 .stats-row span { color: var(--text); font-size: var(--font-body); }
-.profile-bio { display: grid; justify-items: center; gap: 8px; padding-top: 8px; color: var(--text); font-size: var(--font-body); line-height: 1.4; overflow-wrap: anywhere; }
+.profile-bio { display: grid; justify-items: center; gap: var(--space-2); padding-top: var(--space-2); color: var(--text); font-size: var(--font-body); line-height: 1.4; overflow-wrap: anywhere; }
 .profile-bio p { margin: 0; }
-.profile-bio p > span { margin-right: 8px; color: var(--text); }
+.profile-bio p > span { margin-right: var(--space-2); color: var(--text); }
 .profile-bio a { color: var(--text); text-decoration: underline; }
 .profile-bio .bio-placeholder { color: var(--text); }
 
-.profile-content-panel { min-height: 320px; padding-bottom: 24px; background: var(--bg); color: var(--text); }
-.profile-sections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--transparent); }
+.profile-content-panel { min-height: 320px; padding-bottom: var(--space-5); background: var(--bg); color: var(--text); }
+.profile-sections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); padding: var(--space-2) 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--transparent); }
 .profile-sections button {
 	display: grid;
 	min-width: 0;
 	min-height: 48px;
 	place-content: center;
-	gap: 8px;
-	padding: 8px 8px;
+	gap: var(--space-2);
+	padding: var(--space-2) var(--space-2);
 	border: 0;
 	border-bottom: 2px solid var(--transparent);
 	border-radius: var(--radius-inner);
@@ -258,26 +258,26 @@
 .profile-sections button ion-icon { width: 22px; height: 22px; justify-self: center; color: var(--page-text, var(--text)); font-size: var(--font-subheading); }
 .profile-sections button.active { border-bottom-color: var(--border); background: var(--transparent); color: var(--text); }
 .profile-sections button:focus-visible { outline: 2px solid var(--ion-color-primary); outline-offset: 2px; }
-.profile-posts { padding: 24px 8px; }
-.profile-posts > app-post-card { display: block; margin-top: 8px; }
-.profile-posts-feed { display: grid; gap: 8px; margin-top: 16px; }
-.trash-explanation { margin: 8px 0 0; color: var(--page-muted); font-size: var(--font-body); }
-.profile-gallery { display: flex; flex-direction: column; align-items: center; gap: 8px; overflow: visible; padding: 16px 0 24px; }
+.profile-posts { padding: var(--space-5) var(--space-2); }
+.profile-posts > app-post-card { display: block; margin-top: var(--space-2); }
+.profile-posts-feed { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
+.trash-explanation { margin: var(--space-2) 0 0; color: var(--page-muted); font-size: var(--font-body); }
+.profile-gallery { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); overflow: visible; padding: var(--space-4) 0 var(--space-5); }
 .profile-gallery img, .profile-gallery video { display: block; width: min(100%, 700px); max-width: calc(100vw - 40px); height: auto; flex: 0 0 auto; max-height: min(80vh, 720px); border: 1px solid var(--border); border-radius: var(--radius-inner); background: var(--bg); object-fit: contain; }
-.profile-gallery { display: flex; flex-direction: column; align-items: center; gap: 16px; overflow: visible; padding: 16px 24px 24px; }
+.profile-gallery { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); overflow: visible; padding: var(--space-4) var(--space-5) var(--space-5); }
 .profile-gallery img, .profile-gallery video { display: block; width: min(100%, 700px); max-width: calc(100vw - 40px); height: auto; flex: 0 0 auto; max-height: min(80vh, 720px); border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface-alt); object-fit: contain; }
-.profile-photo-gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: 8px; }
+.profile-photo-gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: var(--space-2); }
 .profile-photo-gallery img { width: 100%; max-width: none; height: auto; aspect-ratio: 1 / 1; max-height: none; object-fit: contain; }
 .profile-video-gallery video { object-fit: contain; }
 .profile-gallery .empty-profile { width: 100%; }
-.empty-profile { display: grid; justify-items: center; padding: 48px 8px; color: var(--text); text-align: center; }
+.empty-profile { display: grid; justify-items: center; padding: var(--space-7) var(--space-2); color: var(--text); text-align: center; }
 .empty-profile ion-icon { color: var(--text); font-size: var(--font-display); }
-.empty-profile img.empty-state-icon { width: 32px; height: 32px; margin-bottom: 8px; filter: brightness(0) invert(1); object-fit: contain; }
+.empty-profile img.empty-state-icon { width: 32px; height: 32px; margin-bottom: var(--space-2); filter: brightness(0) invert(1); object-fit: contain; }
 .empty-profile p { font-size: var(--font-body); }
 
-.edit-backdrop { position: fixed; z-index: 20; inset: 0; display: grid; align-items: center; padding: 16px; background: var(--bg); }
-.edit-dialog { width: min(100%, 440px); max-height: calc(100dvh - 40px); margin: auto; overflow-y: auto; overscroll-behavior: contain; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--bg); color: var(--text); box-shadow: var(--shadow-soft); }
-.edit-dialog { width: min(100%, 440px); max-height: calc(100dvh - 40px); margin: auto; overflow-y: auto; overscroll-behavior: contain; padding: 16px; border: 1px solid var(--page-border); border-radius: var(--radius-card); background: var(--page-surface); color: var(--page-text); box-shadow: var(--shadow-soft); }
+.edit-backdrop { position: fixed; z-index: 20; inset: 0; display: grid; align-items: center; padding: var(--space-4); background: var(--bg); }
+.edit-dialog { width: min(100%, 440px); max-height: calc(100dvh - 40px); margin: auto; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--bg); color: var(--text); box-shadow: var(--shadow-soft); }
+.edit-dialog { width: min(100%, 440px); max-height: calc(100dvh - 40px); margin: auto; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-4); border: 1px solid var(--page-border); border-radius: var(--radius-card); background: var(--page-surface); color: var(--page-text); box-shadow: var(--shadow-soft); }
 .profile-editor-dialog { scrollbar-width: none; -ms-overflow-style: none; }
 .profile-editor-dialog::-webkit-scrollbar { display: none; }
 :host-context(html:not(.app-light)) .profile-editor-dialog {
@@ -288,24 +288,24 @@
 	border-color: var(--app-border);
 	color: var(--app-text);
 }
-.edit-dialog h2 { margin: 0 0 16px; color: var(--page-text); font-size: var(--font-body); }
+.edit-dialog h2 { margin: 0 0 var(--space-4); color: var(--page-text); font-size: var(--font-body); }
 .profile-photo-input { display: none; }
-.profile-photo-error { margin: 0 0 8px; color: var(--text); font-size: var(--font-body); text-align: center; }
-.profile-photo-viewer { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; padding: 24px; background: var(--bg); }
+.profile-photo-error { margin: 0 0 var(--space-2); color: var(--text); font-size: var(--font-body); text-align: center; }
+.profile-photo-viewer { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; padding: var(--space-5); background: var(--bg); }
 .profile-photo-viewer img { display: block; max-width: min(90vw, 720px); max-height: 85vh; border-radius: var(--radius-inner); object-fit: contain; }
-.profile-photo-viewer-close { position: absolute; top: 18px; right: 22px; width: 42px; height: 42px; border: 0; border-radius: 50%; background: var(--surface); color: var(--text); font-size: var(--font-heading); cursor: pointer; }
-.profile-photo-actions { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
-.profile-photo-error { margin: 0 0 8px; color: var(--text); font-size: var(--font-body); text-align: center; }
-.edit-dialog ion-input, .edit-dialog ion-textarea { margin-bottom: 8px; --color: var(--page-text); --highlight-color-focused: var(--ion-color-primary); }
+.profile-photo-viewer-close { position: absolute; top: var(--space-4); right: var(--space-5); width: 42px; height: 42px; border: 0; border-radius: var(--radius-circle); background: var(--surface); color: var(--text); font-size: var(--font-heading); cursor: pointer; }
+.profile-photo-actions { display: flex; justify-content: center; gap: var(--space-2); margin-bottom: var(--space-4); }
+.profile-photo-error { margin: 0 0 var(--space-2); color: var(--text); font-size: var(--font-body); text-align: center; }
+.edit-dialog ion-input, .edit-dialog ion-textarea { margin-bottom: var(--space-2); --color: var(--page-text); --highlight-color-focused: var(--ion-color-primary); }
 .profile-editor-dialog ion-input,
 .profile-editor-dialog ion-textarea {
 	--background: var(--app-surface-alt);
 	--color: var(--app-text);
 	--placeholder-color: var(--app-placeholder);
-	--padding-start: 16px;
-	--padding-end: 16px;
-	--padding-top: 8px;
-	--padding-bottom: 8px;
+	--padding-start: var(--space-4);
+	--padding-end: var(--space-4);
+	--padding-top: var(--space-2);
+	--padding-bottom: var(--space-2);
 	min-height: 58px;
 	border: 1px solid var(--app-border);
 	border-radius: var(--radius-inner);
@@ -313,21 +313,21 @@
 }
 .profile-editor-dialog ion-input::part(native),
 .profile-editor-dialog ion-textarea::part(native) { border-radius: var(--radius-inner); }
-.edit-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.edit-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
 .unfollow-backdrop { z-index: 40; background: var(--bg);  }
-.unfollow-dialog { width: min(100%, 390px); padding: 24px; border-color: var(--border); }
-.unfollow-dialog h2 { margin-bottom: 8px; }
+.unfollow-dialog { width: min(100%, 390px); padding: var(--space-5); border-color: var(--border); }
+.unfollow-dialog h2 { margin-bottom: var(--space-2); }
 .unfollow-dialog p { margin: 0; color: var(--page-muted); font-size: var(--font-body); line-height: 1.5; }
-.unfollow-dialog .edit-actions { margin-top: 24px; }
+.unfollow-dialog .edit-actions { margin-top: var(--space-5); }
 .unfollow-dialog .confirm-unfollow-button { --background: var(--ion-color-primary); --color: var(--on-primary); --border-radius: var(--radius-inner); font-weight: 650; }
-.connections-dialog h2 { margin-bottom: 16px; }
-.connection-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--page-border); color: var(--page-text); text-decoration: none; }
+.connections-dialog h2 { margin-bottom: var(--space-4); }
+.connection-row { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) 0; border-bottom: 1px solid var(--page-border); color: var(--page-text); text-decoration: none; }
 .connection-row ion-icon { flex: 0 0 34px; width: 34px; height: 34px; color: var(--text); }
 .connection-row strong, .connection-row span { display: block; }
 .connection-row strong { font-size: var(--font-body); }
 .connection-row span, .connection-empty { color: var(--page-muted); font-size: var(--font-body); }
 
-.page-footer ion-toolbar { display: flex; justify-content: space-around; min-height: 70px; padding: 8px 8px; --background: var(--page-bg); }
+.page-footer ion-toolbar { display: flex; justify-content: space-around; min-height: 70px; padding: var(--space-2) var(--space-2); --background: var(--page-bg); }
 .page-footer ion-button { width: 48px; height: 48px; margin: 0; --color: var(--page-muted); font-size: var(--font-heading); }
 .page-footer .active-tab, .page-footer .compose-button { --color: var(--page-text); }
 .page-footer .compose-button { font-size: var(--font-display); }
@@ -417,27 +417,27 @@
 	.profile-page-shell { width: min(100%, 1600px); min-height: calc(100dvh - 132px); padding: 0; }
 	.profile-hero { padding: 0; }
 	.profile-cover { height: 380px; margin: 0; }
-	.profile-top { grid-template-columns: 124px minmax(0, 1fr); column-gap: 24px; row-gap: 16px; margin-top: 8px; padding: 0 24px 24px; }
+	.profile-top { grid-template-columns: 124px minmax(0, 1fr); column-gap: var(--space-5); row-gap: var(--space-4); margin-top: var(--space-2); padding: 0 var(--space-5) var(--space-5); }
 	.profile-avatar-wrap { width: 124px; height: 124px; }
-	.profile-identity { padding-bottom: 8px; }
+	.profile-identity { padding-bottom: var(--space-2); }
 	.profile-identity h2 { font-size: var(--font-heading); }
-	.profile-stats-card { padding-bottom: 16px; }
+	.profile-stats-card { padding-bottom: var(--space-4); }
 	.profile-stats-card .stats-row { max-width: 520px; margin-left: auto; }
-	.profile-posts { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+	.profile-posts { max-width: 900px; margin: 0 auto; padding: var(--space-5) var(--space-4); }
 	.profile-video-gallery video { width: min(100%, 820px); }
 }
 @media (max-width: 560px) {
 	.profile-page-shell { margin-top: 0; padding: 0; }
 	.profile-hero { padding: 0; border-radius: var(--radius-inner); }
 	.profile-cover { height: clamp(260px, 64vw, 320px); margin: 0; }
-	.profile-top { grid-template-columns: 90px minmax(0, 1fr); column-gap: 8px; row-gap: 16px; margin-top: 8px; padding: 0 16px 16px; }
-	.profile-sections { gap: 8px; padding: 8px 0; }
+	.profile-top { grid-template-columns: 90px minmax(0, 1fr); column-gap: var(--space-2); row-gap: var(--space-4); margin-top: var(--space-2); padding: 0 var(--space-4) var(--space-4); }
+	.profile-sections { gap: var(--space-2); padding: var(--space-2) 0; }
 	.profile-sections button { min-height: 48px; font-size: var(--font-body); }
-	.profile-posts { padding: 16px 8px; }
+	.profile-posts { padding: var(--space-4) var(--space-2); }
 	.profile-top h2 { font-size: var(--font-body); }
 	.profile-top p { font-size: var(--font-body); }
 	.profile-avatar-wrap { width: 90px; height: 90px; }
-	.profile-stats-card { min-width: 0; padding-bottom: 8px; }
+	.profile-stats-card { min-width: 0; padding-bottom: var(--space-2); }
 	.stats-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 	.stats-row strong { font-size: var(--font-body); }
 	.stats-row span { font-size: var(--font-body); }
@@ -450,31 +450,31 @@
 	.profile-page-shell { padding: 0; }
 	.profile-hero { padding: 0; }
 	.profile-cover { height: 250px; margin: 0; }
-	.profile-top { grid-template-columns: 76px minmax(0, 1fr); column-gap: 8px; padding: 0 8px 16px; }
+	.profile-top { grid-template-columns: 76px minmax(0, 1fr); column-gap: var(--space-2); padding: 0 var(--space-2) var(--space-4); }
 	.profile-avatar-wrap { width: 76px; height: 76px; }
 	.profile-top h2 { font-size: var(--font-body); }
 	.profile-top p { font-size: var(--font-body); }
-	.profile-actions { gap: 8px; }
+	.profile-actions { gap: var(--space-2); }
 	.profile-actions ion-button { min-width: 65px; font-size: var(--font-body); }
 	.stats-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
 	.stats-row strong { font-size: var(--font-body); }
 	.stats-row span { font-size: var(--font-body); }
 }
 main
-.profile-privacy-settings { display:grid;gap: 8px;margin: 16px 0;padding: 16px;border:1px solid var(--app-border);border-radius: var(--radius-inner);background:var(--app-surface); }
+.profile-privacy-settings { display:grid;gap: var(--space-2);margin: var(--space-4) 0;padding: var(--space-4);border:1px solid var(--app-border);border-radius: var(--radius-inner);background:var(--app-surface); }
 .profile-privacy-settings h3 { margin: 0;color:var(--app-text);font-size: var(--font-body); }
-.profile-privacy-settings label { display:grid;gap: 8px;color:var(--app-text);font-size: var(--font-body);font-weight:700; }
-.profile-privacy-settings select { min-height:42px;padding: 8px 8px;border:1px solid var(--app-border);border-radius: var(--radius-inner);background:var(--app-surface-alt);color:var(--app-text);font:inherit; }
+.profile-privacy-settings label { display:grid;gap: var(--space-2);color:var(--app-text);font-size: var(--font-body);font-weight:700; }
+.profile-privacy-settings select { min-height:42px;padding: var(--space-2) var(--space-2);border:1px solid var(--app-border);border-radius: var(--radius-inner);background:var(--app-surface-alt);color:var(--app-text);font:inherit; }
 .profile-privacy-settings p { margin: 0;color:var(--app-text-muted);font-size: var(--font-body);line-height:1.45; }
-.profile-photo-visibility { margin: 8px 0; }
+.profile-photo-visibility { margin: var(--space-2) 0; }
 .crop-backdrop { z-index: 30; }
-.crop-dialog { display: grid; gap: 16px; }
+.crop-dialog { display: grid; gap: var(--space-4); }
 .crop-dialog h2 { margin-bottom: 0; }
-.profile-photo-crop-preview { width: min(72vw, 280px); aspect-ratio: 1; margin: 0 auto; overflow: hidden; border: 3px solid var(--ion-color-primary); border-radius: 50%; background: var(--page-bg); }
+.profile-photo-crop-preview { width: min(72vw, 280px); aspect-ratio: 1; margin: 0 auto; overflow: hidden; border: 3px solid var(--ion-color-primary); border-radius: var(--radius-circle); background: var(--page-bg); }
 .profile-photo-crop-preview img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .08s ease-out; }
-.crop-control { display: grid; gap: 8px; color: var(--page-text); font-size: var(--font-body); }
+.crop-control { display: grid; gap: var(--space-2); color: var(--page-text); font-size: var(--font-body); }
 .crop-control input { width: 100%; accent-color: var(--ion-color-primary); }
-.crop-control select { min-height: 42px; padding: 8px 8px; border: 1px solid var(--page-border); border-radius: var(--radius-inner); background: var(--page-bg); color: var(--page-text); font: inherit; }
+.crop-control select { min-height: 42px; padding: var(--space-2) var(--space-2); border: 1px solid var(--page-border); border-radius: var(--radius-inner); background: var(--page-bg); color: var(--page-text); font: inherit; }
 
 
 /* Compact, aligned profile header on narrow screens. */
@@ -495,10 +495,10 @@ main
 .profile-top {
   grid-template-columns: 76px minmax(0, 1fr);
   align-items: center;
-  column-gap: 12px;
-  row-gap: 12px;
-  margin-top: -34px;
-  padding: 0 14px 16px;
+  column-gap: var(--space-3);
+  row-gap: var(--space-3);
+  margin-top: calc(var(--space-0) - var(--space-6));
+  padding: 0 var(--space-3) var(--space-4);
   position: relative;
   z-index: 1;
   background: var(--surface);
@@ -509,41 +509,41 @@ main
 .profile-top ion-avatar {
   border: 3px solid var(--surface);
   background: var(--surface-2);
-  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.12);
+  box-shadow: 0 2px 8px rgba(var(--shadow-rgb), 0.12);
 }
-.profile-top ion-avatar img { border-radius: 50%; }
+.profile-top ion-avatar img { border-radius: var(--radius-circle); }
 .profile-stats-card {
   min-width: 0;
   align-self: center;
-  padding: 8px 4px;
+  padding: var(--space-2) var(--space-1);
   border: 1px solid var(--divider);
   border-radius: var(--radius-inner);
   background: var(--bg);
 }
 .stats-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.stats-row div, .stats-row button { gap: 4px; padding: 2px 3px; }
-.stats-row strong { font-size: 14px; line-height: 1.2; }
-.stats-row span { font-size: 11px; line-height: 1.2; }
+.stats-row div, .stats-row button { gap: var(--space-1); padding: var(--space-0) var(--space-1); }
+.stats-row strong { font-size: var(--font-14); line-height: 1.2; }
+.stats-row span { font-size: var(--font-12); line-height: 1.2; }
 .stats-row > :not(:last-child)::after { background: var(--divider); }
 .profile-identity { grid-column: 1 / -1; padding-top: 0; }
-.profile-top h2 { margin-bottom: 4px; font-size: 18px; line-height: 1.25; }
-.profile-bio { justify-items: start; gap: 4px; padding-top: 4px; font-size: 14px; line-height: 1.4; }
+.profile-top h2 { margin-bottom: var(--space-1); font-size: var(--font-18); line-height: 1.25; }
+.profile-bio { justify-items: start; gap: var(--space-1); padding-top: var(--space-1); font-size: var(--font-14); line-height: 1.4; }
 .profile-bio p { color: var(--text-muted) !important; }
-.profile-sections { padding: 4px 12px; border-color: var(--divider); background: var(--surface); }
+.profile-sections { padding: var(--space-1) var(--space-3); border-color: var(--divider); background: var(--surface); }
 .profile-sections button { min-height: 46px; }
 .profile-sections button.active { border-bottom-color: var(--primary); }
 
 @media (min-width: 561px) {
-  .profile-top { grid-template-columns: 96px minmax(0, 1fr); margin-top: -42px; padding-inline: 24px; }
+  .profile-top { grid-template-columns: 96px minmax(0, 1fr); margin-top: calc(var(--space-0) - var(--space-7)); padding-inline: var(--space-5); }
   .profile-avatar-wrap { width: 96px; height: 96px; }
   .profile-top h2 { font-size: var(--font-subheading); }
-  .stats-row span { font-size: 13px; }
+  .stats-row span { font-size: var(--font-12); }
 }
 
 /* Profile overview arranged as a centered identity and compact information cards. */
 .profile-page-shell {
   width: min(100%, 620px);
-  padding: 12px 12px 24px;
+  padding: var(--space-3) var(--space-3) var(--space-5);
   overflow: visible;
 }
 .profile-hero {
@@ -560,8 +560,8 @@ main
 }
 .profile-cover-button { background: var(--surface-2) !important; }
 .profile-cover.has-cover-image::after,
-.profile-cover:has(img)::after { background: transparent; }
-.profile-floating-header { top: max(10px, env(safe-area-inset-top, 10px)); left: 12px; right: 12px; }
+.profile-cover:has(img)::after { background: var(--transparent); }
+.profile-floating-header { top: max(var(--space-2), env(safe-area-inset-top, var(--space-2))); left: var(--space-3); right: var(--space-3); }
 .profile-circle-btn,
 :host-context(html.app-light) .profile-circle-btn,
 :host-context(html.app-light) .profile-floating-header .profile-circle-btn.settings-button {
@@ -578,9 +578,9 @@ main
   grid-template-areas: "avatar" "identity" "stats";
   justify-items: center;
   align-items: center;
-  row-gap: 12px;
-  margin-top: -42px;
-  padding: 0 clamp(14px, 5vw, 28px) 20px;
+  row-gap: var(--space-3);
+  margin-top: calc(var(--space-0) - var(--space-7));
+  padding: 0 clamp(var(--space-3), 5vw, var(--space-5)) var(--space-4);
   position: relative;
   z-index: 1;
   background: var(--surface);
@@ -594,18 +594,18 @@ main
 .profile-top ion-avatar {
   border: 3px solid var(--surface);
   background: var(--surface-2);
-  box-shadow: 0 2px 10px rgba(12, 12, 12, 0.15);
+  box-shadow: 0 2px 10px rgba(var(--shadow-rgb), 0.15);
 }
-.profile-top ion-avatar img { border-radius: 50%; }
+.profile-top ion-avatar img { border-radius: var(--radius-circle); }
 .profile-identity {
   grid-area: identity;
   width: 100%;
   text-align: center;
 }
 .profile-top h2 {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   color: var(--text) !important;
-  font-size: clamp(20px, 5vw, 24px);
+  font-size: clamp(var(--font-20), 5vw, var(--font-24));
   font-weight: 700;
   line-height: 1.25;
 }
@@ -613,45 +613,45 @@ main
   justify-items: center;
   max-width: 460px;
   margin: 0 auto;
-  padding-top: 2px;
+  padding-top: var(--space-0);
   color: var(--text-muted) !important;
-  font-size: 14px;
+  font-size: var(--font-14);
 }
 .profile-identity .profile-bio p { color: var(--text-muted) !important; }
 .profile-stats-card {
   grid-area: stats;
   width: 100%;
   align-self: stretch;
-  padding: 12px 8px;
+  padding: var(--space-3) var(--space-2);
   border: 1px solid var(--divider);
   border-radius: var(--radius-inner);
   background: var(--surface-2);
 }
 .stats-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.stats-row div, .stats-row button { gap: 4px; padding: 4px 6px; }
+.stats-row div, .stats-row button { gap: var(--space-1); padding: var(--space-1) var(--space-1); }
 .stats-row > :not(:last-child)::after { background: var(--divider); }
-.stats-row strong { color: var(--text) !important; font-size: 16px; line-height: 1.25; }
-.stats-row span { color: var(--text-muted) !important; font-size: 12px; line-height: 1.25; }
+.stats-row strong { color: var(--text) !important; font-size: var(--font-16); line-height: 1.25; }
+.stats-row span { color: var(--text-muted) !important; font-size: var(--font-12); line-height: 1.25; }
 .profile-content-panel {
   min-height: 0;
-  margin-top: 16px;
-  padding: 16px 0 24px;
+  margin-top: var(--space-4);
+  padding: var(--space-4) 0 var(--space-5);
   border: 1px solid var(--divider);
   border-radius: var(--radius-card);
   background: var(--surface);
 }
 .profile-section-heading {
   margin: 0;
-  padding: 0 16px 12px;
+  padding: 0 var(--space-4) var(--space-3);
   color: var(--text);
   font-size: var(--font-subheading);
   font-weight: 700;
 }
 .profile-sections {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0 12px;
-  padding: 8px;
+  gap: var(--space-2);
+  margin: 0 var(--space-3);
+  padding: var(--space-2);
   border: 1px solid var(--divider);
   border-radius: var(--radius-inner);
   background: var(--surface-2);
@@ -661,35 +661,35 @@ main
   grid-template-columns: 20px minmax(0, 1fr);
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px;
-  border: 1px solid transparent;
-  border-radius: 6px;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--transparent);
+  border-radius: var(--radius-sm);
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: var(--font-12);
   font-weight: 600;
 }
-.profile-sections button ion-icon { width: 18px; height: 18px; font-size: 18px; }
+.profile-sections button ion-icon { width: 18px; height: 18px; font-size: var(--font-18); }
 .profile-sections button.active {
   border-color: var(--primary);
   background: var(--surface);
   color: var(--primary);
-  box-shadow: 0 1px 4px rgba(10, 96, 208, 0.12);
+  box-shadow: 0 1px 4px rgba(var(--primary-rgb), 0.12);
 }
-.profile-posts { padding: 16px 12px; }
-.profile-posts-feed { gap: 12px; }
-.profile-gallery { padding: 16px 12px; }
+.profile-posts { padding: var(--space-4) var(--space-3); }
+.profile-posts-feed { gap: var(--space-3); }
+.profile-gallery { padding: var(--space-4) var(--space-3); }
 @media (min-width: 768px) {
-  .profile-page-shell { padding: 24px 16px 32px; }
+  .profile-page-shell { padding: var(--space-5) var(--space-4) var(--space-6); }
   .profile-cover { height: 140px; }
-  .profile-top { margin-top: -48px; padding-inline: 32px; }
+  .profile-top { margin-top: calc(var(--space-0) - var(--space-7)); padding-inline: var(--space-6); }
   .profile-avatar-wrap { width: 104px; height: 104px; }
   .profile-stats-card { max-width: 500px; }
-  .profile-posts { padding-inline: 20px; }
+  .profile-posts { padding-inline: var(--space-4); }
 }
 @media (max-width: 360px) {
-  .profile-page-shell { padding: 8px 8px 20px; }
-  .profile-top { padding-inline: 12px; }
-  .profile-sections { gap: 4px; margin-inline: 8px; padding: 6px; }
-  .profile-sections button { gap: 4px; padding-inline: 4px; font-size: 12px; }
+  .profile-page-shell { padding: var(--space-2) var(--space-2) var(--space-4); }
+  .profile-top { padding-inline: var(--space-3); }
+  .profile-sections { gap: var(--space-1); margin-inline: var(--space-2); padding: var(--space-1); }
+  .profile-sections button { gap: var(--space-1); padding-inline: var(--space-1); font-size: var(--font-12); }
 }
