@@ -6,7 +6,7 @@ import {
   IonContent, IonList, IonItem, IonAvatar, IonLabel, IonIcon,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, ellipsisVerticalOutline } from 'ionicons/icons';
+import { personCircleOutline, ellipsisHorizontalOutline, ellipsisVerticalOutline } from 'ionicons/icons';
 import { AccountService, Account } from '../../services/account.service';
 
 @Component({
@@ -24,7 +24,15 @@ export class MoreAccountsPage {
   menuLeft = 0;
 
   constructor() {
-    addIcons({ personCircleOutline, ellipsisVerticalOutline });
+    addIcons({ personCircleOutline, ellipsisHorizontalOutline, ellipsisVerticalOutline });
+  }
+
+  accountInitials(name: string) {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
+  }
+
+  goBack() {
+    void this.router.navigateByUrl('/select-account');
   }
 
   chooseAccount(account: Account) {

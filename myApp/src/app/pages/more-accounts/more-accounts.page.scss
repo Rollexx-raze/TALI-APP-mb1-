@@ -35,3 +35,30 @@ ion-label p { color: var(--text) !important; }
   .more-heading { padding: clamp(var(--space-7), 30vh, var(--space-7)) var(--space-4) var(--space-4); }
   .more-content::part(scroll) { min-height:100%; box-sizing:border-box; }
 }
+
+.more-content { --background:#f9faff; }
+.more-content::part(background) { background:#f9faff; }
+.more-content::part(scroll) { min-height:100%; box-sizing:border-box; padding-bottom:24px; }
+.more-heading { width:min(calc(100% - 36px),460px); box-sizing:border-box; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 18px) 0 18px; text-align:left; }
+.more-eyebrow { display:inline-block; margin-bottom:8px; padding:5px 8px; border-radius:6px; background:#efeeff; color:#5d58e9; font-size:9px; font-weight:750; text-transform:uppercase; }
+.more-heading h1 { color:#202b45; font-size:22px; font-weight:750; }
+.more-heading p { margin-top:6px; color:#8491aa; font-size:12px; }
+.more-count { display:block; margin-top:10px; color:#8491aa; font-size:10px; }
+.more-content ion-list { width:min(calc(100% - 36px),460px); padding:4px 12px; border-color:#e4e9f2; border-radius:16px; background:#fff!important; box-shadow:none; }
+.more-content .account-entry { border-bottom:1px solid #e9edf4; }
+.more-content .account-entry:last-child { border-bottom:0; }
+.more-content ion-item { --background:#fff!important; --ion-item-background:#fff!important; --color:#202b45!important; --inner-padding-end:4px; --min-height:65px; margin:0; border:0; border-radius:0; }
+.more-content ion-item::part(native) { background:#fff!important; color:#202b45!important; }
+.more-content .account-avatar { width:40px; height:40px; border:0; border-radius:50%; background:#e6eaf3; }
+.more-content .account-avatar img { width:100%; height:100%; object-fit:cover; }
+.more-content .account-initials { display:grid; width:100%; height:100%; place-items:center; color:#5d58e9; font-size:12px; font-weight:750; }
+.more-content ion-label h2 { color:#25314b; font-size:12px; font-weight:700; }
+.more-content ion-label p { color:#8491aa!important; font-size:10px; }
+.more-content .account-more-button { width:34px; height:34px; color:#65728c; font-size:17px; }
+.more-selected-note { width:min(calc(100% - 36px),460px); margin:14px auto 20px; color:#8491aa; font-size:11px; line-height:1.5; }
+.more-actions { display:grid; width:min(calc(100% - 36px),460px); gap:9px; margin:18px auto 0; }
+.more-primary-button, .more-back-button { min-height:46px; border:0; border-radius:11px; font:inherit; font-size:12px; font-weight:700; cursor:pointer; }
+.more-primary-button { background:#5955df; color:#fff; }
+.more-back-button { border:1px solid #e4e9f2; background:#fff; color:#5d58e9; }
+@media (max-width:560px) { .more-heading { padding-top:calc(env(safe-area-inset-top,0px) + 64px); } }
+:host-context(html.app-light) .more-content { --background:#f9faff; }

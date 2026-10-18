@@ -339,7 +339,7 @@
 }
 :host-context(html.app-light) .profile-cover.has-cover-image::after,
 :host-context(html.app-light) .profile-cover:has(img)::after {
-	background: var(--surface);
+	background: transparent;
 }
 :host-context(html.app-light) .profile-cover img { -webkit-mask-image:none; mask-image:none; }
 :host-context(html.app-light) .profile-cover-button {
@@ -475,6 +475,79 @@ main
 .crop-control { display: grid; gap: var(--space-2); color: var(--page-text); font-size: var(--font-body); }
 .crop-control input { width: 100%; accent-color: var(--ion-color-primary); }
 .crop-control select { min-height: 42px; padding: var(--space-2) var(--space-2); border: 1px solid var(--page-border); border-radius: var(--radius-inner); background: var(--page-bg); color: var(--page-text); font: inherit; }
+
+/* Profile layout aligned with the updated settings visual language. */
+.profile-page-shell { width:min(100%, 620px); min-height:100%; padding:0 0 26px; overflow:visible; background:#f9faff; }
+.profile-hero { overflow:visible; border:0; border-radius:0; background:#f9faff!important; box-shadow:none; }
+.profile-page-header { position:relative; display:flex; height:72px; align-items:center; justify-content:center; padding:0 22px; color:#202b45; }
+.profile-page-header h1 { max-width:75%; margin:0; overflow:hidden; color:#202b45; font-size:22px; font-weight:750; text-overflow:ellipsis; white-space:nowrap; }
+.profile-header-back, .profile-header-more { position:absolute; top:50%; display:grid; width:40px; height:40px; place-items:center; padding:0; transform:translateY(-50%); border:0; background:transparent; color:#25314b; }
+.profile-header-back { left:14px; }
+.profile-header-more { right:14px; cursor:pointer; }
+.profile-header-back ion-icon, .profile-header-more ion-icon { width:23px; height:23px; font-size:23px; }
+.profile-header-more-static { position:absolute; right:22px; top:50%; transform:translateY(-58%); color:#25314b; font-size:22px; font-weight:800; letter-spacing:2px; }
+.profile-cover { height:clamp(170px, 36vw, 220px); margin:0 22px; border-radius:18px; background:#e8ebf3!important; }
+.profile-cover img { object-position:center; }
+.profile-cover.has-cover-image::after, .profile-cover:has(img)::after { background:transparent; }
+.profile-top { display:grid; grid-template-columns:88px minmax(0,1fr); align-items:center; column-gap:14px; row-gap:0; margin:20px 0 0; padding:0 22px; background:transparent; }
+.profile-avatar-wrap { width:88px; height:88px; }
+.profile-top ion-avatar { border:0; background:#e9ebf5; box-shadow:none; }
+.profile-top h2 { margin:0; color:#202b45; font-size:22px; font-weight:750; line-height:1.2; }
+.profile-identity { grid-column:2; grid-row:1; align-self:center; }
+.profile-handle { margin:5px 0 0!important; color:#8491aa!important; font-size:14px!important; }
+.profile-stats-card { grid-column:1 / -1; grid-row:2; padding:24px 0 10px; }
+.stats-row { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.stats-row div, .stats-row button { gap:5px; }
+.stats-row > :not(:last-child)::after { display:none; }
+.stats-row strong { color:#202b45; font-size:19px; font-weight:750; }
+.stats-row span { color:#8491aa; font-size:13px; }
+.profile-description { padding:12px 22px 0; color:#34415d; font-size:15px; line-height:1.5; overflow-wrap:anywhere; }
+.profile-description p { margin:0 0 8px; }
+.profile-description .profile-website a { color:#5b58e5; font-weight:650; text-decoration:none; }
+.profile-description .bio-placeholder { color:#8491aa; }
+.profile-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:12px 22px 0; }
+.profile-actions .follow-btn, .profile-actions .message-profile-button { width:100%; min-height:54px; border:0; border-radius:16px; background:#efeeff; color:#5c57e7; font-size:15px; font-weight:700; }
+.profile-actions .follow-btn.is-following { background:#efeeff; color:#5c57e7; }
+.profile-actions .message-profile-button { --background:#5955df; --color:white; --border-radius:16px; }
+.profile-actions .message-profile-button::part(native) { color:white!important; font-weight:700; }
+.message-button-label { color:inherit!important; font-size:15px; }
+.edit-profile-button { min-height:54px; margin:12px 22px 0; --background:#efeeff; --color:#5b58e5; --border-radius:16px; font-weight:700; }
+.profile-content-panel { margin:18px 22px 0; padding:12px 0 16px; border:0; border-radius:0; background:transparent; }
+.profile-sections { grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; margin:0; padding:5px; border:0; border-radius:14px; background:#f0f2f7; }
+.profile-sections button { display:flex; min-height:42px; align-items:center; justify-content:center; border:0; border-radius:11px; background:transparent; color:#8491aa; font-size:13px; font-weight:650; }
+.profile-sections button ion-icon { display:none; }
+.profile-sections button.active { background:#fff; color:#5b58e5; box-shadow:none; }
+.profile-posts { padding:12px 0; }
+.profile-posts-feed { gap:8px; margin-top:4px; }
+@media (min-width:768px) {
+  .profile-page-shell { width:min(100%, 620px); padding:0 0 30px; }
+  .profile-cover { height:220px; }
+  .profile-top { margin-top:20px; padding-inline:22px; }
+  .profile-avatar-wrap { width:88px; height:88px; }
+  .profile-stats-card { max-width:none; }
+  .profile-posts { max-width:none; }
+}
+@media (max-width:560px) {
+  .profile-page-shell { padding:0 0 20px; }
+  .profile-page-header { height:64px; }
+  .profile-cover { height:clamp(160px, 42vw, 210px); margin-inline:16px; }
+  .profile-top { grid-template-columns:76px minmax(0,1fr); padding-inline:18px; }
+  .profile-avatar-wrap { width:76px; height:76px; }
+  .profile-top h2 { font-size:20px; }
+  .profile-stats-card { padding-top:20px; }
+  .profile-description { padding-inline:18px; }
+  .profile-actions { padding-inline:18px; }
+  .edit-profile-button { margin-inline:18px; }
+  .profile-content-panel { margin-inline:18px; }
+  .profile-sections button { min-height:40px; font-size:12px; }
+  .profile-posts { padding-inline:0; }
+}
+:host-context(html.app-light) .profile-page-shell,
+:host-context(html.app-light) .profile-hero { background:#f9faff!important; }
+:host-context(html.app-light) .profile-page-header h1,
+:host-context(html.app-light) .profile-header-back,
+:host-context(html.app-light) .profile-header-more,
+:host-context(html.app-light) .profile-header-more-static { color:#202b45!important; }
 
 
 /* Compact, aligned profile header on narrow screens. */

@@ -39,7 +39,6 @@
   color:var(--text);
   box-shadow:var(--shadow-soft);
 }
-.login-logo { display:block; width:min(220px, 62vw); height:120px; margin: 0 auto var(--space-3); object-fit:contain; object-position:center; }
 .login-brand { width:100%; margin: 0; text-align:center; }
 .login-brand h1 { margin: 0; color:var(--text); font-size: var(--font-heading); font-weight:700; }
 .login-brand p { margin: var(--space-1) 0 0; color:var(--text-muted); font-size: var(--font-body); }
@@ -129,3 +128,53 @@
 @media (max-width:430px) {
   .login-content::part(scroll) { padding-top: calc(var(--space-5) + env(safe-area-inset-top, var(--space-0))); }
 }
+
+/* Auth screens share the light, compact Tali onboarding style. */
+.login-content { --background:var(--bg); }
+.login-content::part(background) { background:var(--bg); }
+.login-content::part(scroll) { justify-content:flex-start; padding-top:max(36px, calc(env(safe-area-inset-top, 0px) + 24px)); }
+.login-wrapper { width:min(calc(100% - 32px), 430px); gap:13px; margin:0 auto; padding:12px 0 24px; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.login-brand { text-align:left; }
+.login-brand-mark {
+  position:relative;
+  width:220px;
+  height:96px;
+  margin:0 auto 16px;
+}
+.login-brand-mark img {
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:220px;
+  height:220px;
+  max-width:none;
+  max-height:none;
+  transform:translate(-50%, -50%);
+}
+.login-eyebrow { display:block; margin-bottom:7px; color:#278e87; font-size:10px; font-weight:750; letter-spacing:.035em; text-transform:uppercase; }
+.login-brand h1 { color:#202b45; font-size:27px; font-weight:750; }
+.login-brand p { margin-top:6px; color:#8491aa; font-size:13px; }
+.login-welcome { color:#8491aa; font-size:13px; }
+.login-field { min-height:52px; padding:7px 12px; border-color:#e4e9f2; border-radius:12px; background:#fff; }
+.login-field label { color:#34415d; font-size:12px; font-weight:650; }
+.login-field input { color:#34415d!important; font-size:13px; }
+.login-password-toggle { min-height:38px; color:#625df0; font-size:12px; font-weight:650; }
+.login-button { min-height:48px; margin-top:1px; --background:#5955df; --background-activated:#5955df; --background-focused:#5955df; --border-radius:12px; --box-shadow:none; font-size:13px; }
+.login-button::part(native) { min-height:48px; }
+.login-links { gap:8px; }
+.login-link-button { flex:1; min-height:46px; border:1px solid #e4e9f2; border-radius:12px; background:#fff; --color:#5c57e7; font-size:12px; font-weight:650; }
+.login-link-button:first-child { border-color:#efeeff; background:#efeeff; }
+.login-footer-note { margin:24px 0 0; color:#8491aa; font-size:11px; text-align:center; }
+.login-wrapper { gap:14px; }
+.login-control-group { display:grid; gap:7px; }
+.login-control-group > label { color:#34415d; font-size:10px; font-weight:700; }
+.login-field { min-height:42px; padding:0 9px; border-color:#e4e9f2; border-radius:10px; background:#fff; }
+.login-field input { min-height:40px; font-size:11px; }
+.login-field input::placeholder { font-size:10px; }
+.login-field.password-field { gap:2px; }
+.login-password-toggle { min-width:38px; min-height:38px; height:38px; padding:0; font-size:9px; }
+.login-brand h1 { font-size:23px; }
+.login-brand p { font-size:11px; }
+.login-button, .login-button::part(native) { min-height:40px; }
+.login-links { margin-top:0; }
+.login-link-button { min-height:40px; }

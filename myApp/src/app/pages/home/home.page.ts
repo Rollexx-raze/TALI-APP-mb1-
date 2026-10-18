@@ -7,7 +7,7 @@ import { PostService } from '../../services/post.service';
 import { NotificationService } from '../../services/notification.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { addCircle, chatbubbleOutline, documentOutline, ellipsisHorizontal, heartOutline, homeSharp, notificationsOutline, personCircleOutline, personOutline, repeatOutline, searchOutline, shareOutline } from 'ionicons/icons';
+import { addCircle, chatbubbleOutline, createOutline, documentOutline, ellipsisHorizontal, heartOutline, homeSharp, notificationsOutline, optionsOutline, personCircleOutline, personOutline, repeatOutline, searchOutline, shareOutline } from 'ionicons/icons';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { ViewStateService } from '../../services/view-state.service';
 import { GroupService } from '../../services/group.service';
@@ -77,7 +77,7 @@ export class HomePage implements AfterViewInit {
   }
 
   constructor() {
-    addIcons({ addCircle, chatbubbleOutline, documentOutline, ellipsisHorizontal, heartOutline, homeSharp, notificationsOutline, personCircleOutline, personOutline, repeatOutline, searchOutline, shareOutline });
+    addIcons({ addCircle, chatbubbleOutline, createOutline, documentOutline, ellipsisHorizontal, heartOutline, homeSharp, notificationsOutline, optionsOutline, personCircleOutline, personOutline, repeatOutline, searchOutline, shareOutline });
     effect(() => {
       const error = this.postService.loadError();
       if (error) void this.showToast(error);

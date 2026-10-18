@@ -5,7 +5,6 @@
 .select-content { --background: var(--bg); --color: var(--auth-paper); }
 .select-content::part(background) { background: var(--surface); }
 .select-header { display: flex; flex-direction: column; align-items: center; padding: var(--space-7) var(--space-4) var(--space-4); text-align: center; }
-.select-logo { display:block; width:min(220px, 62vw); height:120px; margin: 0 auto var(--space-5); object-fit:contain; object-position:center; }
 .profile-avatar { display:grid; width:72px; height:72px; margin-bottom: var(--space-2); padding: 0; place-items:center; border:1px solid var(--primary); background:var(--bg); color:var(--on-bg); box-shadow:var(--shadow-soft); }
 .profile-avatar ion-icon { display:block; width:44px; height:44px; margin: auto; font-size: var(--font-36); }
 .select-header h1,.more-heading h1 { margin: 0; color: var(--auth-paper); font-size: var(--font-heading); font-weight: 650; }
@@ -42,9 +41,39 @@ ion-label p { color: var(--text) !important; }
 @media (max-width:560px) {
   .select-content::part(scroll) { min-height:100%; box-sizing:border-box; }
   .select-header { padding: max(var(--space-7), calc(env(safe-area-inset-top, var(--space-0)) + var(--space-5))) var(--space-4) var(--space-4); }
-  .select-logo { margin-bottom: var(--space-4); }
   .profile-avatar { width:64px; height:64px; margin-bottom: var(--space-2); }
   .profile-avatar ion-icon { width:40px; height:40px; font-size: var(--font-36); }
   .account-list { padding: var(--space-2) 0 var(--space-2); border-radius: var(--radius-card); }
   .more-link { margin-top: var(--space-2); }
 }
+
+.select-content { --background:#f9faff; }
+.select-content::part(background) { background:#f9faff; }
+.select-header { align-items:flex-start; width:min(calc(100% - 36px),460px); box-sizing:border-box; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 12px) 0 19px; text-align:left; }
+.select-eyebrow { margin-bottom:6px; color:#278e87; font-size:10px; font-weight:750; letter-spacing:.03em; text-transform:uppercase; }
+.select-header h1 { color:#202b45; font-size:22px; font-weight:750; }
+.select-header p { margin-top:6px; color:#8491aa; font-size:12px; }
+.account-list { width:min(calc(100% - 36px),460px); padding:4px 12px; border-color:#e4e9f2; border-radius:16px; background:#fff!important; box-shadow:none; }
+.account-entry { border-bottom:1px solid #e9edf4; }
+.account-entry:last-child { border-bottom:0; }
+ion-item { --background:#fff!important; --ion-item-background:#fff!important; --color:#202b45!important; --inner-padding-end:4px; --min-height:68px; margin:0; border:0; border-radius:0; }
+ion-item::part(native) { background:#fff!important; color:#202b45!important; }
+.account-avatar { width:40px; height:40px; border:0; background:#e6eaf3; color:#5d58e9; }
+.account-avatar img { width:100%; height:100%; object-fit:cover; }
+.account-initials { display:grid; width:100%; height:100%; place-items:center; color:#5d58e9; font-size:12px; font-weight:750; }
+ion-label h2 { color:#25314b; font-size:12px; font-weight:700; }
+ion-label p { color:#8491aa!important; font-size:10px; }
+.account-more-button { width:34px; height:34px; color:#65728c; font-size:17px; }
+.more-link { justify-content:center; min-height:46px; margin-top:14px; border:0; border-radius:11px; background:#efeeff; color:#5d58e9; font-size:12px; font-weight:700; }
+.more-link ion-icon { display:none; }
+.auth-empty-state { width:min(calc(100% - 36px),460px); border-color:#e4e9f2; border-radius:16px; background:#fff; }
+@media (max-width:560px) {
+ .select-header { padding-top:calc(env(safe-area-inset-top,0px) + 73px); }
+}
+:host-context(html.app-light) .select-content { --background:#f9faff; }
+.auth-header ion-toolbar { display:flex; justify-content:flex-start; padding:0 10px; }
+.auth-header ion-back-button { --color:#66738e; }
+.continue-account-button { display:block; width:min(calc(100% - 36px),460px); min-height:46px; margin:15px auto 8px; border:0; border-radius:10px; background:#5955df; color:#fff; font:inherit; font-size:11px; font-weight:700; }
+.more-link { width:min(calc(100% - 36px),460px); min-height:42px; margin:7px auto 0; }
+.select-footer-note { margin:12px 0 0; color:#8491aa; font-size:9px; text-align:center; }
+.auth-empty-state + .continue-account-button { display:none; }

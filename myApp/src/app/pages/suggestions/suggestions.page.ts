@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonAvatar, IonButton, IonContent, IonHeader, IonIcon, IonToolbar, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addCircle, atOutline, chatbubbleOutline, heartOutline, homeOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, repeatOutline, shareOutline, trendingUpOutline } from 'ionicons/icons';
+import { addCircle, atOutline, chatbubbleOutline, heartOutline, homeOutline, notificationsOutline, optionsOutline, peopleOutline, personAddOutline, personCircleOutline, repeatOutline, shareOutline, trendingUpOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { AppNotification, NotificationService } from '../../services/notification.service';
 import { PostService } from '../../services/post.service';
@@ -80,6 +80,23 @@ export class SuggestionsPage {
     return this.accountService.accounts().filter((account) => account.id !== selectedId);
   }
 
+  personImage(person: Account) {
+    return this.accountService.canViewProfileImage(person, this.accountService.selectedAccount()) ? person.profileImage : undefined;
+  }
+
+  notificationImage(notification: AppNotification) {
+    const actor = this.accountService.accounts().find((account) => account.id === notification.actorId);
+    return actor ? this.personImage(actor) : undefined;
+  }
+
+  connectionContext(person: Account) {
+    const viewer = this.accountService.selectedAccount();
+    if (!viewer) return person.bio || person.username;
+    const mutualCount = person.followingIds.filter((id) => viewer.followingIds.includes(id)).length;
+    if (!mutualCount) return person.bio || person.username;
+    return `${mutualCount} mutual connection${mutualCount === 1 ? '' : 's'}`;
+  }
+
   get posts() {
     const viewer = this.accountService.selectedAccount();
     const accounts = this.accountService.accounts();
@@ -89,7 +106,7 @@ export class SuggestionsPage {
   }
 
   constructor() {
-    addIcons({ addCircle, atOutline, chatbubbleOutline, heartOutline, homeOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, repeatOutline, shareOutline, trendingUpOutline });
+    addIcons({ addCircle, atOutline, chatbubbleOutline, heartOutline, homeOutline, notificationsOutline, optionsOutline, peopleOutline, personAddOutline, personCircleOutline, repeatOutline, shareOutline, trendingUpOutline });
     const saved = this.viewState.read<Partial<{ selectedSection: 'suggestions' | 'notifications'; selectedCategory: 'people' | 'posts' | 'groups' }>>(this.viewStateKey, {});
     if (saved.selectedSection) this.selectedSection = saved.selectedSection;
     if (saved.selectedCategory) this.selectedCategory = saved.selectedCategory;

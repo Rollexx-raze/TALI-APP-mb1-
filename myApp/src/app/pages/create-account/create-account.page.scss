@@ -2,7 +2,6 @@
 .auth-header { --background: var(--transparent); position:absolute; z-index:5; width:100%; }
 .auth-header ion-toolbar { --background: var(--transparent); --color:var(--text); }
 .auth-header ion-back-button { --color:var(--text); min-width:48px; min-height:48px; }
-.create-account-header-logo, .create-account-logo { display:none; }
 .create-account-content { --background:var(--bg); --color:var(--text); }
 .create-account-content::part(background) { background:var(--bg); }
 .create-account-content::part(scroll) { min-height:100%; box-sizing:border-box; }
@@ -15,8 +14,6 @@
   align-items:center;
   padding: calc(var(--space-5) + env(safe-area-inset-top, var(--space-0))) 0 calc(var(--space-3) + env(safe-area-inset-bottom, var(--space-0)));
 }
-.auth-brand { flex:0 0 auto; margin: 0 auto var(--space-4); }
-.auth-brand img { display:block; width:min(220px, 62vw); height:120px; object-fit:contain; object-position:center; }
 .create-account-card {
   width:min(calc(100% - var(--space-5)), 430px);
   box-sizing:border-box;
@@ -96,3 +93,61 @@
 @media (max-width:430px) {
   .create-account-card { width:min(calc(100% - var(--space-3)), 430px); }
 }
+
+/* Step based sign up styling from the shared auth reference. */
+.create-account-content { --background:#f9faff; }
+.create-account-content::part(background) { background:#f9faff; }
+.create-account-wrapper { justify-content:flex-start; padding:calc(env(safe-area-inset-top, 0px) + 12px) 0 30px; }
+.create-account-card { width:min(calc(100% - 36px),430px); padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.signup-progress { gap:9px; margin-bottom:25px; }
+.signup-progress-bars { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+.signup-progress-bars span { height:3px; border-radius:20px; background:#e6eaf2; }
+.signup-progress-bars span.is-complete { background:#605bf0; }
+.signup-progress-steps { font-size:10px; }
+.signup-progress-steps span { flex:1; }
+.signup-progress-steps span:nth-child(2) { text-align:center; }
+.signup-progress-steps span:last-child { text-align:right; }
+.signup-progress-steps .is-current { color:#5d58e9; font-weight:700; }
+.create-account-heading { margin:0 0 17px; text-align:left; }
+.create-account-heading h1 { color:#202b45; font-size:23px; font-weight:750; line-height:1.15; }
+.create-account-heading p { margin-top:6px; color:#8491aa; font-size:12px; }
+.create-account-fields { gap:12px; }
+.create-account-field { min-height:50px; padding:6px 11px; border-color:#e4e9f2; border-radius:11px; background:#fff; }
+.create-account-field label { color:#34415d; font-size:11px; font-weight:650; }
+.create-account-field input { color:#34415d!important; font-size:12px; }
+.create-account-field-toggle { min-height:38px; color:#5d58e9; font-size:11px; font-weight:650; }
+.signup-actions { grid-template-columns:1fr; gap:9px; margin-top:18px; }
+.signup-step-button, .create-account-button { min-height:47px; border-radius:11px; font-size:12px; }
+.create-account-button { --background:#5955df; --background-activated:#5955df; --box-shadow:none; }
+.signup-step-button { --background:#fff; --border-color:#e4e9f2; --color:#5d58e9; }
+.create-account-footer { margin-top:16px; font-size:11px; }
+.create-account-footer button { min-height:32px; color:#5d58e9; font-size:11px; }
+.password-strength { gap:6px; }
+.password-strength > span { height:3px; }
+:host-context(html.app-light) .create-account-content { --background:#f9faff; }
+.auth-header ion-toolbar { min-height:46px; padding:0 8px; }
+.auth-header h1 { position:absolute; left:50px; top:50%; margin:0; transform:translateY(-50%); color:#202b45; font-size:14px; font-weight:700; }
+.auth-header ion-back-button { min-width:34px; min-height:38px; --color:#66738e; }
+.create-account-wrapper { padding-top:calc(env(safe-area-inset-top,0px) + 54px); }
+.signup-progress { gap:7px; margin-bottom:20px; }
+.signup-progress-steps { margin-top:-1px; }
+.create-account-fields { gap:10px; }
+.create-account-field { position:relative; display:block; min-height:0; padding:0; border:0; border-radius:0; background:transparent; }
+.create-account-field:focus-within { border:0; box-shadow:none; }
+.create-account-field-copy { display:grid; gap:6px; }
+.create-account-field label { color:#34415d; font-size:9px; font-weight:700; }
+.create-account-field input { min-height:39px; box-sizing:border-box; padding:0 9px; border:1px solid #e4e9f2; border-radius:9px; background:#fff!important; color:#34415d!important; font-size:10px; }
+.create-account-field input:focus { border-color:#625df0; }
+.create-account-field input::placeholder { font-size:9px; }
+.create-account-field-toggle { position:absolute; right:0; bottom:0; min-width:42px; min-height:39px; color:#5d58e9; font-size:9px; }
+.password-strength { grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
+.password-strength small { grid-column:1/-1; color:#278e87; font-size:9px; }
+.create-account-error { font-size:10px; }
+.signup-actions { margin-top:15px; }
+.signup-step-button, .create-account-button { min-height:40px; font-size:10px; }
+.create-account-button::part(native), .signup-step-button::part(native) { min-height:40px; }
+.create-account-footer { font-size:9px; }
+.signup-success-icon { display:grid; width:44px; height:44px; place-items:center; margin:32px 0 16px; border-radius:14px; background:#e4f4f0; color:#278e87; font-size:24px; }
+.signup-success-note { margin:13px 0; color:#8491aa; font-size:10px; }
+.create-account-heading[role="status"] { text-align:left; }
+:host-context(html.app-light) .auth-header h1 { color:#202b45; }

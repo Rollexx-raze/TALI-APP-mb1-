@@ -8,11 +8,7 @@
 
 <ion-content class="select-content auth-screen" [fullscreen]="true">
   <div class="select-header">
-    <img class="select-logo auth-logo-light" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="Tali logo">
-    <img class="select-logo auth-logo-dark" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="" aria-hidden="true">
-    <ion-avatar class="profile-avatar">
-      <ion-icon name="person-outline"></ion-icon>
-    </ion-avatar>
+    <span class="select-eyebrow">Welcome to your space</span>
     <h1>Select an account</h1>
     <p>Choose an account to continue</p>
   </div>
@@ -23,14 +19,17 @@
         <div class="account-entry">
           <ion-item button="true" (click)="chooseAccount(account)">
             <ion-avatar slot="start" class="account-avatar">
-              <ion-icon name="person-outline"></ion-icon>
+              @if (account.profileImage) { <img [src]="account.profileImage" [alt]="account.name + ' profile photo'"> }
+              @else {
+                <span class="account-initials">{{ accountInitials(account.name) }}</span>
+              }
             </ion-avatar>
             <ion-label>
               <h2>{{ account.name }}</h2>
               <p>{{ account.username }}</p>
             </ion-label>
             <button type="button" slot="end" class="account-more-button" aria-label="Account options" [attr.aria-expanded]="accountMenuId === account.id" (click)="toggleAccountMenu($event, account.id)">
-              <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+              <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
             </button>
           </ion-item>
         </div>
@@ -41,6 +40,10 @@
       <h1>No accounts yet</h1>
       <p>Create an account first, then it will appear here.</p>
     </div>
+  }
+
+  @if (previewAccounts[0]; as account) {
+    <button type="button" class="continue-account-button" (click)="chooseAccount(account)">Continue as {{ account.name.split(' ')[0] }}</button>
   }
 
   @if (activeMenuAccount; as account) {
@@ -54,4 +57,5 @@
     <span>More accounts</span>
     <ion-icon name="chevron-forward-outline"></ion-icon>
   </button>
+  <p class="select-footer-note">Your saved accounts, all in one place.</p>
 </ion-content>

@@ -560,3 +560,24 @@ main
   .home-account-row { padding-inline: var(--space-2); }
   .feed-tabs { padding-inline: var(--space-1); }
 }
+
+/* Home feed matches the compact reference layout and shares the bottom navigation. */
+.home-header ion-toolbar { min-height:54px; padding:4px 14px; }
+.home-toolbar-row { grid-template-columns:1fr 42px; }
+.home-brand-mark { width:70px; height:36px; justify-self:start; }
+.search-button { color:#66738e; }
+.home-content { --background:#f9faff; --padding-bottom:calc(70px + env(safe-area-inset-bottom,0px)); }
+.screen-shell { width:min(100%,560px); min-height:100%; margin:0 auto; padding-inline:0; background:#f9faff; }
+.home-search-prompt { display:flex; width:calc(100% - 28px); min-height:42px; align-items:center; gap:9px; margin:8px 14px 12px; padding:0 12px; border:0; border-radius:12px; background:#f0f2f7; color:#8793aa; font:inherit; font-size:11px; text-align:left; }
+.home-search-prompt ion-icon { font-size:16px; }
+.home-account-row { gap:9px; padding:0 14px 13px; border:0; }
+.home-account-row .profile-avatar { width:38px; height:38px; border:0; }
+.home-account-copy { flex:1; gap:3px; }
+.home-account-copy .home-greeting { color:#8491aa; font-size:10px; }
+.home-account-copy strong { color:#27334d; font-size:12px; }
+.home-compose-shortcut { display:grid; width:34px; height:34px; place-items:center; border:0; background:transparent; color:#625df0; font-size:19px; }
+.feed-tabs { display:grid; grid-template-columns:repeat(2,1fr); gap:4px; margin:0 14px 8px; padding:4px; border:0; border-radius:12px; background:#f0f2f7; }
+.feed-tab { min-height:34px; border:0; border-radius:9px; background:transparent; color:#8491aa; font-size:11px; font-weight:600; }
+.feed-tab.is-active { background:#fff; color:#5d58e9; }
+.screen-shell > app-post-card { width:100%!important; margin:0 auto!important; }
+@media (max-width:420px) { .screen-shell { padding-inline:0; } .home-account-row { padding-inline:14px; } .feed-tabs { padding-inline:4px; } }

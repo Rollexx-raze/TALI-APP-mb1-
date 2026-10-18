@@ -1,33 +1,32 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonToggle, IonToolbar } from '@ionic/angular';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { IonButton, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonToggle, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { accessibilityOutline, archiveOutline, banOutline, cardOutline, chatbubblesOutline, chevronBackOutline, chevronDownOutline, chevronForwardOutline, checkmarkOutline, colorPaletteOutline, desktopOutline, documentTextOutline, eyeOffOutline, helpCircleOutline, informationCircleOutline, keyOutline, lockClosedOutline, logOutOutline, moonOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, personOutline, searchOutline, serverOutline, shieldCheckmarkOutline, starOutline, sunnyOutline, timeOutline, trashOutline } from 'ionicons/icons';
+import { accessibilityOutline, archiveOutline, banOutline, cameraOutline, cardOutline, chatbubblesOutline, chevronBackOutline, chevronDownOutline, chevronForwardOutline, documentTextOutline, eyeOffOutline, helpCircleOutline, informationCircleOutline, keyOutline, lockClosedOutline, logOutOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, personOutline, searchOutline, serverOutline, shieldCheckmarkOutline, starOutline, timeOutline, trashOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { AuthService } from '../../services/auth.service';
 import { PostService } from '../../services/post.service';
 import { MessageService } from '../../services/message.service';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
-import { AppearanceService } from '../../services/appearance.service';
 
-type SettingsSection = 'profile' | 'account' | 'privacy' | 'blocked' | 'story-privacy' | 'family' | 'muted' | 'like-counts' | 'tags' | 'comments' | 'sharing' | 'hidden-words' | 'security' | 'notifications' | 'messages' | 'content' | 'connections' | 'activity' | 'archive' | 'trash' | 'appearance' | 'accessibility' | 'data' | 'permissions' | 'about' | 'help';
+type SettingsSection = 'profile' | 'account' | 'privacy' | 'blocked' | 'story-privacy' | 'family' | 'muted' | 'like-counts' | 'tags' | 'comments' | 'sharing' | 'hidden-words' | 'security' | 'notifications' | 'messages' | 'content' | 'connections' | 'activity' | 'archive' | 'trash' | 'accessibility' | 'data' | 'permissions' | 'about' | 'help';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
-  imports: [CommonModule, FormsModule, RouterLink, IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonToggle, IonToolbar, PostCardComponent],
+  imports: [CommonModule, FormsModule, RouterLink, IonButton, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonToggle, IonToolbar, PostCardComponent],
 })
 export class SettingsPage {
   readonly accountService = inject(AccountService);
   private readonly auth = inject(AuthService);
   readonly postService = inject(PostService);
   readonly messageService = inject(MessageService);
-  private readonly appearance = inject(AppearanceService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   readonly sections = [
     { id: 'account', label: 'Account Center', icon: 'person-circle-outline' },
     { id: 'privacy', label: 'Privacy', icon: 'lock-closed-outline' },
@@ -48,7 +47,6 @@ export class SettingsPage {
     { id: 'activity', label: 'Your Activity', icon: 'time-outline' },
     { id: 'archive', label: 'Archive', icon: 'archive-outline' },
     { id: 'trash', label: 'Trash', icon: 'trash-outline' },
-    { id: 'appearance', label: 'Appearance', icon: 'color-palette-outline' },
     { id: 'accessibility', label: 'Accessibility', icon: 'accessibility-outline' },
     { id: 'data', label: 'Data and Storage', icon: 'server-outline' },
     { id: 'permissions', label: 'Permissions', icon: 'key-outline' },
@@ -77,8 +75,6 @@ export class SettingsPage {
   profileWebsite = '';
   profilePhotoPreview = '';
   pendingLogoutAccount: Account | null = null;
-  appearanceMode = this.appearance.mode();
-  darkMode = this.appearance.mode() === 'dark';
   privateAccount = false;
   notifications = true;
   messageAlerts = true;
@@ -97,10 +93,22 @@ export class SettingsPage {
   hiddenWords = '';
   currentPassword = '';
   newPassword = '';
+  showCurrentPassword = false;
+  showNewPassword = false;
   passwordMessage = '';
 
   get isSearching() {
     return this.searchText.trim().length > 0;
+  }
+
+  get settingsTitle() {
+    const titles: Partial<Record<SettingsSection, string>> = {
+      profile: 'Edit profile', account: 'Accounts Center', security: 'Password and security',
+      privacy: 'Privacy', notifications: 'Notification & Help',
+      help: 'Notification & Help', blocked: 'Privacy', muted: 'Privacy', tags: 'Privacy',
+      comments: 'Privacy', sharing: 'Privacy', 'hidden-words': 'Privacy', 'like-counts': 'Privacy',
+    };
+    return titles[this.activeSection] ?? this.sections.find((section) => section.id === this.activeSection)?.label ?? 'Settings';
   }
 
   get filteredSettings() {
@@ -116,7 +124,7 @@ export class SettingsPage {
     ];
     const keywordsBySection: Partial<Record<SettingsSection, string>> = {
       security: 'password login safety', messages: 'chat calls alerts receipts', content: 'sensitive content autoplay video',
-      connections: 'close friends blocked followers following', activity: 'posts history', appearance: 'dark light theme mode',
+      connections: 'close friends blocked followers following', activity: 'posts history',
       accessibility: 'text motion', data: 'storage saver', permissions: 'media access',
       about: 'version app',
       family: 'teen parental supervision',
@@ -168,11 +176,12 @@ export class SettingsPage {
   }
 
   constructor() {
-    addIcons({ accessibilityOutline, archiveOutline, banOutline, cardOutline, chatbubblesOutline, chevronBackOutline, chevronDownOutline, chevronForwardOutline, checkmarkOutline, colorPaletteOutline, desktopOutline, documentTextOutline, eyeOffOutline, helpCircleOutline, informationCircleOutline, keyOutline, lockClosedOutline, logOutOutline, moonOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, personOutline, searchOutline, serverOutline, shieldCheckmarkOutline, starOutline, sunnyOutline, timeOutline, trashOutline });
+    addIcons({ accessibilityOutline, archiveOutline, banOutline, cameraOutline, cardOutline, chatbubblesOutline, chevronBackOutline, chevronDownOutline, chevronForwardOutline, documentTextOutline, eyeOffOutline, helpCircleOutline, informationCircleOutline, keyOutline, lockClosedOutline, logOutOutline, notificationsOutline, peopleOutline, personAddOutline, personCircleOutline, personOutline, searchOutline, serverOutline, shieldCheckmarkOutline, starOutline, timeOutline, trashOutline });
     this.readPreferences();
     this.privateAccount = this.accountService.selectedAccount()?.privacy === 'private' || this.privateAccount;
     this.hiddenWords = this.readHiddenWords();
     this.applyPreferences();
+    if (this.route.snapshot.queryParamMap.get('section') === 'profile') this.openSection('profile');
   }
 
   openSection(section: SettingsSection) {
@@ -264,13 +273,6 @@ export class SettingsPage {
       return;
     }
     void this.router.navigateByUrl('/profile');
-  }
-
-  setAppearance(mode: 'system' | 'light' | 'dark') {
-    this.appearanceMode = mode;
-    this.darkMode = mode === 'dark'
-      || (mode === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    this.savePreferences();
   }
 
   savePreferences() {
@@ -413,6 +415,8 @@ export class SettingsPage {
     if (changed) {
       this.currentPassword = '';
       this.newPassword = '';
+      this.showCurrentPassword = false;
+      this.showNewPassword = false;
     }
   }
 
@@ -440,7 +444,6 @@ export class SettingsPage {
   }
   private applyPreferences() {
 		if (typeof document !== 'undefined') {
-		this.appearance.setMode(this.appearanceMode);
       document.documentElement.classList.toggle('app-large-text', this.largerText);
       document.documentElement.classList.toggle('app-reduce-motion', this.reduceMotion);
       document.documentElement.lang = 'en';
@@ -449,7 +452,6 @@ export class SettingsPage {
 
   private preferenceValues() {
     return {
-      darkMode: this.darkMode,
       privateAccount: this.privateAccount,
       notifications: this.notifications,
       messageAlerts: this.messageAlerts,
@@ -473,10 +475,6 @@ export class SettingsPage {
     for (const key of Object.keys(defaults) as (keyof typeof defaults)[]) {
       const stored = this.readPreference(key, defaults[key]);
       switch (key) {
-        case 'darkMode':
-          this.darkMode = stored;
-          if (this.appearance.mode() !== 'system') this.appearanceMode = stored ? 'dark' : 'light';
-          break;
         case 'privateAccount': this.privateAccount = stored; break;
         case 'notifications': this.notifications = stored; break;
         case 'messageAlerts': this.messageAlerts = stored; break;

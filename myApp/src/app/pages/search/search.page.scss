@@ -131,3 +131,50 @@ ion-searchbar {
     transition-duration: .01ms !important;
   }
 }
+
+.page-content { --background:#f9faff; --padding-bottom:calc(72px + env(safe-area-inset-bottom,0px)); }
+.explore-page-header { border:0; background:#f9faff; }
+.explore-page-header ion-toolbar { display:flex; min-height:54px; align-items:center; gap:5px; padding:4px 12px; --background:#f9faff; }
+.explore-back { display:grid; width:36px; height:36px; flex:0 0 36px; place-items:center; border:0; background:transparent; color:#67738d; }
+.explore-back ion-icon { font-size:20px; }
+.explore-page-header h1 { color:#202b45; font-size:16px; font-weight:700; }
+ion-searchbar { min-height:45px; padding:5px 14px; --background:#f0f2f7; --border-radius:12px; --box-shadow:none; --icon-color:#8793aa; --placeholder-color:#8793aa; font-size:11px; }
+.search-filters { gap:4px; margin:0 14px; padding:4px; border-radius:12px; background:#f0f2f7; }
+.search-filters button { min-height:32px; flex:1; border:0; border-radius:9px; background:transparent; color:#8491aa; font-size:10px; }
+.search-filters button.active { background:#fff; color:#5d58e9; }
+.section-block { padding:14px 14px 8px; }
+.section-block h2 { margin:0 0 8px; color:#27334d; font-size:13px; font-weight:750; }
+.search-result, .topic-row { min-height:62px; border-color:#e8ecf3; }
+.result-type { display:none; }
+.person-row ion-avatar { width:42px; height:42px; flex-basis:42px; border:0; }
+.result-copy strong { color:#27334d; font-size:11px; }
+.result-copy small { color:#8491aa; font-size:10px; }
+.empty-state { border-color:#e7ebf3; border-radius:14px; background:#fff; }
+:host-context(html.app-light) .page-content { --background:#f9faff; }
+.discovery-section { padding:7px 14px 10px; }
+.discovery-section-heading { display:flex; min-height:24px; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.discovery-section-heading h2 { margin:0; color:#27334d; font-size:12px; font-weight:750; }
+.discovery-section-heading > button { border:0; background:transparent; color:#5d58e9; font:inherit; font-size:9px; font-weight:700; }
+.discovery-person-row { display:flex; min-height:51px; align-items:center; gap:9px; border-bottom:1px solid #e8ecf3; color:#27334d; text-decoration:none; }
+.discovery-person-row:last-child { border-bottom:0; }
+.discovery-person-row ion-avatar { width:38px; height:38px; flex:0 0 38px; overflow:hidden; border-radius:50%; background:#e7ebf3; }
+.discovery-person-row ion-avatar img { width:100%; height:100%; object-fit:cover; }
+.discovery-person-row ion-avatar ion-icon { width:100%; height:100%; color:#8793aa; }
+.discovery-person-copy { display:grid; min-width:0; flex:1; gap:3px; }
+.discovery-person-copy strong { overflow:hidden; color:#27334d; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
+.discovery-person-copy small { overflow:hidden; color:#8491aa; font-size:8px; text-overflow:ellipsis; white-space:nowrap; }
+.discovery-chevron { flex:0 0 14px; color:#8793aa; font-size:13px; }
+.discovery-group-card { display:grid; min-height:80px; grid-template-columns:34px minmax(0,1fr) 14px; align-items:center; gap:9px; padding:9px; border:1px solid #e7ebf3; border-radius:13px; background:#fff; color:#27334d; text-decoration:none; }
+.discovery-group-icon { display:grid; width:34px; height:34px; place-items:center; overflow:hidden; border-radius:10px; background:#e4f4f0; color:#399b91; }
+.discovery-group-icon ion-icon { font-size:17px; }
+.discovery-group-icon img { width:100%; height:100%; object-fit:cover; }
+.discovery-group-copy { display:grid; min-width:0; gap:3px; }
+.discovery-group-copy strong { overflow:hidden; color:#27334d; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
+.discovery-group-copy small { color:#8491aa; font-size:8px; }
+.discovery-group-copy > span { color:#8491aa; font-size:8px; line-height:1.35; }
+.conversation-section { padding-top:4px; }
+.conversation-topic { display:grid; width:100%; min-height:44px; grid-template-columns:17px minmax(0,1fr) 14px; align-items:center; gap:7px; padding:5px 0; border:0; border-bottom:1px solid #e8ecf3; background:transparent; color:#27334d; text-align:left; }
+.topic-hash { color:#6c67f3; font-size:15px; }
+.conversation-topic > span:nth-child(2) { display:grid; gap:3px; }
+.conversation-topic strong { color:#27334d; font-size:9px; }
+.conversation-topic small { color:#8491aa; font-size:8px; }

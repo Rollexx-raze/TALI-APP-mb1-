@@ -6,7 +6,7 @@ import {
   IonContent, IonList, IonItem, IonAvatar, IonLabel, IonIcon,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personCircleOutline, chevronForwardOutline, ellipsisVerticalOutline } from 'ionicons/icons';
+import { personCircleOutline, chevronForwardOutline, ellipsisHorizontalOutline, ellipsisVerticalOutline } from 'ionicons/icons';
 import { AccountService } from '../../services/account.service';
 
 @Component({
@@ -36,11 +36,18 @@ export class SelectAccountPage {
   menuLeft = 0;
 
   constructor() {
-    addIcons({ personCircleOutline, chevronForwardOutline, ellipsisVerticalOutline });
+    addIcons({ personCircleOutline, chevronForwardOutline, ellipsisHorizontalOutline, ellipsisVerticalOutline });
   }
 
   get previewAccounts() {
-    return this.accountService.listedAccounts().slice(0, 3);
+    const accounts = this.accountService.listedAccounts();
+    const selected = this.accountService.selectedAccount();
+    const account = selected && accounts.some((item) => item.id === selected.id) ? selected : accounts[0];
+    return account ? [account] : [];
+  }
+
+  accountInitials(name: string) {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
   }
 
   get activeMenuAccount() {

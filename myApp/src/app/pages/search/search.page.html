@@ -1,5 +1,5 @@
-<ion-header class="page-header ion-no-border">
-  <ion-toolbar><h1>Search</h1></ion-toolbar>
+<ion-header class="page-header explore-page-header ion-no-border">
+  <ion-toolbar><button type="button" class="explore-back" routerLink="/home" aria-label="Back to home"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></button><h1>Explore</h1></ion-toolbar>
 </ion-header>
 <ion-content class="page-content" [fullscreen]="true">
   <ion-searchbar [value]="query" (ionInput)="setQuery($any($event).detail.value ?? '')" placeholder="Search people, groups, and topics" [debounce]="100" aria-label="Search people, groups, and topics"></ion-searchbar>
@@ -9,14 +9,34 @@
     <button type="button" [class.active]="activeFilter === 'groups'" [attr.aria-pressed]="activeFilter === 'groups'" (click)="setFilter('groups')">Groups</button>
   </nav>
   @if (!query.trim() && activeFilter === 'all') {
-    <section class="section-block">
-      <h2>Trending topics</h2>
+    <section class="discovery-section">
+      <header class="discovery-section-heading"><h2>People you may know</h2><button type="button" (click)="setFilter('people')">See all</button></header>
+      @for (person of filteredPeople.slice(0, 2); track person.username) {
+        <a class="discovery-person-row" [routerLink]="['/profile', person.id]">
+          <ion-avatar>@if (profileImageFor(person.id); as image) { <img [src]="image" alt=""> } @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }</ion-avatar>
+          <span class="discovery-person-copy"><strong>{{ person.name }}</strong><small>{{ person.username }} · {{ connectionContext(person) }}</small></span>
+          <ion-icon class="discovery-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </a>
+      } @empty { <p class="empty-state">No other accounts to suggest yet.</p> }
+    </section>
+    @if (groupService.getGroups()[0]; as featuredGroup) {
+      <section class="discovery-section">
+        <header class="discovery-section-heading"><h2>Find a shared interest</h2></header>
+        <a class="discovery-group-card" [routerLink]="['/groups', featuredGroup.id]">
+          <span class="discovery-group-icon">@if (featuredGroup.photo) { <img [src]="featuredGroup.photo" alt=""> } @else { <ion-icon name="people-outline" aria-hidden="true"></ion-icon> }</span>
+          <span class="discovery-group-copy"><strong>{{ featuredGroup.name }}</strong><small>{{ featuredGroup.privacy === 'private' ? 'Private' : 'Public' }} group · {{ featuredGroup.memberIds.length }} members</small><span>{{ featuredGroup.description || 'A place to share the things you enjoy.' }}</span></span>
+          <ion-icon class="discovery-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </a>
+      </section>
+    }
+    <section class="discovery-section conversation-section">
+      <header class="discovery-section-heading"><h2>In the conversation</h2></header>
       @for (topic of topics; track topic) {
-        <button class="topic-row" (click)="setQuery(topic)"><ion-icon name="trending-up-outline"></ion-icon><span>{{ topic }}</span><ion-icon name="search-outline"></ion-icon></button>
+        <button class="conversation-topic" type="button" (click)="setQuery(topic)"><span class="topic-hash">#</span><span><strong>{{ topic }}</strong><small>Explore conversations and shared interests</small></span><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
       }
     </section>
   }
-  @if (activeFilter !== 'groups') {
+  @if (activeFilter !== 'groups' && (query.trim() || activeFilter === 'people')) {
     <section class="section-block">
       <h2>People</h2>
       @for (person of filteredPeople; track person.username) {
@@ -33,7 +53,7 @@
       }
     </section>
   }
-  @if (activeFilter !== 'people') {
+  @if (activeFilter !== 'people' && (query.trim() || activeFilter === 'groups')) {
     <section class="section-block">
       <h2>Groups</h2>
       @if (groupService.loading()) {

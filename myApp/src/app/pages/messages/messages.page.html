@@ -28,11 +28,15 @@
           </ion-button>
         </div>
         @if (visibleConversations.length) {
+          <strong class="quick-chats-heading">Your people</strong>
           <div class="message-quick-chats" aria-label="Recent conversations">
             @for (conversation of visibleConversations.slice(0, 8); track conversation.id) {
-              <button type="button" class="quick-chat-avatar" [attr.aria-label]="'Open chat with ' + conversationTitle(conversation)" (click)="openConversation(conversation.id)">
-                @if (conversationProfileImage(conversation); as image) { <img [src]="image" [alt]="conversationTitle(conversation)" /> }
-                @else { <ion-icon name="person-circle-outline"></ion-icon> }
+              <button type="button" class="quick-chat-person" [attr.aria-label]="'Open chat with ' + conversationTitle(conversation)" (click)="openConversation(conversation.id)">
+                <span class="quick-chat-avatar">
+                  @if (conversationProfileImage(conversation); as image) { <img [src]="image" [alt]="conversationTitle(conversation)" /> }
+                  @else { <ion-icon name="person-circle-outline"></ion-icon> }
+                </span>
+                <span>{{ conversationTitle(conversation) }}</span>
               </button>
             }
           </div>
@@ -232,6 +236,7 @@
             </div>
           </header>
           @if (selectedCommunityChats.length) {
+            <h3 class="community-topics-heading">Topic chats <span>{{ selectedCommunityChats.length }} topics</span></h3>
             <section class="community-topic-list" aria-label="Community topic chats">
               @for (conversation of selectedCommunityChats; track conversation.id) {
                 <button type="button" class="community-topic-row" (click)="openConversation(conversation.id)">
@@ -362,6 +367,13 @@
             <span>Use an invite link to join its topic chats.</span>
           </button>
         } @else {
+          @if (composeMode === 'direct') {
+            <div class="direct-message-intro">
+              <h3>Start with a hello.</h3>
+              <p>Find a person or bring your circle together.</p>
+            </div>
+            <ion-searchbar class="direct-message-search" placeholder="Search name or username" aria-label="Search people" [value]="composeSearch" (ionInput)="composeSearch = $any($event).detail.value ?? ''"></ion-searchbar>
+          }
           @if (composeMode === 'group') {
             <div class="group-create-intro"><span class="group-create-icon"><ion-icon name="people-outline"></ion-icon></span><div><strong>Bring everyone together</strong><p>Give your chat a name, then add at least one person.</p></div></div>
             <label class="group-name-label" for="group-name">Group name</label>
@@ -396,7 +408,7 @@
 
           @if (composeMode === 'direct' || composeMode === 'group') {
           <div class="account-picker" aria-label="Choose accounts">
-            @for (account of (composeMode === 'group' ? groupMemberOptions : otherAccounts()); track account.id) {
+            @for (account of (composeMode === 'group' ? groupMemberOptions : composeAccounts); track account.id) {
               <button type="button" class="account-choice" [attr.aria-pressed]="composeMode === 'group' ? selectedMemberIds.includes(account.id) : null" (click)="composeMode === 'direct' ? startDirectMessage(account.id) : toggleGroupMember(account.id)">
                 <span class="account-choice-avatar">@if (account.profileImage) { <img [src]="account.profileImage" [alt]="account.name" /> } @else { <ion-icon name="person-circle-outline"></ion-icon> }</span>
                 <span class="account-choice-copy"><strong>{{ account.name }} @if (account.id < 0) { <small class="sample-account-label">Sample</small> }</strong><span>{{ account.username }}</span></span>
