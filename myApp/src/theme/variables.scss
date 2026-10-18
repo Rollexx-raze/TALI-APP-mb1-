@@ -58,7 +58,7 @@
   --space-6: 32px;
   --space-7: 48px;
   --space-8: 64px;
-  /* Compact aliases keep large component stylesheets within the Ionic bundle budget. */
+  /* Compact aliases used by component stylesheets. */
   --s0: var(--space-0);
   --s1: var(--space-1);
   --s2: var(--space-2);

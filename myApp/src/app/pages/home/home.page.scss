@@ -513,6 +513,37 @@ main
 :host-context(html.app-light) .home-header .search-button ion-icon { color:var(--page-text)!important; }
 :host-context(html.app-light) .home-footer .home-nav { background:var(--page-surface); }
 
+/* Keep the brand centered while the search action stays at the right edge. */
+.home-toolbar-row {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr) 44px !important;
+}
+.home-brand-mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 148px;
+  height: 64px;
+  overflow: visible;
+  justify-self: auto;
+  transform: translate(-50%, -50%);
+}
+.home-brand-mark img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 148px;
+  height: 148px;
+  max-width: none;
+  max-height: none;
+  transform: translate(-50%, -50%);
+}
+.home-toolbar-row .search-button {
+  z-index: 1;
+  grid-column: 2;
+  justify-self: end;
+}
+
 /* Keep the feed readable on large screens while using the available width on phones. */
 .screen-shell {
   width: min(100%, 920px);

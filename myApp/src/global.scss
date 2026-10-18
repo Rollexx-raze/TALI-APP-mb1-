@@ -112,53 +112,6 @@ ion-button[fill="outline"] {
   --border-width: 1px;
 }
 
-ion-button.button-primary,
-button.button-primary {
-  --background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  --color: var(--on-primary);
-  border-color: var(--primary);
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  color: var(--on-primary);
-}
-
-ion-button.button-secondary,
-button.button-secondary {
-  --background: var(--surface);
-  --color: var(--primary);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--primary);
-}
-
-ion-button.button-danger,
-button.button-danger {
-  --background: var(--danger);
-  --color: var(--surface);
-  border-color: var(--danger);
-  background: var(--danger);
-  color: var(--surface);
-}
-
-ion-button.button-ghost,
-button.button-ghost {
-  --background: var(--transparent);
-  --color: var(--text-muted);
-  border-color: var(--transparent);
-  background: var(--transparent);
-  color: var(--text-muted);
-}
-
-.button-loading::after {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  margin-inline-start: var(--space-2);
-  border: 2px solid currentColor;
-  border-right-color: var(--transparent);
-  border-radius: var(--radius-circle);
-  content: "";
-}
-
 button,
 input,
 textarea,
@@ -283,9 +236,9 @@ ion-icon {
   transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 
-ion-header.page-header,
-ion-header.home-header,
-ion-header.settings-header {
+.page-header,
+.home-header,
+.settings-header {
   --background: color-mix(in srgb, var(--surface) 92%, var(--transparent));
   --border-color: var(--border);
   position: sticky;
@@ -297,9 +250,9 @@ ion-header.settings-header {
   -webkit-backdrop-filter: blur(12px);
 }
 
-ion-header.page-header ion-toolbar,
-ion-header.home-header ion-toolbar,
-ion-header.settings-header ion-toolbar {
+.page-header ion-toolbar,
+.home-header ion-toolbar,
+.settings-header ion-toolbar {
   --background: var(--transparent);
   --color: var(--text);
   --border-color: var(--transparent);
@@ -310,17 +263,6 @@ ion-header.settings-header ion-toolbar {
 .settings-header h1 {
   color: var(--text);
   font-size: var(--font-20);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-}
-
-ion-header.page-header h1,
-ion-header.settings-header h1 {
-  font-size: var(--font-page-title);
-}
-
-ion-content.settings-content .settings-detail > h2 {
-  font-size: var(--font-24);
   font-weight: 700;
   letter-spacing: -0.03em;
 }
@@ -338,12 +280,32 @@ ion-content.settings-content .settings-detail > h2 {
   display: block;
 }
 
+.auth-logo-dark { display: none !important; }
+.auth-logo-light { display: block; }
+
 html.app-dark .home-brand-mark .logo-on-dark {
   display: block;
+  filter: brightness(0) invert(1);
 }
 
 html.app-dark .home-brand-mark .logo-on-light {
   display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.app-light):not(.app-dark) .home-brand-mark .logo-on-dark {
+    display: block;
+    filter: brightness(0) invert(1);
+  }
+  html:not(.app-light):not(.app-dark) .home-brand-mark .logo-on-light { display: none; }
+}
+
+html.app-dark .auth-logo-light { display: none; }
+html.app-dark .auth-logo-dark { display: block !important; filter: brightness(0) invert(1); }
+
+@media (prefers-color-scheme: dark) {
+  html:not(.app-light):not(.app-dark) .auth-logo-light { display: none; }
+  html:not(.app-light):not(.app-dark) .auth-logo-dark { display: block !important; filter: brightness(0) invert(1); }
 }
 
 .screen-shell,
@@ -359,21 +321,10 @@ html.app-dark .home-brand-mark .logo-on-light {
   margin-inline: auto;
 }
 
-.search-filters,
-.section-block {
-  width: min(100%, 720px);
-  margin-inline: auto;
-}
-
 .screen-shell {
   width: min(100%, 620px);
   padding: var(--space-4);
   background: var(--bg);
-}
-
-ion-content.home-content .screen-shell {
-  width: min(100%, 620px);
-  padding-inline: var(--space-4);
 }
 
 .home-content,
@@ -391,10 +342,6 @@ ion-content.home-content .screen-shell {
 .profile-page-shell {
   width: min(100%, 960px);
   padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom, var(--space-0)));
-}
-
-ion-content.profile-content .profile-page-shell {
-  width: min(100%, 960px);
 }
 
 .profile-hero {
@@ -424,12 +371,6 @@ ion-content.profile-content .profile-page-shell {
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-4);
-}
-
-ion-content.profile-content .profile-top {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
 }
 
 .profile-avatar-wrap ion-avatar {
@@ -529,10 +470,6 @@ ion-content.profile-content .profile-top {
   padding: var(--space-4);
 }
 
-ion-content.settings-content .settings-layout {
-  width: min(100%, 1200px);
-}
-
 .settings-home-simple {
   width: 100%;
   max-width: none;
@@ -593,10 +530,6 @@ ion-content.settings-content .settings-layout {
   margin-top: var(--space-4);
 }
 
-.settings-layout .appearance-options {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .appearance-option {
   position: relative;
   display: grid;
@@ -654,10 +587,6 @@ ion-content.settings-content .settings-layout {
 
 .appearance-preview i:last-child {
   width: 66%;
-}
-
-.system-preview {
-  background: linear-gradient(90deg, var(--bg) 50%, var(--preview-dark-bg) 50%);
 }
 
 .dark-preview {
@@ -773,17 +702,6 @@ ion-content.settings-content .settings-layout {
   border-color: var(--primary);
   background: var(--primary-soft);
   color: var(--primary);
-}
-
-.feed-tabs .feed-tab[aria-selected="true"],
-.profile-sections button[aria-pressed="true"] {
-  color: var(--primary);
-}
-
-.notification-count,
-.group-chat-count,
-.unread-dot {
-  accent-color: var(--primary);
 }
 
 .search-result,
@@ -941,23 +859,18 @@ ion-modal.post-comments-modal {
 }
 
 @media (max-width: 767px) {
+  .app-main {
+    padding-bottom: calc(var(--space-8) + var(--space-1) + env(safe-area-inset-bottom, var(--space-0)));
+  }
+
   ion-content:not(.login-content):not(.create-account-content):not(.select-content):not(.more-content) {
-    --padding-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, var(--space-0)));
+    --padding-bottom: calc(var(--space-7) + env(safe-area-inset-bottom, var(--space-0)));
   }
 
   .screen-shell,
   .profile-content-panel,
   .settings-layout {
     padding-inline: var(--space-4);
-  }
-
-  ion-content.home-content .screen-shell {
-    width: 100%;
-  }
-
-  ion-content.profile-content .profile-page-shell,
-  ion-content.settings-content .settings-layout {
-    width: 100%;
   }
 
   .profile-top {
@@ -990,10 +903,6 @@ ion-modal.post-comments-modal {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .settings-layout .appearance-options {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   ion-modal.post-comments-modal {
     --height: min(94dvh, 860px);
   }
@@ -1001,10 +910,6 @@ ion-modal.post-comments-modal {
   .settings-messages-button {
     right: max(var(--space-3), env(safe-area-inset-right, var(--space-0)));
     bottom: calc(var(--space-7) + env(safe-area-inset-bottom, var(--space-0)));
-  }
-
-  ion-content.page-content .chat-footer {
-    --chat-nav-offset: calc(var(--space-0) - var(--mobile-nav-height) - env(safe-area-inset-bottom, var(--space-0)));
   }
 }
 
@@ -1021,12 +926,32 @@ ion-modal.post-comments-modal {
     padding: var(--space-5);
   }
 
-  ion-content.profile-content .profile-top {
-    grid-template-columns: auto minmax(0, 1fr);
+  .settings-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+    gap: var(--space-5);
+    padding: var(--space-5);
+  }
+
+  .settings-home,
+  .settings-detail {
+    min-width: 0;
   }
 
   .settings-home-simple {
     padding: 0;
+  }
+
+  .settings-layout.mobile-detail-open .settings-home {
+    display: block;
+  }
+
+  .settings-detail {
+    display: block;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
   }
 }
 
@@ -1049,34 +974,9 @@ ion-modal.post-comments-modal {
     padding: var(--space-5) var(--space-6);
   }
 
-  ion-content.settings-content .settings-layout {
-    display: grid;
+  .settings-layout {
     grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
     align-items: start;
-    gap: var(--space-5);
-    padding: var(--space-5);
-  }
-
-  .settings-home,
-  .settings-detail {
-    min-width: 0;
-  }
-
-  .settings-home-simple {
-    padding: 0;
-  }
-
-  .settings-layout.mobile-detail-open .settings-home {
-    display: block;
-  }
-
-  .settings-detail {
-    display: block;
-    min-height: 60vh;
-    padding: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
-    background: var(--surface);
   }
 
   .settings-home {
@@ -1114,7 +1014,7 @@ ion-modal.post-comments-modal {
 @media (min-width: 1024px) {
   ion-app.has-main-nav .app-main {
     width: calc(100% - var(--nav-rail-width));
-    margin-inline-start: var(--nav-rail-width);
+    margin-inline-start: 72px;
   }
 
   .screen-shell {
@@ -1132,10 +1032,6 @@ ion-modal.post-comments-modal {
     padding-inline: 0;
   }
 
-  ion-content.profile-content .profile-page-shell {
-    width: min(calc(100% - var(--space-8)), 1120px);
-  }
-
   .profile-hero {
     border-radius: 0 0 var(--radius-card) var(--radius-card);
   }
@@ -1143,10 +1039,6 @@ ion-modal.post-comments-modal {
   .profile-top {
     grid-template-columns: auto minmax(0, 1fr) minmax(220px, 320px);
     align-items: center;
-  }
-
-  ion-content.profile-content .profile-top {
-    grid-template-columns: auto minmax(0, 1fr) minmax(220px, 320px);
   }
 
   .profile-stats-card {
@@ -1183,11 +1075,6 @@ ion-modal.post-comments-modal {
   .search-content .page-content {
     width: min(100%, 1120px);
     margin-inline: auto;
-  }
-
-  ion-content.page-content .chat-footer {
-    --chat-nav-offset: var(--space-0);
-    transform: none;
   }
 }
 
@@ -1232,6 +1119,25 @@ ion-modal.post-comments-modal {
   .design-skeleton {
     animation: skeleton-shimmer 1.6s linear infinite;
   }
+
+  .post-card,
+  .group-card,
+  .community-card,
+  .settings-simple-row {
+    animation: card-enter var(--dur-base) var(--ease-out) both;
+  }
+
+  .post-card:nth-child(2),
+  .group-card:nth-child(2),
+  .community-card:nth-child(2) {
+    animation-delay: 60ms;
+  }
+
+  .post-card:nth-child(3),
+  .group-card:nth-child(3),
+  .community-card:nth-child(3) {
+    animation-delay: 120ms;
+  }
 }
 
 @keyframes skeleton-shimmer {
@@ -1246,33 +1152,6 @@ ion-modal.post-comments-modal {
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 
-  .app-main > ion-router-outlet > .ion-page {
-    animation: page-enter var(--dur-base) var(--ease-out) both;
-  }
-
-  .app-main [data-reveal-state="pending"] {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  .app-main [data-reveal-state="visible"] {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
-  }
-
-  .app-main app-post-card:nth-of-type(2)[data-reveal-state="visible"],
-  .app-main .group-card:nth-of-type(2)[data-reveal-state="visible"],
-  .app-main .community-card:nth-of-type(2)[data-reveal-state="visible"] {
-    transition-delay: var(--dur-stagger);
-  }
-
-  .app-main app-post-card:nth-of-type(3)[data-reveal-state="visible"],
-  .app-main .group-card:nth-of-type(3)[data-reveal-state="visible"],
-  .app-main .community-card:nth-of-type(3)[data-reveal-state="visible"] {
-    transition-delay: calc(var(--dur-stagger) + var(--dur-stagger));
-  }
-
   html.app-theme-transition,
   html.app-theme-transition body,
   html.app-theme-transition ion-app,
@@ -1284,11 +1163,6 @@ ion-modal.post-comments-modal {
   }
 }
 
-@keyframes page-enter {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1297,16 +1171,6 @@ ion-modal.post-comments-modal {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
-  }
-
-  .app-main > ion-router-outlet > .ion-page {
-    animation-name: page-fade;
-    transform: none;
-  }
-
-  .app-main [data-reveal-state="pending"],
-  .app-main [data-reveal-state="visible"] {
-    transform: none;
   }
 }
 
@@ -1317,27 +1181,4 @@ html.app-reduce-motion *::after {
   animation-duration: 1ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 1ms !important;
-}
-
-html.app-reduce-motion .app-main > ion-router-outlet > .ion-page {
-  animation-name: page-fade;
-  transform: none;
-}
-
-html.app-reduce-motion .app-main [data-reveal-state="pending"],
-html.app-reduce-motion .app-main [data-reveal-state="visible"] {
-  transform: none;
-}
-
-html.app-reduce-motion button:hover,
-html.app-reduce-motion ion-button:hover::part(native),
-html.app-reduce-motion .post-card:hover,
-html.app-reduce-motion .group-card:hover,
-html.app-reduce-motion .community-card:hover {
-  transform: none !important;
-}
-
-@keyframes page-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }

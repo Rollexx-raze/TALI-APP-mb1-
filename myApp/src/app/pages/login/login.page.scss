@@ -39,7 +39,7 @@
   color:var(--text);
   box-shadow:var(--shadow-soft);
 }
-.login-logo { display:block; width:min(220px, 62vw); height:120px; margin: 0 auto var(--space-3); object-fit:cover; object-position:center; mix-blend-mode:multiply; }
+.login-logo { display:block; width:min(220px, 62vw); height:120px; margin: 0 auto var(--space-3); object-fit:contain; object-position:center; }
 .login-brand { width:100%; margin: 0; text-align:center; }
 .login-brand h1 { margin: 0; color:var(--text); font-size: var(--font-heading); font-weight:700; }
 .login-brand p { margin: var(--space-1) 0 0; color:var(--text-muted); font-size: var(--font-body); }

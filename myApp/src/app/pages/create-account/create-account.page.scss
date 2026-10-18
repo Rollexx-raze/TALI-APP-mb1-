@@ -16,7 +16,7 @@
   padding: calc(var(--space-5) + env(safe-area-inset-top, var(--space-0))) 0 calc(var(--space-3) + env(safe-area-inset-bottom, var(--space-0)));
 }
 .auth-brand { flex:0 0 auto; margin: 0 auto var(--space-4); }
-.auth-brand img { display:block; width:min(220px, 62vw); height:120px; object-fit:cover; object-position:center; mix-blend-mode:multiply; }
+.auth-brand img { display:block; width:min(220px, 62vw); height:120px; object-fit:contain; object-position:center; }
 .create-account-card {
   width:min(calc(100% - var(--space-5)), 430px);
   box-sizing:border-box;

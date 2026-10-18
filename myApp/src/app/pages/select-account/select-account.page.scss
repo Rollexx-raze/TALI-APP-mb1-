@@ -5,7 +5,7 @@
 .select-content { --background: var(--bg); --color: var(--auth-paper); }
 .select-content::part(background) { background: var(--surface); }
 .select-header { display: flex; flex-direction: column; align-items: center; padding: var(--space-7) var(--space-4) var(--space-4); text-align: center; }
-.select-logo { display:block; width:min(220px, 62vw); height:120px; margin: 0 auto var(--space-5); object-fit:cover; object-position:center; mix-blend-mode:multiply; }
+.select-logo { display:block; width:min(220px, 62vw); height:120px; margin: 0 auto var(--space-5); object-fit:contain; object-position:center; }
 .profile-avatar { display:grid; width:72px; height:72px; margin-bottom: var(--space-2); padding: 0; place-items:center; border:1px solid var(--primary); background:var(--bg); color:var(--on-bg); box-shadow:var(--shadow-soft); }
 .profile-avatar ion-icon { display:block; width:44px; height:44px; margin: auto; font-size: var(--font-36); }
 .select-header h1,.more-heading h1 { margin: 0; color: var(--auth-paper); font-size: var(--font-heading); font-weight: 650; }

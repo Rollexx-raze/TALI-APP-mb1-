@@ -227,7 +227,29 @@ export class SettingsPage {
     if (file.size > 5 * 1024 * 1024) { this.profilePhotoError = 'Choose an image smaller than 5 MB.'; return; }
     this.profilePhotoError = '';
     const reader = new FileReader();
-    reader.onload = () => this.profilePhotoPreview = String(reader.result ?? '');
+    reader.onload = () => {
+      const image = String(reader.result ?? '');
+      const account = this.accountService.selectedAccount();
+      if (!image || !account) {
+        this.profilePhotoError = 'The photo could not be saved. Please try again.';
+        return;
+      }
+      const updated = this.accountService.updateProfile(
+        account.name,
+        account.username,
+        account.bio,
+        image,
+        account.profileImageVisibility,
+        account.gender,
+        account.website,
+        account.customGender,
+      );
+      if (updated) {
+        this.profilePhotoPreview = image;
+        this.profilePhotoError = '';
+        this.profileSettingsMessage = 'Profile photo updated.';
+      } else this.profilePhotoError = 'The photo could not be saved. Please try again.';
+    };
     reader.onerror = () => this.profilePhotoError = 'The image could not be read. Please try again.';
     reader.readAsDataURL(file);
   }

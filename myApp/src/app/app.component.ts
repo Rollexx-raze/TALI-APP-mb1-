@@ -33,11 +33,10 @@ export class AppComponent {
 
 	private setupScrollReveals() {
 		if (typeof window === 'undefined' || typeof document === 'undefined') return;
-		const revealSelector = 'app-post-card, .group-card, .community-card, .notification-row, .suggestion-row, .settings-info-card, .feed-empty, .thread-empty';
-		const observeCardsIn = (root: ParentNode) => {
-			const elements: HTMLElement[] = [];
-			if (root instanceof HTMLElement && root.matches(revealSelector)) elements.push(root);
-			elements.push(...root.querySelectorAll<HTMLElement>(revealSelector));
+		const observeVisibleCards = () => {
+			const elements = document.querySelectorAll<HTMLElement>(
+				'.app-main app-post-card, .app-main .group-card, .app-main .community-card, .app-main .notification-row, .app-main .suggestion-row, .app-main .settings-info-card, .app-main .feed-empty, .app-main .thread-empty',
+			);
 			elements.forEach((element) => {
 				if (element.dataset['revealState']) return;
 				if (typeof IntersectionObserver === 'undefined') {
@@ -57,14 +56,10 @@ export class AppComponent {
 		};
 		const appMain = document.querySelector('.app-main');
 		if (typeof MutationObserver !== 'undefined' && appMain) {
-			this.revealMutationObserver = new MutationObserver((records) => {
-				records.forEach((record) => record.addedNodes.forEach((node) => {
-					if (node instanceof HTMLElement) observeCardsIn(node);
-				}));
-			});
+			this.revealMutationObserver = new MutationObserver(observeVisibleCards);
 			this.revealMutationObserver.observe(appMain, { childList: true, subtree: true });
 		}
-		if (appMain) observeCardsIn(appMain);
+		observeVisibleCards();
 	}
 
 }

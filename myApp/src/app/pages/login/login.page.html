@@ -1,7 +1,8 @@
 <ion-content class="login-content auth-screen" [fullscreen]="true">
   <form class="login-wrapper" data-surface="surface" [attr.aria-busy]="isSigningIn" (ngSubmit)="logIn()" novalidate>
     <div class="login-brand">
-      <img class="login-logo" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="Tali logo" />
+      <img class="login-logo auth-logo-light" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="Tali logo" />
+      <img class="login-logo auth-logo-dark" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="" aria-hidden="true" />
       <h1>Welcome back</h1>
       <p>Sign in to continue to your account</p>
     </div>
