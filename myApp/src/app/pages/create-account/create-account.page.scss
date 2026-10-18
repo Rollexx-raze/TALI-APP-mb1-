@@ -13,9 +13,9 @@
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  padding: calc(var(--space-5) + env(safe-area-inset-top, 0px)) 0 calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  padding: calc(var(--space-5) + env(safe-area-inset-top, var(--space-0))) 0 calc(var(--space-3) + env(safe-area-inset-bottom, var(--space-0)));
 }
-.auth-brand { flex:0 0 auto; margin:0 auto 18px; }
+.auth-brand { flex:0 0 auto; margin: 0 auto var(--space-4); }
 .auth-brand img { display:block; width:min(220px, 62vw); height:120px; object-fit:cover; object-position:center; mix-blend-mode:multiply; }
 .create-account-card {
   width:min(calc(100% - var(--space-5)), 430px);
@@ -23,7 +23,7 @@
   margin: 0 auto;
   padding: var(--space-3);
   border:1px solid var(--border);
-  border-radius:var(--radius-card);
+  border-radius: var(--radius-card);
   background:var(--surface);
   color:var(--text);
   box-shadow:var(--shadow-soft);
@@ -34,7 +34,7 @@
 .create-account-eyebrow { display:block; margin-bottom: var(--space-1); color:var(--accent); font-size: var(--font-body); font-weight:700; }
 .signup-progress { display:grid; gap: var(--space-1); margin: 0 0 var(--space-2); }
 .signup-progress-copy { display:flex; align-items:center; justify-content:space-between; gap: var(--space-1); color:var(--text-muted); font-size: var(--font-body); }
-.signup-progress-track { height:4px; overflow:hidden; border-radius:var(--radius-pill); background:var(--border); }
+.signup-progress-track { height:4px; overflow:hidden; border-radius: var(--radius-pill); background:var(--border); }
 .signup-progress-fill { display:block; height:100%; border-radius: var(--radius-inner); background:var(--accent); transition:width 200ms ease-out; }
 .signup-progress-steps { display:flex; justify-content:space-between; gap: var(--space-1); color:var(--text-muted); font-size: var(--font-body); }
 .signup-progress-steps .is-current { color:var(--text); }
@@ -47,7 +47,7 @@
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
   border:1px solid var(--border-control);
-  border-radius:var(--radius-inner);
+  border-radius: var(--radius-inner);
   background:var(--surface-2);
   color:var(--text);
   transition:border-color 200ms ease-out, box-shadow 200ms ease-out;
@@ -69,18 +69,18 @@
   box-shadow:0 0 0 1000px var(--surface-2) inset !important;
   transition:background-color 9999s ease-out 0s;
 }
-.create-account-field-toggle { display:grid; min-width:48px; min-height:48px; place-items:center; border:0; border-radius:var(--radius-pill); background: var(--transparent); color:var(--text-muted); font:inherit; font-size: var(--font-body); cursor:pointer; }
+.create-account-field-toggle { display:grid; min-width:48px; min-height:48px; place-items:center; border:0; border-radius: var(--radius-pill); background: var(--transparent); color:var(--text-muted); font:inherit; font-size: var(--font-body); cursor:pointer; }
 .create-account-error { margin: var(--space-1) 0; color:var(--auth-error); font-size: var(--font-body); }
-.password-strength { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)) auto; align-items:center; gap:8px; color:var(--text-muted); }
-.password-strength > span { height:4px; border-radius:var(--radius-pill); background:var(--border); }
+.password-strength { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)) auto; align-items:center; gap: var(--space-2); color:var(--text-muted); }
+.password-strength > span { height:4px; border-radius: var(--radius-pill); background:var(--border); }
 .password-strength > span.is-filled { background:var(--primary); }
-.password-strength small { color:var(--text-muted); font-size:var(--font-body); }
+.password-strength small { color:var(--text-muted); font-size: var(--font-body); }
 .signup-actions { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap: var(--space-1); margin-top: var(--space-2); }
 .signup-step-button, .create-account-button {
   width:100%;
   min-height:56px;
   margin: 0;
-  --border-radius:var(--radius-inner);
+  --border-radius: var(--radius-inner);
   font-size: var(--font-body);
   font-weight:700;
 }
@@ -88,10 +88,10 @@
 .create-account-button { --background:var(--accent); --background-activated:var(--accent); --color:var(--on-accent); --box-shadow:var(--shadow-soft); }
 .create-account-button[disabled] { --background:var(--surface-2); --background-activated:var(--surface-2); --color:var(--text-muted); --box-shadow:none; opacity:1; cursor:not-allowed; }
 .create-account-footer { margin: var(--space-2) 0 0; color:var(--text-muted); font-size: var(--font-body); text-align:center; }
-.create-account-footer button { min-width:48px; min-height:48px; margin-left: var(--space-1); padding: 0 var(--space-1); border:0; border-radius:var(--radius-inner); background: var(--transparent); color:var(--accent); font:inherit; font-size: var(--font-body); cursor:pointer; }
+.create-account-footer button { min-width:48px; min-height:48px; margin-left: var(--space-1); padding: 0 var(--space-1); border:0; border-radius: var(--radius-inner); background: var(--transparent); color:var(--accent); font:inherit; font-size: var(--font-body); cursor:pointer; }
 .create-account-button:hover, .create-account-button:focus-visible { --box-shadow:var(--shadow-accent); }
 .create-account-button-content { display:inline-flex; align-items:center; justify-content:center; gap: var(--space-1); }
-.auth-spinner { display:inline-block; width:16px; height:16px; box-sizing:border-box; border: 2px solid var(--text); border-right-color: var(--transparent); border-radius:50%; animation:auth-spin 700ms linear infinite; }
+.auth-spinner { display:inline-block; width:16px; height:16px; box-sizing:border-box; border: 2px solid var(--text); border-right-color: var(--transparent); border-radius: var(--radius-circle); animation:auth-spin 700ms linear infinite; }
 @keyframes auth-spin { to { transform:rotate(360deg); } }
 @media (max-width:430px) {
   .create-account-card { width:min(calc(100% - var(--space-3)), 430px); }
