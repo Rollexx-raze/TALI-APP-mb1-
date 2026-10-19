@@ -283,6 +283,29 @@
   .chat-composer .chat-text-input { padding-left: 10px !important; }
 }
 
+.message-file-card {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-height: 64px;
+  align-items: center;
+  gap: 12px;
+  margin-top: var(--s2);
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+.message-row.own-message .message-file-card { margin-left: auto; }
+.message-file-type-icon { width: 28px; height: 28px; flex: 0 0 28px; color: var(--primary); }
+.message-file-copy { display: grid; min-width: 0; flex: 1; gap: 4px; }
+.message-file-copy strong { overflow: hidden; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.message-file-copy small { color: var(--text-muted); font-size: 11px; }
+.message-file-download { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; border-radius: 9px; color: var(--primary); }
+.message-file-download:hover { background: var(--surface); }
+.message-file-download ion-icon { width: 19px; height: 19px; }
+
 
 @media (min-width: 992px) {
   .page-content:not(.chat-mode)::part(scroll) { box-sizing: border-box; width: min(100%, 720px); max-width: 720px; margin-inline: auto; border-inline: 1px solid var(--border); }

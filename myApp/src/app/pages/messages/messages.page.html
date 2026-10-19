@@ -171,7 +171,13 @@
                     @if (messageReactionList(message).length) { <div class="message-reaction-tools bubble-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">@for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }</div> }
                   </app-voice-message-bubble>
                 }
-                @if (attachment.kind === 'file') { <a class="message-file-attachment" [href]="attachment.url" [download]="attachment.name"><ion-icon name="document-outline"></ion-icon><span>{{ attachment.name }}</span></a> }
+                @if (attachment.kind === 'file') {
+                  <div class="message-file-card">
+                    <ion-icon class="message-file-type-icon" [name]="fileAttachmentIcon(attachment.name)" aria-hidden="true"></ion-icon>
+                    <span class="message-file-copy"><strong [title]="attachment.name">{{ attachment.name }}</strong><small>{{ formatAttachmentSize(attachment.sizeBytes) }}</small></span>
+                    <a class="message-file-download" [href]="attachment.url" [download]="attachment.name" [attr.aria-label]="'Download ' + attachment.name"><ion-icon name="download-outline" aria-hidden="true"></ion-icon></a>
+                  </div>
+                }
               }
             }
             @if (messageReactionList(message).length && !message.body && !hasPhotoAttachment(message) && !message.attachments?.some((attachment) => attachment.kind === 'voice')) {
@@ -735,7 +741,7 @@
         <input #cameraPicker hidden type="file" accept="image/*" capture="environment" (change)="attachSelectedFile($event, 'photo')" />
         <input #videoPicker hidden type="file" accept="video/*" (change)="attachSelectedFile($event, 'video')" />
         <input #gifPicker hidden type="file" accept="image/gif,.gif" (change)="attachSelectedFile($event, 'gif')" />
-        <input #filePicker hidden type="file" (change)="attachSelectedFile($event, 'file')" />
+        <input #filePicker hidden type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" (change)="attachSelectedFile($event, 'file')" />
         @if (voiceService.recording()) {
           <app-voice-recorder-bar (send)="sendVoiceRecording()" (discard)="cancelVoiceRecording()"></app-voice-recorder-bar>
         } @else {
@@ -753,14 +759,8 @@
           </div>
         }
         <div class="chat-attachment-actions" aria-label="Message attachments">
-          <ion-button type="button" fill="clear" aria-label="Add attachment" aria-haspopup="true" (click)="isComposerExpanded = !isComposerExpanded"><ion-icon slot="icon-only" name="add-circle"></ion-icon></ion-button>
           <ion-button type="button" fill="clear" aria-label="Take a photo" (click)="cameraPicker.click()"><ion-icon slot="icon-only" name="camera-outline"></ion-icon></ion-button>
           <ion-button type="button" fill="clear" aria-label="Choose a photo" [disabled]="isReadingPhotoAttachments" (click)="photoPicker.click()"><ion-icon slot="icon-only" name="image-outline"></ion-icon></ion-button>
-          @if (isComposerExpanded) {
-          <ion-button fill="clear" aria-label="Upload video" (click)="videoPicker.click()"><ion-icon slot="icon-only" name="videocam-outline"></ion-icon></ion-button>
-          <ion-button fill="clear" class="gif-upload-button" aria-label="Upload GIF" (click)="gifPicker.click()"><span>GIF</span></ion-button>
-          <ion-button fill="clear" aria-label="Upload file" (click)="filePicker.click()"><ion-icon slot="icon-only" name="document-outline"></ion-icon></ion-button>
-          }
         </div>
         @if (messageDraft.trim() || pendingAttachments.length) {
           <ion-button class="composer-send-control" type="submit" fill="solid" aria-label="Send message" [disabled]="isPreferenceEnabled('blockedFor')"><ion-icon slot="icon-only" name="paper-plane-outline"></ion-icon></ion-button>

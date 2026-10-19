@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
-import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, downloadOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, alertCircleOutline, archiveOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, documentTextOutline, downloadOutline, ellipsisHorizontal, filterOutline, gridOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, statsChartOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { ChatAttachment, ChatMessage, Community, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
@@ -89,6 +89,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   selectedMemberIds: number[] = [];
   messageDraft = '';
   isComposerExpanded = false;
+  private readonly allowedDocumentExtensions = new Set(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'zip']);
   pendingAttachments: ChatAttachment[] = [];
   isReadingPhotoAttachments = false;
   recordingVoice = false;
@@ -309,7 +310,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   }
 
   constructor() {
-    addIcons({ addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, downloadOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
+    addIcons({ addCircle, alertCircleOutline, archiveOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, documentTextOutline, downloadOutline, ellipsisHorizontal, filterOutline, gridOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, statsChartOutline, stopCircleOutline, trashOutline, videocamOutline });
     effect(() => {
       const conversations = this.conversations();
       const activeId = this.activeConversationId;
@@ -815,13 +816,29 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   @HostListener('document:click', ['$event'])
   closeComposerEmojiOnOutsideClick(event: MouseEvent) {
     const target = event.target;
-    if (!(target instanceof Element) || target.closest('.composer-emoji-picker, .composer-emoji-control')) return;
+    if (!(target instanceof Element)) return;
+    if (target.closest('.composer-emoji-picker, .composer-emoji-control')) return;
     this.showComposerEmojiPicker = false;
   }
 
   @HostListener('document:keydown.escape')
   closeComposerEmojiOnEscape() {
     this.showComposerEmojiPicker = false;
+  }
+
+  fileAttachmentIcon(filename: string) {
+    const extension = filename.split('.').at(-1)?.toLowerCase();
+    if (extension === 'zip') return 'archive-outline';
+    if (extension === 'xls' || extension === 'xlsx') return 'grid-outline';
+    if (extension === 'ppt' || extension === 'pptx') return 'stats-chart-outline';
+    if (extension === 'doc' || extension === 'docx' || extension === 'pdf' || extension === 'txt') return 'document-text-outline';
+    return 'document-outline';
+  }
+
+  formatAttachmentSize(sizeBytes = 0) {
+    if (sizeBytes < 1024) return `${sizeBytes} B`;
+    if (sizeBytes < 1024 * 1024) return `${(sizeBytes / 1024).toFixed(1)} KB`;
+    return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   retryInlineImage(url: string) {
@@ -1490,7 +1507,17 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
       return;
     }
     const file = selectedFiles[0];
-    if (file.size > 15 * 1024 * 1024) {
+    if (kind === 'file') {
+      const extension = file.name.split('.').at(-1)?.toLowerCase() ?? '';
+      if (!this.allowedDocumentExtensions.has(extension)) {
+        this.callNotice = 'Choose a PDF, Office document, text file, or ZIP archive.';
+        return;
+      }
+      if (file.size > 25 * 1024 * 1024) {
+        this.callNotice = 'Files must be 25 MB or smaller.';
+        return;
+      }
+    } else if (file.size > 15 * 1024 * 1024) {
       this.callNotice = 'Choose a file smaller than 15 MB.';
       return;
     }
@@ -1508,7 +1535,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = () => resolve(typeof reader.result === 'string'
-        ? { kind, name: file.name, url: reader.result }
+        ? { kind, name: file.name, url: reader.result, ...(kind === 'file' ? { sizeBytes: file.size } : {}) }
         : null);
       reader.onerror = () => resolve(null);
       reader.readAsDataURL(file);
