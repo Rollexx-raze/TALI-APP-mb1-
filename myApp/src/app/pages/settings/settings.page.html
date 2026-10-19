@@ -54,7 +54,6 @@
             <p class="name-change-note">{{ nameChangeCooldownMessage }}</p>
           </div>
           <label class="profile-field"><strong>Bio</strong><textarea maxlength="150" [(ngModel)]="profileBio" name="bio" placeholder="Bio"></textarea><small>{{ profileBio.length }} / 150</small></label>
-          <label class="profile-field"><strong>Website</strong><input type="url" [(ngModel)]="profileWebsite" name="website" autocomplete="url" placeholder="https://example.com"></label>
           <div class="profile-field gender-field"><strong>Gender</strong>
             <div class="gender-picker">
               <button type="button" class="gender-picker-trigger" [attr.aria-expanded]="genderMenuOpen" (click)="genderMenuOpen = !genderMenuOpen">{{ genderLabel }}<ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon></button>
@@ -200,11 +199,19 @@
         @if (passwordMessage) { <p class="detail-copy" role="status">{{ passwordMessage }}</p> }
       }
       @if (activeSection === 'notifications') {
-        <h2>Notification preferences</h2><p class="detail-copy">Stay close to the conversations that matter.</p>
+        <div class="notification-intro">
+          <span class="notification-intro-icon"><ion-icon name="notifications-outline" aria-hidden="true"></ion-icon></span>
+          <h2>Notification preferences</h2>
+          <p class="detail-copy">Stay close to the conversations that matter.</p>
+        </div>
+        <h2 class="settings-section-heading">Alerts</h2>
         <div class="notification-settings-card">
-          <ion-item class="notification-setting-row" lines="none"><span class="settings-row-icon" slot="start"><ion-icon name="notifications-outline" aria-hidden="true"></ion-icon></span><ion-label>Browser notifications<p>Allow notifications on this device</p></ion-label><ion-toggle slot="end" [(ngModel)]="notifications" (ionChange)="onNotificationsChanged()"></ion-toggle></ion-item>
-          <ion-item class="notification-setting-row" lines="none"><span class="settings-row-icon" slot="start"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon></span><ion-label>Message alerts<p>Get notified about new messages</p></ion-label><ion-toggle slot="end" [(ngModel)]="messageAlerts" (ionChange)="savePreferences()"></ion-toggle></ion-item>
-          <ion-item class="notification-setting-row" lines="none"><span class="settings-row-icon" slot="start"><ion-icon name="checkmark-outline" aria-hidden="true"></ion-icon></span><ion-label>Read receipts<p>Let people know you’ve seen a message</p></ion-label><ion-toggle slot="end" [(ngModel)]="readReceipts" (ionChange)="savePreferences()"></ion-toggle></ion-item>
+          <ion-item class="notification-setting-row" lines="none"><ion-label>Browser notifications<p>Allow notifications on this device</p></ion-label><ion-toggle slot="end" [(ngModel)]="notifications" (ionChange)="onNotificationsChanged()"></ion-toggle></ion-item>
+          <ion-item class="notification-setting-row" lines="none"><ion-label>Message alerts<p>Get notified about new messages</p></ion-label><ion-toggle slot="end" [(ngModel)]="messageAlerts" (ionChange)="savePreferences()"></ion-toggle></ion-item>
+        </div>
+        <h2 class="settings-section-heading">Messaging</h2>
+        <div class="notification-settings-card">
+          <ion-item class="notification-setting-row" lines="none"><ion-label>Read receipts<p>Let people know you’ve seen a message</p></ion-label><ion-toggle slot="end" [(ngModel)]="readReceipts" (ionChange)="savePreferences()"></ion-toggle></ion-item>
         </div>
         <h2 class="settings-section-heading">Help</h2><section class="settings-info-card"><h3>Looking for a setting?</h3><p class="detail-copy">Open your profile, then Settings. Account holds your personal details and password; Privacy controls your connections.</p><hr><h3>Need to sign in again?</h3><p class="detail-copy">Return to Sign in and use your email or number and password. Select Account lets you choose a saved account on this device.</p></section>
         <h2 class="settings-section-heading">About Tali</h2><section class="settings-about-card"><strong>tali</strong><p>A space for people and communities to connect</p><small>Made for shared interests, everyday stories, and meaningful conversations.</small></section>
