@@ -10,6 +10,9 @@ import { Account, AccountService } from '../../services/account.service';
 import { ChatAttachment, ChatMessage, Community, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
 import { ViewStateService } from '../../services/view-state.service';
+import { VoiceRecordingService } from '../../services/voice-recording.service';
+import { VoiceRecorderBarComponent } from '../../components/voice-recorder-bar/voice-recorder-bar.component';
+import { VoiceMessageBubbleComponent } from '../../components/voice-message-bubble/voice-message-bubble.component';
 
 @Component({
   selector: 'app-messages',
@@ -17,7 +20,7 @@ import { ViewStateService } from '../../services/view-state.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './messages.page.html',
   styleUrls: ['./messages.page.scss'],
-  imports: [FormsModule, RouterLink, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar],
+  imports: [FormsModule, RouterLink, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar, VoiceRecorderBarComponent, VoiceMessageBubbleComponent],
 })
 export class MessagesPage {
   readonly viewState = inject(ViewStateService);
@@ -26,6 +29,7 @@ export class MessagesPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly messageService = inject(MessageService);
+  readonly voiceService = inject(VoiceRecordingService);
   readonly notificationService = inject(NotificationService);
   readonly selectedAccount = this.accountService.selectedAccount;
   @ViewChild(IonContent) private chatContent?: IonContent;
@@ -99,6 +103,7 @@ export class MessagesPage {
   replyToMessage: ChatMessage | null = null;
   forwardMessage: ChatMessage | null = null;
   forwardSearch = '';
+  forwardNote = '';
   showComposerEmojiPicker = false;
   openConversationMenuId: string | null = null;
   isThreadAtBottom = true;
@@ -419,6 +424,11 @@ export class MessagesPage {
     if (!account || !this.groupName.trim() || validMembers.length < 1) return;
     const conversation = this.messageService.createGroupConversation([account.id, ...validMembers], this.groupName);
     if (!conversation) return;
+    if (this.forwardMessage) {
+      this.messageService.sendMessage(conversation.id, account.id, this.forwardBody(), this.forwardMessage.attachments ?? [], { forwarded: true });
+      this.closeForward();
+      this.callNotice = 'Message forwarded to the new group.';
+    }
     this.closeCompose();
     this.activeConversationId = conversation.id;
     this.activeTab = 'inbox';
@@ -600,6 +610,16 @@ export class MessagesPage {
     if (localState === 'sending' || localState === 'failed') return localState;
     if (message.senderId === this.selectedAccount()?.id && this.messageWasReadByOther(message)) return 'seen';
     return 'sent';
+  }
+
+  voiceDeliveryLabel(message: ChatMessage) {
+    const status = this.messageDeliveryStatus(message);
+    return status === 'sending' ? 'Sending…' : status === 'failed' ? 'Failed' : status === 'seen' ? 'Seen' : 'Delivered';
+  }
+
+  quickReactionLabel() {
+    const emoji = this.activeChatSettings?.reactionEmoji || '❤️';
+    return emoji === '❤️' ? '♥' : emoji;
   }
 
   async retryMessage(message: ChatMessage) {
@@ -925,6 +945,13 @@ export class MessagesPage {
     this.reactionDetailEmoji = null;
   }
 
+  removeReactionFromDetails(message: ChatMessage, accountId: number) {
+    const emoji = this.selectedReactionEmoji ?? this.reactionEmojisForAccount(message, accountId)[0];
+    const conversation = this.activeConversation;
+    if (emoji && conversation) this.messageService.toggleReaction(conversation.id, message.id, accountId, emoji);
+    if (!this.messageReactionList(message).length) this.closeReactionDetails();
+  }
+
   closeReactionDetails() {
     this.reactionDetailMessageId = null;
     this.reactionDetailEmoji = null;
@@ -1058,6 +1085,7 @@ export class MessagesPage {
     this.pendingMediaTap = null;
     this.mediaTapTimes.delete(message.id);
     this.reactionPressTimer = setTimeout(() => {
+      this.revealedMessageActionsId = message.id;
       this.openMediaReactionPicker(message);
       this.reactionPressTimer = null;
     }, 450);
@@ -1148,6 +1176,7 @@ export class MessagesPage {
     } else if (action === 'forward') {
       this.forwardMessage = message;
       this.forwardSearch = '';
+      this.forwardNote = '';
     } else if (action === 'pin' || action === 'report') {
       const accountId = this.selectedAccount()?.id;
       if (accountId === undefined) return;
@@ -1159,14 +1188,27 @@ export class MessagesPage {
     }
   }
 
-  closeForward() { this.forwardMessage = null; this.forwardSearch = ''; }
+  closeForward() { this.forwardMessage = null; this.forwardSearch = ''; this.forwardNote = ''; }
+
+  openForwardGroupCreation() {
+    this.composeMode = 'group';
+    this.selectedMemberIds = [];
+    this.groupName = '';
+    this.groupMemberSearch = '';
+  }
+
+  forwardBody() {
+    const message = this.forwardMessage;
+    if (!message) return '';
+    return this.forwardNote.trim() ? `${this.forwardNote.trim()}\n\n${message.body}` : message.body;
+  }
 
   forwardToAccount(accountId: number) {
     const account = this.selectedAccount();
     const message = this.forwardMessage;
     if (!account || !message) return;
     const conversation = this.messageService.openDirectConversation(account.id, accountId);
-    this.messageService.sendMessage(conversation.id, account.id, message.body, message.attachments ?? [], { forwarded: true });
+    this.messageService.sendMessage(conversation.id, account.id, this.forwardBody(), message.attachments ?? [], { forwarded: true });
     this.closeForward();
     this.callNotice = 'Message forwarded.';
   }
@@ -1175,7 +1217,7 @@ export class MessagesPage {
     const account = this.selectedAccount();
     const message = this.forwardMessage;
     if (!account || !message) return;
-    this.messageService.sendMessage(conversation.id, account.id, message.body, message.attachments ?? [], { forwarded: true });
+    this.messageService.sendMessage(conversation.id, account.id, this.forwardBody(), message.attachments ?? [], { forwarded: true });
     this.closeForward();
     this.callNotice = 'Message forwarded.';
   }
@@ -1289,99 +1331,33 @@ export class MessagesPage {
   }
 
   async toggleVoiceRecording() {
-    if (this.recordingVoice && this.voiceRecorder) {
-      this.voiceRecorder.stop();
-      return;
-    }
-    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
-      this.callNotice = 'Voice recording is not supported by this browser.';
-      return;
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const chunks: BlobPart[] = [];
-      const recorder = new MediaRecorder(stream);
-      this.voiceRecorder = recorder;
-      this.voiceDuration = 0;
-      this.voiceRecordingStartedAt = Date.now();
-      this.sendVoiceAfterStop = false;
-      this.discardVoiceRecording = false;
-      recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
-      recorder.onstop = () => {
-        stream.getTracks().forEach((track) => track.stop());
-        if (this.voiceTimerInterval !== null) clearInterval(this.voiceTimerInterval);
-        this.voiceTimerInterval = null;
-        this.recordingVoice = false;
-        this.voiceRecordingPaused = false;
-        this.voiceRecorder = null;
-        const shouldSend = this.sendVoiceAfterStop;
-        const shouldDiscard = this.discardVoiceRecording;
-        const durationSeconds = this.voiceDuration;
-        this.sendVoiceAfterStop = false;
-        this.discardVoiceRecording = false;
-        if (shouldDiscard) return;
-        const recording = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
-        if (recording.size > 15 * 1024 * 1024) {
-          this.callNotice = 'The voice message is larger than 15 MB.';
-          return;
-        }
-        if (!recording.size) {
-          this.callNotice = 'No audio was recorded. Try again.';
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (typeof reader.result === 'string') {
-            this.pendingAttachments = [...this.pendingAttachments, { kind: 'voice', name: 'Voice message', url: reader.result, durationSeconds }];
-            if (shouldSend) {
-              this.sendMessage();
-              this.callNotice = '';
-            }
-          }
-        };
-        reader.onerror = () => { this.callNotice = 'The voice message could not be prepared. Please try again.'; };
-        reader.readAsDataURL(recording);
-      };
-      recorder.start(250);
-      this.recordingVoice = true;
-      this.voiceTimerInterval = setInterval(() => {
-        if (!this.voiceRecordingPaused) this.voiceDuration = Math.floor((Date.now() - this.voiceRecordingStartedAt) / 1000);
-      }, 250);
-      this.callNotice = '';
-    } catch {
-      this.callNotice = 'Microphone access was not granted.';
-    }
+    const started = await this.voiceService.start();
+    if (!started && this.voiceService.error()) this.callNotice = this.voiceService.error()!;
   }
 
-  pauseVoiceRecording() {
-    if (!this.voiceRecorder) return;
-    if (this.voiceRecordingPaused) {
-      this.voiceRecorder.resume();
-      this.voiceRecordingStartedAt = Date.now() - this.voiceDuration * 1000;
-      this.voiceRecordingPaused = false;
-    } else {
-      this.voiceDuration = Math.floor((Date.now() - this.voiceRecordingStartedAt) / 1000);
-      this.voiceRecorder.pause();
-      this.voiceRecordingPaused = true;
-    }
+  micPressStart() { void this.toggleVoiceRecording(); }
+  micPressEnd() { /* Recording continues until send or discard. */ }
+
+  async sendVoiceRecording() {
+    const account = this.selectedAccount();
+    const conversation = this.activeConversation;
+    if (!account || !conversation) return;
+    const recording = this.voiceService.completed() ?? (this.voiceService.recording() ? await this.voiceService.stop() : null);
+    if (!recording) { this.callNotice = 'The voice message could not be prepared. Please try again.'; return; }
+    this.messageService.sendMessage(conversation.id, account.id, '', [{
+      kind: 'voice', name: 'Voice message', url: recording.url, audioUrl: recording.url,
+      durationSeconds: recording.durationSeconds, peaks: recording.peaks,
+    }]);
+    this.scrollToLatest();
+    this.callNotice = '';
+    this.voiceService.completed.set(null);
   }
 
-  sendVoiceRecording() {
-    if (!this.voiceRecorder || !this.recordingVoice || this.sendVoiceAfterStop) return;
-    if (this.voiceRecorder.state === 'inactive') return;
-    if (!this.voiceRecordingPaused) this.voiceDuration = Math.floor((Date.now() - this.voiceRecordingStartedAt) / 1000);
-    this.sendVoiceAfterStop = true;
-    this.callNotice = 'Sending voice message…';
-    this.voiceRecorder.stop();
+  async cancelVoiceRecording() {
+    await this.voiceService.stop(true);
   }
 
-  cancelVoiceRecording() {
-    if (!this.voiceRecorder || !this.recordingVoice) return;
-    this.discardVoiceRecording = true;
-    this.sendVoiceAfterStop = false;
-    this.voiceRecorder.stop();
-    this.callNotice = 'Voice recording discarded.';
-  }
+  discardCompletedVoice() { this.voiceService.completed.set(null); }
 
   formatVoiceDuration(seconds: number) {
     const safeSeconds = Math.max(0, Math.floor(seconds));
@@ -1393,30 +1369,13 @@ export class MessagesPage {
   }
 
   updateVoiceProgress(url: string, player: HTMLAudioElement) {
-    const progress = Number.isFinite(player.duration) && player.duration > 0
-      ? Math.min(1, Math.max(0, player.currentTime / player.duration))
-      : 0;
+    const progress = Number.isFinite(player.duration) && player.duration > 0 ? Math.min(1, Math.max(0, player.currentTime / player.duration)) : 0;
     this.voicePlaybackProgress = { ...this.voicePlaybackProgress, [url]: progress };
   }
-
-  voiceBarPlayed(url: string, index: number) {
-    return (index + 1) / this.voiceWaveBars.length <= (this.voicePlaybackProgress[url] ?? 0);
-  }
-
-  async toggleVoicePlayback(player: HTMLAudioElement) {
-    if (player.paused) {
-      try { await player.play(); } catch { this.callNotice = 'This voice message could not be played.'; }
-    } else player.pause();
-  }
-
-  voicePlaybackPaused(url: string) {
-    if (this.voicePlayingUrl === url) this.voicePlayingUrl = null;
-  }
-
-  voicePlaybackEnded(url: string) {
-    this.voicePlaybackProgress = { ...this.voicePlaybackProgress, [url]: 1 };
-    this.voicePlaybackPaused(url);
-  }
+  voiceBarPlayed(url: string, index: number) { return (index + 1) / this.voiceWaveBars.length <= (this.voicePlaybackProgress[url] ?? 0); }
+  async toggleVoicePlayback(player: HTMLAudioElement) { if (player.paused) { try { await player.play(); } catch { this.callNotice = 'This voice message could not be played.'; } } else player.pause(); }
+  voicePlaybackPaused(url: string) { if (this.voicePlayingUrl === url) this.voicePlayingUrl = null; }
+  voicePlaybackEnded(url: string) { this.voicePlaybackProgress = { ...this.voicePlaybackProgress, [url]: 1 }; this.voicePlaybackPaused(url); }
 
   sendMessage() {
     const account = this.selectedAccount();

@@ -26,6 +26,8 @@ export interface ChatAttachment {
   name: string;
   url: string;
   durationSeconds?: number;
+  peaks?: number[];
+  audioUrl?: string;
 }
 
 export type SharedItemsType = 'photos' | 'links' | 'files' | 'voice messages';

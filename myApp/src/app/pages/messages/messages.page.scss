@@ -739,7 +739,7 @@
 .message-action-controls:not(:focus-within) .message-actions-toggle { opacity: 0; pointer-events: none; }
 .message-row:hover .message-action-controls .message-actions-toggle,
 .message-action-controls:focus-within .message-actions-toggle { opacity: 1; pointer-events: auto; }
-.message-row.message-actions-revealed .message-action-controls .message-actions-toggle { opacity: 0; pointer-events: none; }
+.message-row.message-actions-revealed .message-action-controls .message-actions-toggle { opacity: 1; pointer-events: auto; }
 .message-action-menu {
   position: absolute;
   top: 50%;
@@ -2404,3 +2404,4 @@
 .conversation-action-menu .delete-chat-action { color: var(--danger, #ff7777); }
 .empty-state { min-height: min(56vh, 420px); padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px)); }
 .community-topic-empty { min-height: min(56vh, 420px); justify-content: center; }
+
