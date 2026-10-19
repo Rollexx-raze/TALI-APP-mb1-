@@ -1,11 +1,11 @@
-﻿import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
-import { effect, ViewChild } from '@angular/core';
+﻿import { AfterViewChecked, Component, computed, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnDestroy } from '@angular/core';
+import { effect, HostListener, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
-import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, downloadOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { ChatAttachment, ChatMessage, Community, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
@@ -22,7 +22,7 @@ import { VoiceMessageBubbleComponent } from '../../components/voice-message-bubb
   styleUrls: ['./messages.page.scss'],
   imports: [FormsModule, RouterLink, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar, VoiceRecorderBarComponent, VoiceMessageBubbleComponent],
 })
-export class MessagesPage {
+export class MessagesPage implements AfterViewChecked, OnDestroy {
   readonly viewState = inject(ViewStateService);
   private readonly viewStateKey = 'tali-view-messages';
   private readonly accountService = inject(AccountService);
@@ -33,6 +33,14 @@ export class MessagesPage {
   readonly notificationService = inject(NotificationService);
   readonly selectedAccount = this.accountService.selectedAccount;
   @ViewChild(IonContent) private chatContent?: IonContent;
+  @ViewChild('chatFooter', { read: ElementRef }) private chatFooterRef?: ElementRef<HTMLElement>;
+  @ViewChild('chatMessageInput') private chatMessageInput?: ElementRef<HTMLTextAreaElement>;
+  chatFooterHeight = 128;
+  private footerResizeObserver?: ResizeObserver;
+  private observedFooter?: HTMLElement;
+  private revealActionsTimer: ReturnType<typeof setTimeout> | null = null;
+  highlightedReplyMessageId: string | null = null;
+  private replyHighlightTimer: ReturnType<typeof setTimeout> | null = null;
   readonly accounts = computed(() => {
     const accounts = this.accountService.accounts();
     const selected = this.selectedAccount();
@@ -105,9 +113,20 @@ export class MessagesPage {
   forwardSearch = '';
   forwardNote = '';
   showComposerEmojiPicker = false;
+  composerEmojiSearch = '';
+  composerEmojiCategory = 'Smileys';
+  readonly composerEmojiGroups = [
+    { name: 'Smileys', emojis: ['😀','😃','😄','😁','😆','😅','😂','🤣','🥲','😊','😇','🙂','🙃','😉','😍','🥰','😘','😗','😋','😎','🤩','🥳','😭','😢','😡','🤔','🤗','🙏','👏','👍','👎','❤️','🧡','💛','💚','💙','💜','✨','🔥','🎉','💯'] },
+    { name: 'People', emojis: ['👋','🤚','✋','🖐️','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','💪','🫶','🙌','👐','🤝','🫡','💃','🕺','🧍','🧑‍🤝‍🧑','👶','🧑','👩','👨','🧓','👪'] },
+    { name: 'Nature', emojis: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐸','🐵','🐔','🐧','🐦','🦋','🐢','🐬','🌸','🌻','🌈','☀️','🌙','⭐','🌍','🌿'] },
+    { name: 'Food', emojis: ['🍎','🍊','🍋','🍉','🍇','🍓','🫐','🍒','🥑','🍕','🍔','🍟','🌮','🍜','🍣','🍰','🍩','🍪','☕','🧋','🥤','🍿'] },
+    { name: 'Activities', emojis: ['⚽','🏀','🏈','⚾','🎾','🏐','🎮','🎯','🎨','🎤','🎧','🎸','🎹','🎬','🏆','🎁','🎈','🎊','🚗','✈️','🚀','💡'] },
+  ];
   openConversationMenuId: string | null = null;
   isThreadAtBottom = true;
+  isScrollButtonVisible = false;
   newMessagesWhileAway = 0;
+  private scrollUpdateFrame: number | null = null;
   private readonly observedMessageCounts = new Map<string, number>();
   private readonly handledCommunityInvites = new Set<string>();
   private reactionPressTimer: ReturnType<typeof setTimeout> | null = null;
@@ -290,7 +309,7 @@ export class MessagesPage {
   }
 
   constructor() {
-    addIcons({ addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
+    addIcons({ addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, downloadOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
     effect(() => {
       const conversations = this.conversations();
       const activeId = this.activeConversationId;
@@ -543,18 +562,53 @@ export class MessagesPage {
     return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
   }
 
+  replyAuthorLabel(senderId: number) {
+    if (senderId === this.selectedAccount()?.id) return 'yourself';
+    const peer = this.activeChatAccount;
+    if (peer?.id === senderId && this.activeConversation) return this.conversationTitle(this.activeConversation);
+    return this.accountName(senderId) ?? 'Former account';
+  }
+
+  ngAfterViewChecked() {
+    const footer = this.chatFooterRef?.nativeElement;
+    if (footer !== this.observedFooter) {
+      this.footerResizeObserver?.disconnect();
+      this.observedFooter = footer;
+      if (!footer) this.chatFooterHeight = 0;
+      else {
+        this.footerResizeObserver = new ResizeObserver(() => {
+          this.chatFooterHeight = Math.ceil(footer.getBoundingClientRect().height);
+        });
+        this.footerResizeObserver.observe(footer);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    this.footerResizeObserver?.disconnect();
+    if (this.revealActionsTimer) clearTimeout(this.revealActionsTimer);
+    if (this.replyHighlightTimer) clearTimeout(this.replyHighlightTimer);
+    if (this.scrollUpdateFrame !== null) cancelAnimationFrame(this.scrollUpdateFrame);
+  }
+
   scrollToLatest() {
     this.isThreadAtBottom = true;
+    this.isScrollButtonVisible = false;
     this.newMessagesWhileAway = 0;
-    requestAnimationFrame(() => { void this.chatContent?.scrollToBottom(180); });
+    requestAnimationFrame(() => requestAnimationFrame(() => { void this.chatContent?.scrollToBottom(300); }));
   }
 
   onThreadScroll(_event: Event) {
-    if (!this.activeConversation || this.showChatSettings || this.showGroupInfo) return;
-    void this.chatContent?.getScrollElement().then((scrollElement) => {
-      const isAtBottom = scrollElement.scrollHeight - scrollElement.clientHeight - scrollElement.scrollTop < 88;
-      this.isThreadAtBottom = isAtBottom;
-      if (isAtBottom) this.newMessagesWhileAway = 0;
+    if (!this.activeConversation || this.showChatSettings || this.showGroupInfo || this.scrollUpdateFrame !== null) return;
+    this.scrollUpdateFrame = requestAnimationFrame(() => {
+      this.scrollUpdateFrame = null;
+      void this.chatContent?.getScrollElement().then((scrollElement) => {
+        const distanceFromBottom = scrollElement.scrollHeight - scrollElement.clientHeight - scrollElement.scrollTop;
+        const atBottom = distanceFromBottom <= 88;
+        this.isThreadAtBottom = atBottom;
+        this.isScrollButtonVisible = distanceFromBottom > 200;
+        if (atBottom) this.newMessagesWhileAway = 0;
+      });
     });
   }
 
@@ -617,6 +671,64 @@ export class MessagesPage {
     return status === 'sending' ? 'Sending…' : status === 'failed' ? 'Failed' : status === 'seen' ? 'Seen' : 'Delivered';
   }
 
+  replyPreviewText(message: ChatMessage | { messageId: string; body: string }) {
+    const target = this.replyTarget(message);
+    const attachments = target?.attachments ?? [];
+    const photos = attachments.filter((item) => item.kind === 'photo' || item.kind === 'gif');
+    if (photos.length > 1) return `${photos.length} photos`;
+    if (photos.length === 1) return 'Photo';
+    const attachment = attachments[0];
+    if (attachment?.kind === 'voice') return `Voice message ${this.formatVoiceDuration(attachment.durationSeconds ?? 0)}`;
+    if (attachment?.kind === 'video') return 'Video';
+    if (attachment?.kind === 'file') return attachment.name || 'File';
+    return target?.body?.trim() || message.body?.trim() || 'Message';
+  }
+
+  private replyTarget(message: ChatMessage | { messageId: string; body: string }) {
+    return 'messageId' in message
+      ? this.activeConversation?.messages.find((item) => item.id === message.messageId)
+      : message as ChatMessage;
+  }
+
+  replyPreviewAttachment(message: ChatMessage | { messageId: string; body: string } | string) {
+    const target = typeof message === 'string'
+      ? this.activeConversation?.messages.find((item) => item.id === message)
+      : this.replyTarget(message);
+    return target?.attachments?.find((item) => item.kind === 'photo' || item.kind === 'gif');
+  }
+
+  replyPreviewKind(message: ChatMessage) {
+    if (message.attachments?.some((item) => item.kind === 'photo' || item.kind === 'gif')) return 'photo';
+    return message.attachments?.[0]?.kind ?? 'text';
+  }
+
+  replyPreviewIcon(message: ChatMessage) {
+    const kind = this.replyPreviewKind(message);
+    return kind === 'voice' ? 'mic-outline' : kind === 'video' ? 'videocam-outline' : 'document-outline';
+  }
+
+  setReplyToMessage(message: ChatMessage) {
+    this.replyToMessage = message;
+    this.scrollToLatest();
+  }
+
+  clearReply() {
+    this.replyToMessage = null;
+    this.scrollToLatest();
+  }
+
+  navigateToReply(messageId: string) {
+    const target = document.getElementById(`message-${messageId}`);
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    this.highlightedReplyMessageId = messageId;
+    if (this.replyHighlightTimer) clearTimeout(this.replyHighlightTimer);
+    this.replyHighlightTimer = setTimeout(() => {
+      this.highlightedReplyMessageId = null;
+      this.replyHighlightTimer = null;
+    }, 1600);
+  }
+
   quickReactionLabel() {
     const emoji = this.activeChatSettings?.reactionEmoji || '❤️';
     return emoji === '❤️' ? '♥' : emoji;
@@ -637,11 +749,24 @@ export class MessagesPage {
     return (message.attachments ?? []).filter((item) => item.kind === 'photo' || item.kind === 'gif').length;
   }
 
+  photoAttachments(message: ChatMessage) {
+    return (message.attachments ?? []).filter((item) => item.kind === 'photo' || item.kind === 'gif');
+  }
+
+  photoStackHeight(message: ChatMessage) {
+    const count = this.photoAttachmentCount(message);
+    return count > 1 ? 164 + (count - 1) * 82 : 0;
+  }
+
   photoAttachmentIndex(message: ChatMessage, attachment: ChatAttachment) {
     if (attachment.kind !== 'photo' && attachment.kind !== 'gif') return -1;
     return (message.attachments ?? [])
       .filter((item) => item.kind === 'photo' || item.kind === 'gif')
       .findIndex((item) => item.url === attachment.url);
+  }
+
+  photoStackActionIndex(message: ChatMessage) {
+    return Math.floor((this.photoAttachmentCount(message) - 1) / 2);
   }
 
   isFirstImageAttachment(message: ChatMessage, attachment: ChatAttachment) {
@@ -655,6 +780,48 @@ export class MessagesPage {
 
   setImageLoadState(url: string, state: 'loaded' | 'error') {
     this.imageLoadStates = { ...this.imageLoadStates, [url]: state };
+  }
+
+  onChatImageLoad(url: string) {
+    this.setImageLoadState(url, 'loaded');
+    if (this.isThreadAtBottom) this.scrollToLatest();
+  }
+
+  get composerEmojiResults() {
+    const query = this.composerEmojiSearch.trim().toLowerCase();
+    const groups = query ? this.composerEmojiGroups : this.composerEmojiGroups.filter((group) => group.name === this.composerEmojiCategory);
+    return groups.flatMap((group) => group.emojis.filter((emoji) => !query || group.name.toLowerCase().includes(query) || emoji.includes(query)));
+  }
+
+  toggleComposerEmojiPicker() {
+    this.showComposerEmojiPicker = !this.showComposerEmojiPicker;
+    if (this.showComposerEmojiPicker) this.composerEmojiSearch = '';
+  }
+
+  insertComposerEmoji(emoji: string) {
+    const input = this.chatMessageInput?.nativeElement;
+    const start = input?.selectionStart ?? this.messageDraft.length;
+    const end = input?.selectionEnd ?? start;
+    const next = this.messageDraft.slice(0, start) + emoji + this.messageDraft.slice(end);
+    this.updateDraftTyping(next);
+    this.showComposerEmojiPicker = false;
+    requestAnimationFrame(() => {
+      input?.focus();
+      const cursor = start + emoji.length;
+      input?.setSelectionRange(cursor, cursor);
+    });
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeComposerEmojiOnOutsideClick(event: MouseEvent) {
+    const target = event.target;
+    if (!(target instanceof Element) || target.closest('.composer-emoji-picker, .composer-emoji-control')) return;
+    this.showComposerEmojiPicker = false;
+  }
+
+  @HostListener('document:keydown.escape')
+  closeComposerEmojiOnEscape() {
+    this.showComposerEmojiPicker = false;
   }
 
   retryInlineImage(url: string) {
@@ -976,6 +1143,11 @@ export class MessagesPage {
     this.reactionPickerExpanded = false;
     this.reactionPickerForMedia = false;
     this.revealedMessageActionsId = message.id;
+    if (this.revealActionsTimer) clearTimeout(this.revealActionsTimer);
+    this.revealActionsTimer = setTimeout(() => {
+      this.revealedMessageActionsId = null;
+      this.revealActionsTimer = null;
+    }, 1800);
     this.messageActionsId = message.id;
     const element = target instanceof HTMLElement
       ? target
@@ -1086,6 +1258,11 @@ export class MessagesPage {
     this.mediaTapTimes.delete(message.id);
     this.reactionPressTimer = setTimeout(() => {
       this.revealedMessageActionsId = message.id;
+      if (this.revealActionsTimer) clearTimeout(this.revealActionsTimer);
+      this.revealActionsTimer = setTimeout(() => {
+        this.revealedMessageActionsId = null;
+        this.revealActionsTimer = null;
+      }, 1800);
       this.openMediaReactionPicker(message);
       this.reactionPressTimer = null;
     }, 450);
@@ -1172,7 +1349,7 @@ export class MessagesPage {
     if (action === 'delete') {
       this.requestMessageDelete(message);
     } else if (action === 'reply') {
-      this.replyToMessage = message;
+      this.setReplyToMessage(message);
     } else if (action === 'forward') {
       this.forwardMessage = message;
       this.forwardSearch = '';
@@ -1269,6 +1446,15 @@ export class MessagesPage {
     input.style.height = 'auto';
     input.style.height = `${Math.min(input.scrollHeight, 120)}px`;
   }
+
+  private resetComposerInputHeight() {
+    requestAnimationFrame(() => {
+      const input = this.chatMessageInput?.nativeElement;
+      if (!input) return;
+      input.style.removeProperty('height');
+      input.scrollTop = 0;
+    });
+  }
   messageReactionList(message: ChatMessage) {
     return Object.entries(message.reactions ?? {})
       .filter(([, users]) => users.length > 0)
@@ -1297,7 +1483,6 @@ export class MessagesPage {
         const loaded = attachments.filter((attachment): attachment is ChatAttachment => attachment !== null);
         if (loaded.length) {
           this.pendingAttachments = [...this.pendingAttachments, ...loaded];
-          this.sendMessage();
         }
         if (loaded.length !== validFiles.length) this.callNotice = 'Some photos could not be loaded.';
         else if (!loaded.length && !this.callNotice) this.callNotice = 'No photos could be loaded.';
@@ -1328,6 +1513,10 @@ export class MessagesPage {
       reader.onerror = () => resolve(null);
       reader.readAsDataURL(file);
     });
+  }
+
+  removePendingAttachment(attachment: ChatAttachment) {
+    this.pendingAttachments = this.pendingAttachments.filter((item) => item !== attachment);
   }
 
   async toggleVoiceRecording() {
@@ -1392,6 +1581,7 @@ export class MessagesPage {
     this.scrollToLatest();
     this.clearTyping();
     this.messageDraft = '';
+    this.resetComposerInputHeight();
     this.replyToMessage = null;
     this.saveViewState();
     this.pendingAttachments = [];

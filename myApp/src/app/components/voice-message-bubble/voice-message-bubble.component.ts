@@ -4,24 +4,31 @@ import { addIcons } from 'ionicons';
 import { pauseOutline, playOutline } from 'ionicons/icons';
 
 @Component({ selector: 'app-voice-message-bubble', standalone: true, imports: [IonIcon], template: `
+<div class="bubble-wrap">
 <div class="bubble" [class.sent]="sent">
   <audio #audio [src]="audioUrl" (play)="claimPlayback()" (timeupdate)="sync()" (ended)="ended()" (pause)="sync()"></audio>
   <button type="button" [attr.aria-label]="playing ? 'Pause voice message' : 'Play voice message'" (click)="toggle()"><ion-icon [name]="playing ? 'pause-outline' : 'play-outline'"></ion-icon></button>
-  <div class="wave" role="slider" tabindex="0" aria-label="Seek voice message" [attr.aria-valuenow]="progress * 100" aria-valuemin="0" aria-valuemax="100" (pointerdown)="seek($event)" (pointermove)="drag($event)">@for (peak of bars; track $index) { <i [class.played]="$index / bars.length <= progress" [style.height.%]="Math.max(14, peak * 100)"></i> }</div>
+  <div class="wave" role="slider" tabindex="0" aria-label="Seek voice message" [attr.aria-valuenow]="progress * 100" aria-valuemin="0" aria-valuemax="100" (pointerdown)="seek($event)" (pointermove)="drag($event)">@for (peak of bars; track $index) { <i [class.played]="$index / bars.length <= progress" [style.height.%]="Math.max(14, peak * 100)"></i> }@if (playing) { <span class="playhead" [style.left.%]="progress * 100"></span> }</div>
   <span class="duration">{{ timeLabel }}</span>
+</div>
+<ng-content></ng-content>
 </div>
 <div class="status">{{ status }}</div>`, styles: [`
 :host { display:block; max-width:100%; animation:appear 180ms ease both; }
-.bubble { display:flex; align-items:center; gap:10px; width:min(350px,75vw); min-height:64px; padding:10px 14px; border-radius:20px; background:var(--surface-2); color:var(--text); }
+.bubble-wrap { position:relative; display:flex; width:fit-content; max-width:75%; flex-direction:column; }
+.bubble-wrap.has-reaction { margin-bottom:14px; }
+.bubble { position:relative; display:flex; align-items:center; gap:10px; width:min(350px,75vw); min-height:64px; padding:10px 14px; border-radius:20px; background:var(--surface-2); color:var(--text); }
 .bubble.sent { margin-left:auto; background:var(--primary); color:var(--on-primary); }
 audio { display:none; }
 button { display:grid; flex:0 0 36px; width:36px;height:36px;place-items:center;border:0;border-radius:50%;background:#fff;color:var(--primary);cursor:pointer;transition:transform 150ms ease; }
 button:active { transform:scale(.95); } button ion-icon { color:var(--primary); font-size:20px; }
-.wave { display:flex; flex:1; min-width:50px; height:34px; align-items:center; gap:3px; cursor:pointer; touch-action:none; }
+.wave { position:relative; display:flex; flex:1; min-width:50px; height:34px; align-items:center; gap:3px; cursor:pointer; touch-action:none; }
 .wave i { flex:1 1 2px; min-width:2px; max-width:5px; border-radius:5px; background:rgba(255,255,255,.5); }
 .wave i.played { background:#fff; }
+.playhead { position:absolute; top:3px; bottom:3px; width:2px; transform:translateX(-1px); border-radius:2px; background:#fff; pointer-events:none; }
 .duration { min-width:34px; text-align:right; font-size:12px; font-variant-numeric:tabular-nums; }
 .status { min-height:14px; padding:3px 5px 0; color:var(--text-muted); font-size:11px; text-align:right; }
+.bubble-wrap:has(.bubble.sent) { margin-left:auto; }
 @keyframes appear { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
 @media(prefers-reduced-motion:reduce){:host,button{animation:none!important;transition:none!important}}
 ` ] })
@@ -57,7 +64,10 @@ export class VoiceMessageBubbleComponent implements OnChanges, OnDestroy {
     }
   }
   private isUsable(peaks: number[] | undefined) {
-    return !!peaks && peaks.length >= 4 && peaks.some((value) => Number.isFinite(value)) && Math.max(...peaks) - Math.min(...peaks) > .025;
+    if (!peaks || peaks.length < 4) return false;
+    const valid = peaks.filter((value) => Number.isFinite(value));
+    if (valid.length < 4 || Math.max(...valid) < .05) return false;
+    return Math.max(...valid) - Math.min(...valid) > .025;
   }
   private pattern(seedText: string) {
     let seed = 2166136261;
