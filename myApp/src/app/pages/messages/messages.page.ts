@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
-import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
+import { addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { ChatAttachment, ChatMessage, Community, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
@@ -285,7 +285,7 @@ export class MessagesPage {
   }
 
   constructor() {
-    addIcons({ addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
+    addIcons({ addCircle, alertCircleOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, ellipsisHorizontal, filterOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, stopCircleOutline, trashOutline, videocamOutline });
     effect(() => {
       const conversations = this.conversations();
       const activeId = this.activeConversationId;
@@ -1219,6 +1219,13 @@ export class MessagesPage {
     const emoji = this.resolveEmojiFromEvent(event);
     if (emoji) this.updateDraftTyping(this.messageDraft + emoji);
     this.showComposerEmojiPicker = false;
+  }
+
+  resizeComposerInput(event: Event) {
+    const input = event.currentTarget as HTMLTextAreaElement | null;
+    if (!input) return;
+    input.style.height = 'auto';
+    input.style.height = `${Math.min(input.scrollHeight, 120)}px`;
   }
   messageReactionList(message: ChatMessage) {
     return Object.entries(message.reactions ?? {})
