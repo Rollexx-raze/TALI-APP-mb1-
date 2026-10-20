@@ -7,7 +7,7 @@
           <div class="profile-brand"><span>Profile</span></div>
           @if (isOwnProfile) {
             <button type="button" class="profile-header-more" routerLink="/settings" aria-label="Settings"><ion-icon name="settings-outline" aria-hidden="true"></ion-icon></button>
-          } @else { <span class="profile-header-more-static" aria-hidden="true">···</span> }
+          }
         </div>
         @if (isOwnProfile) {
           <button type="button" class="profile-cover profile-cover-button" [class.has-cover-image]="profile.coverImage" (click)="coverPhotoInput.click()" aria-label="Upload a profile cover photo">

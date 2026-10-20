@@ -38,7 +38,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="page-content" [class.chat-mode]="activeConversation !== null" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" [style.--chat-footer-height.px]="chatFooterHeight" [fullscreen]="true" [scrollEvents]="true" (ionScroll)="onThreadScroll($event)">
+<ion-content class="page-content" [class.chat-mode]="activeConversation !== null" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" [style.--chat-footer-height.px]="chatFooterHeight" [fullscreen]="true" [scrollEvents]="true" (click)="openConversationMenuId = null" (ionScroll)="onThreadScroll($event)">
   @if (messageService.loadError(); as messageLoadError) {
     <section class="message-data-error" role="alert"><p>{{ messageLoadError }}</p><button type="button" (click)="retryLoadingMessages()">Retry</button></section>
   }
@@ -323,21 +323,25 @@
                   {{ conversationPreview(conversation) }}
                 </span>
               </span>
-              <span class="conversation-trailing">
-                <time [attr.datetime]="conversation.updatedAt.toISOString()">{{ formatMessageTime(conversation.updatedAt) }}</time>
-                @if (conversationIsUnread(conversation)) { <span class="conversation-unread-count" [attr.aria-label]="unreadMessageCount(conversation) + ' unread messages'">{{ unreadMessageCount(conversation) }}</span> }
-              </span>
             </button>
-            <button type="button" class="conversation-more" [attr.aria-label]="'Conversation options for ' + conversationTitle(conversation)" [attr.aria-expanded]="openConversationMenuId === conversation.id" (click)="toggleConversationMenu(conversation.id, $event)"><ion-icon name="ellipsis-horizontal"></ion-icon></button>
-            @if (messageService.settingsFor(conversation.id).pinnedFor.includes(selectedAccount()?.id ?? -1)) {
-              <button type="button" class="conversation-indicator-button conversation-pin-indicator" aria-label="Unpin chat" title="Unpin chat" (click)="conversationAction(conversation, 'pinnedFor')"><ion-icon name="pin-outline" aria-hidden="true"></ion-icon></button>
-            }
-            @if (messageService.settingsFor(conversation.id).mutedFor.includes(selectedAccount()?.id ?? -1)) {
-              <button type="button" class="conversation-indicator-button conversation-mute-indicator" aria-label="Unmute chat" title="Unmute chat" (click)="conversationAction(conversation, 'mutedFor')"><ion-icon name="notifications-off-outline" aria-hidden="true"></ion-icon></button>
-            }
+            <div class="conversation-trailing">
+              <time [attr.datetime]="conversation.updatedAt.toISOString()">{{ formatMessageTime(conversation.updatedAt) }}</time>
+              <span class="conversation-row-status">
+                @if (conversationIsUnread(conversation)) { <span class="conversation-unread-count" [attr.aria-label]="unreadMessageCount(conversation) + ' unread messages'">{{ unreadMessageCount(conversation) }}</span> }
+                @if (messageService.settingsFor(conversation.id).pinnedFor.includes(selectedAccount()?.id ?? -1)) {
+                  <button type="button" class="conversation-indicator-button conversation-pin-indicator" aria-label="Unpin chat" title="Unpin chat" (click)="conversationAction(conversation, 'pinnedFor')"><ion-icon name="pin-outline" aria-hidden="true"></ion-icon></button>
+                }
+                @if (messageService.settingsFor(conversation.id).mutedFor.includes(selectedAccount()?.id ?? -1)) {
+                  <button type="button" class="conversation-indicator-button conversation-mute-indicator" aria-label="Unmute chat" title="Unmute chat" (click)="conversationAction(conversation, 'mutedFor')"><ion-icon name="notifications-off-outline" aria-hidden="true"></ion-icon></button>
+                }
+              </span>
+              <button type="button" class="conversation-more" [attr.aria-label]="'Conversation options for ' + conversationTitle(conversation)" [attr.aria-expanded]="openConversationMenuId === conversation.id" (click)="toggleConversationMenu(conversation.id, $event)"><ion-icon name="ellipsis-horizontal"></ion-icon></button>
+            </div>
             @if (openConversationMenuId === conversation.id) {
               <div class="conversation-action-menu" role="menu" [attr.aria-label]="'Options for ' + conversationTitle(conversation)">
+                <button type="button" role="menuitem" (click)="conversationAction(conversation, 'pinnedFor')">{{ messageService.settingsFor(conversation.id).pinnedFor.includes(selectedAccount()?.id ?? -1) ? 'Unpin' : 'Pin' }}</button>
                 <button type="button" role="menuitem" (click)="conversationAction(conversation, 'mutedFor')">{{ messageService.settingsFor(conversation.id).mutedFor.includes(selectedAccount()?.id ?? -1) ? 'Unmute' : 'Mute' }}</button>
+                <button type="button" role="menuitem" (click)="conversationAction(conversation, 'archivedFor')">{{ messageService.settingsFor(conversation.id).archivedFor.includes(selectedAccount()?.id ?? -1) ? 'Unarchive' : 'Archive' }}</button>
                 <button type="button" role="menuitem" (click)="conversationAction(conversation, 'unreadFor')">{{ conversationIsUnread(conversation) ? 'Mark read' : 'Mark unread' }}</button>
                 <button type="button" role="menuitem" class="delete-chat-action" (click)="conversationAction(conversation, 'delete')">Delete chat</button>
               </div>

@@ -817,13 +817,20 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   closeComposerEmojiOnOutsideClick(event: MouseEvent) {
     const target = event.target;
     if (!(target instanceof Element)) return;
-    if (target.closest('.composer-emoji-picker, .composer-emoji-control')) return;
-    this.showComposerEmojiPicker = false;
+    if (!target.closest('.composer-emoji-picker, .composer-emoji-control')) {
+      this.showComposerEmojiPicker = false;
+    }
+    if (!target.closest('.message-action-controls, .message-action-menu') && this.messageActionsId !== null) {
+      this.messageActionsId = null;
+      this.messageActionsMenuPosition = null;
+    }
   }
 
   @HostListener('document:keydown.escape')
   closeComposerEmojiOnEscape() {
     this.showComposerEmojiPicker = false;
+    this.messageActionsId = null;
+    this.messageActionsMenuPosition = null;
   }
 
   fileAttachmentIcon(filename: string) {

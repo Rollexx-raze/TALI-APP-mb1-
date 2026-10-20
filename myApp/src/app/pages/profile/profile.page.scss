@@ -1645,3 +1645,58 @@ main
   .profile-sections button { min-height: 52px; font-size: 15px; }
   .profile-posts { padding: 16px; }
 }
+
+/* Final profile contrast and stable header control. */
+.profile-page-shell,
+.profile-hero,
+.profile-top,
+.profile-content-panel,
+.profile-sections { background: var(--surface) !important; color: var(--text) !important; }
+.profile-page-header { position: relative; background: var(--surface) !important; }
+.profile-page-header:has(.profile-header-back) .profile-brand { margin-left: 52px; }
+.profile-brand,
+.profile-top h2,
+.profile-description,
+.profile-description p { color: var(--text) !important; }
+.profile-top .profile-handle,
+.profile-stats-card .stats-row span { color: var(--text-muted) !important; }
+.profile-cover,
+.profile-cover-button { background: var(--surface-alt) !important; }
+.profile-stats-card { padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-inner); background: var(--surface-alt); }
+.profile-stats-card .stats-row strong { color: var(--text) !important; }
+.profile-header-back {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  transform: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  background: var(--surface-alt);
+  color: var(--text);
+  transition: none;
+}
+.profile-header-back:hover,
+.profile-header-back:active { transform: none; border-color: var(--border); background: var(--surface-alt); color: var(--text); box-shadow: none; filter: none; }
+.profile-header-back:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.profile-header-more {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  transform: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  background: var(--surface-alt);
+  color: var(--text);
+  transition: none;
+}
+.profile-header-more:hover,
+.profile-header-more:active { transform: none; border-color: var(--border); background: var(--surface-alt); color: var(--text); box-shadow: none; filter: none; }
+.profile-header-more:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
