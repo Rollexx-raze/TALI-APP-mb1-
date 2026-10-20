@@ -10,6 +10,7 @@ import { Group, GroupService } from '../../services/group.service';
 import { Account, AccountService } from '../../services/account.service';
 import { PostAttachment, PostService } from '../../services/post.service';
 import { MediaAttachmentService } from '../../services/media-attachment.service';
+import { MessageService } from '../../services/message.service';
 
 interface PendingMediaUpload {
   file: File;
@@ -30,6 +31,7 @@ export class GroupDetailPage implements OnDestroy {
   readonly groupService = inject(GroupService);
   readonly accountService = inject(AccountService);
   readonly postService = inject(PostService);
+  readonly messageService = inject(MessageService);
   private readonly alertController = inject(AlertController);
   private readonly toastController = inject(ToastController);
   private readonly mediaAttachmentService = inject(MediaAttachmentService);
@@ -96,6 +98,15 @@ export class GroupDetailPage implements OnDestroy {
     return groupId ? this.postService.posts().filter((post) => post.groupId === groupId) : [];
   }
 
+  get hasCommunityChats() {
+    const groupId = this.group?.id;
+    return !!groupId && this.messageService.communityChatsForGroup(groupId).length > 0;
+  }
+
+  get communityChatDataReady() {
+    return this.messageService.communityDataReady() && this.messageService.conversationDataReady();
+  }
+
   get groupMembers() {
     const group = this.group;
     if (!group) return [];
@@ -111,6 +122,18 @@ export class GroupDetailPage implements OnDestroy {
   setTab(tab: 'posts' | 'about' | 'members') {
     this.activeTab = tab;
     this.showGroupMenu = false;
+  }
+
+  openCommunityChatEntry() {
+    const group = this.group;
+    if (!group || !this.isGroupMember) return;
+    void this.router.navigate(['/messages'], {
+      queryParams: {
+        from: 'group',
+        groupId: group.id,
+        action: this.hasCommunityChats ? 'join' : 'create',
+      },
+    });
   }
 
   toggleGroupMenu() {

@@ -7,6 +7,7 @@ import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
 import { addCircle, alertCircleOutline, archiveOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, documentTextOutline, downloadOutline, ellipsisHorizontal, filterOutline, gridOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, statsChartOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
+import { GroupService } from '../../services/group.service';
 import { ChatAttachment, ChatMessage, Community, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
 import { NotificationService } from '../../services/notification.service';
 import { ViewStateService } from '../../services/view-state.service';
@@ -26,6 +27,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   readonly viewState = inject(ViewStateService);
   private readonly viewStateKey = 'tali-view-messages';
   private readonly accountService = inject(AccountService);
+  private readonly groupService = inject(GroupService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly messageService = inject(MessageService);
@@ -53,6 +55,101 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     return accountId === undefined ? 0 : this.notificationService.unreadCount(accountId);
   }
 
+  get groupCommunityEntryChats() {
+    const entry = this.groupCommunityEntry;
+    return entry ? this.messageService.communityChatsForGroup(entry.groupId) : [];
+  }
+
+  private async handleGroupCommunityEntry(groupId: string | null, action: string | null) {
+    const requestId = ++this.groupEntryRequestId;
+    if (!groupId || (action !== 'create' && action !== 'join')) {
+      await this.clearGroupCommunityEntryQuery();
+      return;
+    }
+
+    await Promise.all([
+      this.groupService.groupsHydrated,
+      this.messageService.communityDataHydrated,
+      this.messageService.conversationDataHydrated,
+    ]);
+    if (requestId !== this.groupEntryRequestId) return;
+
+    const group = this.groupService.getGroupById(groupId);
+    const accountId = this.selectedAccount()?.id;
+    if (!group || accountId === undefined || !group.memberIds.includes(accountId)) {
+      await this.clearGroupCommunityEntryQuery();
+      return;
+    }
+
+    const actualAction = this.messageService.communityChatsForGroup(group.id).length ? 'join' : 'create';
+    this.groupCommunityEntry = { groupId: group.id, groupName: group.name, action: actualAction };
+    this.groupCommunityChatNameDraft = '';
+    this.groupCommunityEntryNotice = '';
+    this.composeMode = null;
+    this.activeConversationId = null;
+    this.activeTab = 'inbox';
+    this.saveViewState();
+  }
+
+  async closeGroupCommunityEntry() {
+    this.groupCommunityEntry = null;
+    this.groupCommunityChatNameDraft = '';
+    this.groupCommunityEntryNotice = '';
+    this.activeConversationId = null;
+    this.activeTab = 'inbox';
+    this.saveViewState();
+    await this.clearGroupCommunityEntryQuery();
+  }
+
+  async createGroupCommunityChat() {
+    const entry = this.groupCommunityEntry;
+    const group = entry ? this.groupService.getGroupById(entry.groupId) : null;
+    const account = this.selectedAccount();
+    if (!entry || !group || !account || !group.memberIds.includes(account.id) || !this.groupCommunityChatNameDraft.trim()) return;
+    if (this.messageService.communityChatsForGroup(group.id).length) {
+      this.groupCommunityEntry = { ...entry, action: 'join' };
+      return;
+    }
+    const conversation = await this.messageService.createGroupCommunityChat(
+      group.id, group.name, this.groupCommunityChatNameDraft, account.id, group.memberIds,
+    );
+    if (!conversation) {
+      this.groupCommunityEntryNotice = 'The Community Chat could not be saved. Please try again.';
+      return;
+    }
+    await this.clearGroupCommunityEntryQuery();
+    this.groupCommunityEntry = null;
+    this.openConversation(conversation.id);
+  }
+
+  async joinGroupCommunityChat(conversationId: string) {
+    const entry = this.groupCommunityEntry;
+    const group = entry ? this.groupService.getGroupById(entry.groupId) : null;
+    const account = this.selectedAccount();
+    const conversation = this.groupCommunityEntryChats.find((chat) => chat.id === conversationId);
+    if (!entry || !group || !account || !group.memberIds.includes(account.id) || !conversation) return;
+    const community = await this.messageService.joinGroupCommunity(group.id, account.id);
+    if (!community) {
+      this.groupCommunityEntryNotice = 'Could not join these Community Chats. Please try again.';
+      return;
+    }
+    await this.clearGroupCommunityEntryQuery();
+    this.groupCommunityEntry = null;
+    this.selectedCommunityId = community.id;
+    this.activeTab = 'community';
+    this.openCommunity(community);
+    this.openConversation(conversation.id);
+  }
+
+  private async clearGroupCommunityEntryQuery() {
+    await this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { from: null, groupId: null, action: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
   retryLoadingMessages() {
     if (typeof window !== 'undefined') window.location.reload();
   }
@@ -65,6 +162,10 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   activeFilter = 'All';
   showFilters = false;
   composeMode: 'menu' | 'direct' | 'group' | 'community' | 'community-chat' | 'join-community' | null = null;
+  groupCommunityEntry: { groupId: string; groupName: string; action: 'create' | 'join' } | null = null;
+  groupCommunityChatNameDraft = '';
+  groupCommunityEntryNotice = '';
+  private groupEntryRequestId = 0;
   composeSearch = '';
   selectedCommunityId: string | null = null;
   communityNameDraft = '';
@@ -345,6 +446,12 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.groupName = saved.groupName ?? '';
     this.selectedMemberIds = saved.selectedMemberIds ?? [];
     this.route.queryParamMap.subscribe((params) => {
+      if (params.get('from') === 'group') {
+        void this.handleGroupCommunityEntry(params.get('groupId'), params.get('action'));
+      } else {
+        this.groupEntryRequestId++;
+        this.groupCommunityEntry = null;
+      }
       const inviteCode = params.get('communityInvite');
       if (inviteCode && !this.handledCommunityInvites.has(inviteCode)) void this.handleCommunityInvite(inviteCode);
       const conversationId = params.get('conversationId');

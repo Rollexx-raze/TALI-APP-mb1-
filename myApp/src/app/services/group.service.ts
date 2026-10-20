@@ -27,6 +27,10 @@ export class GroupService {
   readonly groups = signal<Group[]>([]);
   readonly loading = signal(true);
   readonly loadError = signal<string | null>(null);
+  private resolveGroupsHydrated!: () => void;
+  readonly groupsHydrated = new Promise<void>((resolve) => {
+    this.resolveGroupsHydrated = resolve;
+  });
   private nextId = 0;
   private changedBeforeHydration = false;
   private persistenceQueue: Promise<void> = Promise.resolve();
@@ -51,10 +55,12 @@ export class GroupService {
           this.loadError.set('Groups could not be loaded. Check your browser storage and try again.');
         }
         if (this.changedBeforeHydration || savedGroups.some(groupNeedsMigration)) this.persistGroups();
+        this.resolveGroupsHydrated();
       },
       (error: unknown) => {
         this.loading.set(false);
         this.loadError.set('Groups could not be loaded. Check your browser storage and try again.');
+        this.resolveGroupsHydrated();
       },
     );
   }

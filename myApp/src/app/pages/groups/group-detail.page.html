@@ -53,6 +53,11 @@
             {{ currentGroup.privacy === 'private' ? 'Request to join' : 'Join group' }}
           </ion-button>
         }
+        @if (isGroupMember && communityChatDataReady) {
+          <ion-button class="group-community-chat-button" fill="outline" expand="block" (click)="openCommunityChatEntry()">
+            {{ hasCommunityChats ? 'Join Community Chats' : 'Create Community Chat' }}
+          </ion-button>
+        }
       </section>
 
       <nav class="group-detail-tabs" aria-label="Group sections">

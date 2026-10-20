@@ -64,6 +64,7 @@ export interface Community {
   memberIds: number[];
   inviteCode: string;
   createdAt: Date;
+  groupId?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -73,6 +74,7 @@ export class MessageService {
   private resolveCommunityDataHydrated!: () => void;
   private resolveConversationDataHydrated!: () => void;
   readonly conversations = signal<Conversation[]>([]);
+  readonly conversationDataReady = signal(false);
   readonly conversationDataHydrated = new Promise<void>((resolve) => {
     this.resolveConversationDataHydrated = resolve;
   });
@@ -99,6 +101,7 @@ export class MessageService {
     }).catch(() => {
       this.loadError.set('Messages could not be loaded from this browser. Retry to check the saved data again.');
     }).finally(() => {
+      this.conversationDataReady.set(true);
       this.resolveConversationDataHydrated();
     });
     void loadBrowserData(communitiesStorageKey, [], isStoredCommunityList, () => {
@@ -132,7 +135,7 @@ export class MessageService {
     return this.createConversation(members, groupName.trim());
   }
 
-  async createCommunity(name: string, ownerId: number) {
+  async createCommunity(name: string, ownerId: number, options?: { groupId?: string; memberIds?: number[] }) {
     await this.communityDataHydrated;
     const trimmedName = name.trim();
     if (!trimmedName) return null;
@@ -140,9 +143,10 @@ export class MessageService {
       id: `community-${Date.now()}-${++this.nextId}`,
       name: trimmedName,
       ownerId,
-      memberIds: [ownerId],
+      memberIds: [...new Set([ownerId, ...(options?.memberIds ?? [])])],
       inviteCode: createCommunityInviteCode(),
       createdAt: new Date(),
+      ...(options?.groupId ? { groupId: options.groupId } : {}),
     };
     this.communities.update((communities) => [community, ...communities]);
     if (!await this.persistCommunities()) {
@@ -150,6 +154,30 @@ export class MessageService {
       return null;
     }
     return community;
+  }
+
+  communityForGroup(groupId: string) {
+    return this.communities().find((community) => community.groupId === groupId) ?? null;
+  }
+
+  communityChatsForGroup(groupId: string) {
+    const community = this.communityForGroup(groupId);
+    return community
+      ? this.conversations().filter((conversation) => conversation.communityId === community.id)
+      : [];
+  }
+
+  async createGroupCommunityChat(groupId: string, groupName: string, chatName: string, ownerId: number, memberIds: number[]) {
+    await this.communityDataHydrated;
+    await this.conversationDataHydrated;
+    const community = this.communityForGroup(groupId) ?? await this.createCommunity(groupName, ownerId, { groupId, memberIds });
+    return community ? this.createCommunityChat(community.id, chatName) : null;
+  }
+
+  async joinGroupCommunity(groupId: string, accountId: number) {
+    await this.communityDataHydrated;
+    const community = this.communityForGroup(groupId);
+    return community ? this.joinCommunityByInvite(community.inviteCode, accountId) : null;
   }
 
   async createCommunityChat(communityId: string, name: string) {
@@ -416,6 +444,7 @@ function isStoredCommunityList(value: unknown): value is Community[] {
     const community = item as Partial<Community>;
     return typeof community.id === 'string' && typeof community.name === 'string' &&
       Number.isSafeInteger(community.ownerId) && Array.isArray(community.memberIds) &&
+      (community.groupId === undefined || typeof community.groupId === 'string') &&
       typeof community.inviteCode === 'string' &&
       (typeof community.createdAt === 'string' || community.createdAt instanceof Date);
   });
