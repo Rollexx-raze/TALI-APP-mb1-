@@ -14,23 +14,29 @@ import { pauseOutline, playOutline } from 'ionicons/icons';
 <ng-content></ng-content>
 </div>
 <div class="status">{{ status }}</div>`, styles: [`
-:host { display:block; max-width:100%; animation:appear 180ms ease both; }
-.bubble-wrap { position:relative; display:flex; width:fit-content; max-width:75%; flex-direction:column; }
+:host { display:block; min-width:0; max-width:100%; animation:appear 180ms ease both; }
+.bubble-wrap { position:relative; display:flex; width:fit-content; min-width:0; max-width:100%; flex-direction:column; }
 .bubble-wrap.has-reaction { margin-bottom:14px; }
-.bubble { position:relative; display:flex; align-items:center; gap:10px; width:min(350px,75vw); min-height:64px; padding:10px 14px; border-radius:20px; background:var(--surface-2); color:var(--text); }
-.bubble.sent { margin-left:auto; background:var(--primary); color:var(--on-primary); }
+.bubble { position:relative; display:flex; box-sizing:border-box; min-width:min(220px,100%); width:min(350px,100%); min-height:68px; align-items:center; gap:10px; padding:9px 12px; border:1px solid color-mix(in srgb, var(--border) 80%, transparent); border-radius:18px 18px 18px 6px; background:var(--surface-2); color:var(--text); box-shadow:0 3px 10px rgba(0,0,0,.12); }
+.bubble.sent { margin-left:auto; border-color:color-mix(in srgb, var(--primary) 75%, transparent); border-radius:18px 18px 6px 18px; background:var(--primary); color:var(--on-primary); }
 audio { display:none; }
-button { display:grid; flex:0 0 36px; width:36px;height:36px;place-items:center;border:0;border-radius:50%;background:#fff;color:var(--primary);cursor:pointer;transition:transform 150ms ease; }
-button:active { transform:scale(.95); } button ion-icon { color:var(--primary); font-size:20px; }
-.wave { position:relative; display:flex; flex:1; min-width:50px; height:34px; align-items:center; gap:3px; cursor:pointer; touch-action:none; }
-.wave i { flex:1 1 2px; min-width:2px; max-width:5px; border-radius:5px; background:rgba(255,255,255,.5); }
-.wave i.played { background:#fff; }
-.playhead { position:absolute; top:3px; bottom:3px; width:2px; transform:translateX(-1px); border-radius:2px; background:#fff; pointer-events:none; }
-.duration { min-width:34px; text-align:right; font-size:12px; font-variant-numeric:tabular-nums; }
-.status { min-height:14px; padding:3px 5px 0; color:var(--text-muted); font-size:11px; text-align:right; }
+button { display:grid; box-sizing:border-box; flex:0 0 40px; width:40px; height:40px; place-items:center; padding:0; border:1px solid color-mix(in srgb, var(--primary) 35%, transparent); border-radius:50%; background:var(--primary); color:var(--on-primary); cursor:pointer; box-shadow:0 2px 7px rgba(0,0,0,.16); transition:background-color 150ms ease, box-shadow 150ms ease; }
+button:hover { box-shadow:0 3px 9px rgba(0,0,0,.22); }
+button:active { background:var(--primary-hover); }
+button:focus-visible { outline:2px solid currentColor; outline-offset:3px; }
+button ion-icon { color:inherit; font-size:20px; }
+.bubble.sent button { border-color:color-mix(in srgb, var(--on-primary) 28%, transparent); background:color-mix(in srgb, var(--on-primary) 16%, transparent); color:var(--on-primary); }
+.wave { position:relative; display:flex; box-sizing:border-box; flex:1 1 0; min-width:0; height:36px; align-items:center; justify-content:space-between; gap:3px; overflow:hidden; padding:0 4px; border-radius:8px; background:color-mix(in srgb, currentColor 7%, transparent); cursor:pointer; touch-action:none; }
+.wave i { flex:1 1 0; min-width:0; max-width:5px; border-radius:999px; background:currentColor; opacity:.34; transition:opacity 140ms ease; }
+.wave i.played { opacity:.92; }
+.wave:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
+.playhead { position:absolute; top:4px; bottom:4px; width:2px; transform:translateX(-1px); border-radius:2px; background:currentColor; box-shadow:0 0 5px currentColor; pointer-events:none; }
+.duration { box-sizing:border-box; width:38px; min-width:38px; flex:0 0 38px; color:inherit; font-size:12px; font-weight:650; text-align:right; font-variant-numeric:tabular-nums; }
+.status { box-sizing:border-box; width:100%; min-height:18px; padding:5px 12px 0; color:var(--text-muted); font-size:12px; line-height:1.1; text-align:right; }
 .bubble-wrap:has(.bubble.sent) { margin-left:auto; }
 @keyframes appear { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
-@media(prefers-reduced-motion:reduce){:host,button{animation:none!important;transition:none!important}}
+@media(max-width:360px){.bubble{gap:9px;padding-inline:10px}button{flex-basis:36px;width:36px;height:36px}.duration{min-width:34px}}
+@media(prefers-reduced-motion:reduce){:host,button,.wave i{animation:none!important;transition:none!important}}
 ` ] })
 export class VoiceMessageBubbleComponent implements OnChanges, OnDestroy {
   @Input() audioUrl = '';

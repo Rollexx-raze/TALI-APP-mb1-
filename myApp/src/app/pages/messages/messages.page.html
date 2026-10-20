@@ -116,6 +116,22 @@
                 @if (messageReactionList(message).length) { <div class="message-reaction-tools bubble-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">@for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" [attr.aria-label]="reaction.emoji + ', ' + reaction.count + ' reactions. Tap to see who reacted'" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }</div> }
                 </div>
               }
+              @if (!hasPhotoAttachment(message) && !message.attachments?.some((attachment) => attachment.kind === 'voice')) {
+                <div class="message-action-controls" (click)="$event.stopPropagation()">
+                  <button type="button" class="message-actions-toggle" [class.is-open]="messageActionsId === message.id" [attr.aria-label]="'Message options'" [attr.aria-expanded]="messageActionsId === message.id" (click)="toggleMessageActions(message, $event)">
+                    <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
+                  </button>
+                  @if (messageActionsId === message.id) {
+                    <div class="message-action-menu" role="menu" aria-label="Message actions">
+                      <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
+                      <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
+                      <button type="button" role="menuitem" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
+                      <button type="button" role="menuitem" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
+                      @if (message.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
+                    </div>
+                  }
+                </div>
+              }
             </div>
             @if (photoAttachments(message).length) {
               @let photos = photoAttachments(message);
@@ -167,9 +183,25 @@
                   </div>
                 }
                 @if (attachment.kind === 'voice') {
-                  <app-voice-message-bubble [class.has-reaction]="messageReactionList(message).length > 0" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" [audioUrl]="attachment.audioUrl || attachment.url" [peaks]="attachment.peaks || []" [duration]="attachment.durationSeconds || 0" [messageId]="message.id" [sent]="message.senderId === selectedAccount()?.id" [status]="formatMessageTime(message.createdAt) + (message.senderId === selectedAccount()?.id ? ' · ' + voiceDeliveryLabel(message) : '')">
-                    @if (messageReactionList(message).length) { <div class="message-reaction-tools bubble-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">@for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }</div> }
-                  </app-voice-message-bubble>
+                  <div class="voice-message-row">
+                    <app-voice-message-bubble [class.has-reaction]="messageReactionList(message).length > 0" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" [audioUrl]="attachment.audioUrl || attachment.url" [peaks]="attachment.peaks || []" [duration]="attachment.durationSeconds || 0" [messageId]="message.id" [sent]="message.senderId === selectedAccount()?.id" [status]="formatMessageTime(message.createdAt) + (message.senderId === selectedAccount()?.id ? ' · ' + voiceDeliveryLabel(message) : '')">
+                      @if (messageReactionList(message).length) { <div class="message-reaction-tools bubble-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">@for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }</div> }
+                    </app-voice-message-bubble>
+                    <div class="message-action-controls" (click)="$event.stopPropagation()">
+                      <button type="button" class="message-actions-toggle" [class.is-open]="messageActionsId === message.id" aria-label="Message options" [attr.aria-expanded]="messageActionsId === message.id" (click)="toggleMessageActions(message, $event)">
+                        <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
+                      </button>
+                      @if (messageActionsId === message.id) {
+                        <div class="message-action-menu" role="menu" aria-label="Message actions">
+                          <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
+                          <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
+                          <button type="button" role="menuitem" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
+                          <button type="button" role="menuitem" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
+                          @if (message.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
+                        </div>
+                      }
+                    </div>
+                  </div>
                 }
                 @if (attachment.kind === 'file') {
                   <div class="message-file-card">
@@ -203,34 +235,12 @@
                 }
               </div>
             }
-            @if (!hasPhotoAttachment(message)) {
-            <div class="message-action-controls" (click)="$event.stopPropagation()">
-              <button type="button" class="message-actions-toggle" [class.is-open]="messageActionsId === message.id" [attr.aria-label]="'Message options'" [attr.aria-expanded]="messageActionsId === message.id" (click)="toggleMessageActions(message, $event)">
-                <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
-              </button>
-              @if (messageActionsId === message.id) {
-                <div class="message-action-menu" role="menu" aria-label="Message actions">
-                  <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
-                  <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
-                  <button type="button" role="menuitem" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
-                  <button type="button" role="menuitem" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
-                  @if (message.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
-                </div>
-              }
-            </div>
-            }
           </div>
         </div>
       } @empty {
         @if (conversation.messages.length) { <p class="no-search-results">No messages match that search.</p> }
       }
     </section>
-    @if (!showChatSettings && !showGroupInfo && conversation.messages.length) {
-      <button slot="fixed" type="button" class="scroll-to-bottom-button" [class.is-visible]="isScrollButtonVisible" [attr.aria-hidden]="!isScrollButtonVisible" [attr.tabindex]="isScrollButtonVisible ? 0 : -1" aria-label="Scroll to latest message" (click)="scrollToLatest()">
-        <ion-icon name="chevron-down-outline"></ion-icon>
-        @if (newMessagesWhileAway > 0) { <span class="scroll-unread-badge" aria-live="polite" aria-atomic="true">{{ newMessagesWhileAway > 9 ? '9+' : newMessagesWhileAway }}</span> }
-      </button>
-    }
     @if (typingNames.length) { <div class="typing-indicator" role="status">{{ typingNames.join(', ') }} {{ typingNames.length === 1 ? 'is' : 'are' }} typing<span class="typing-dots">…</span></div> }
     @if (voiceService.completed(); as completedVoice) { <div class="call-notice" role="status">Recording limit reached. Send this voice message? <button type="button" (click)="sendVoiceRecording()">Send</button><button type="button" aria-label="Discard recording" (click)="discardCompletedVoice()"><ion-icon name="trash-outline"></ion-icon></button></div> }
     @if (callNotice) { <div class="call-notice" role="status">{{ callNotice }}<button type="button" aria-label="Dismiss" (click)="callNotice = ''"><ion-icon name="close-outline"></ion-icon></button></div> }
@@ -431,8 +441,8 @@
   }
 
   @if (composeMode) {
-    <div class="compose-backdrop" (click)="closeCompose()">
-      <section class="compose-sheet" role="dialog" aria-modal="true" aria-labelledby="compose-title" (click)="$event.stopPropagation()">
+    <div class="compose-backdrop" [class.group-compose-backdrop]="composeMode === 'group'" (click)="closeCompose()">
+      <section class="compose-sheet" [class.group-compose-sheet]="composeMode === 'group'" role="dialog" aria-modal="true" aria-labelledby="compose-title" (click)="$event.stopPropagation()">
         <div class="compose-heading">
           <h2 id="compose-title">
             {{ composeMode === 'menu' ? 'Start a conversation' : composeMode === 'direct' ? 'New message' : composeMode === 'group' ? 'Create group chat' : composeMode === 'community' ? 'Create a community' : composeMode === 'community-chat' ? 'Create a topic chat' : 'Join a community' }}
@@ -622,6 +632,29 @@
   }
 </ion-content>
 
+@if (pendingCommunityInvite; as inviteCommunity) {
+  <div class="compose-backdrop community-invite-backdrop" (click)="dismissCommunityInvite()">
+    <section class="compose-sheet community-invite-sheet" role="dialog" aria-modal="true" aria-labelledby="community-invite-title" (click)="$event.stopPropagation()">
+      <div class="compose-heading">
+        <h2 id="community-invite-title">Join this community?</h2>
+        <ion-button fill="clear" aria-label="Not now" (click)="dismissCommunityInvite()">Not now</ion-button>
+      </div>
+      <div class="community-invite-preview">
+        <span class="community-heading-icon"><ion-icon name="people-outline"></ion-icon></span>
+        <div>
+          <strong>{{ inviteCommunity.name }}</strong>
+          <p>{{ inviteCommunity.memberIds.length }} {{ inviteCommunity.memberIds.length === 1 ? 'member' : 'members' }}</p>
+        </div>
+      </div>
+      <p class="community-invite-message">Would you like to join this community and its topic chats?</p>
+      <div class="community-invite-actions">
+        <button type="button" class="community-invite-cancel" (click)="dismissCommunityInvite()">Not now</button>
+        <button type="button" class="community-invite-join" (click)="acceptCommunityInvite()">Join community</button>
+      </div>
+    </section>
+  </div>
+}
+
 @if (reactionDetailsMessage; as message) {
   <div class="reaction-modal-backdrop" role="presentation" (click)="closeReactionDetails()">
     <section class="reaction-modal" role="dialog" aria-modal="true" aria-labelledby="reaction-modal-title" (click)="$event.stopPropagation()">
@@ -719,6 +752,12 @@
 
 @if (activeConversation; as conversation) {
   <ion-footer #chatFooter class="chat-footer ion-no-border" [class.chat-settings-open]="showChatSettings || showGroupInfo" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" [class.emoji-picker-open]="showComposerEmojiPicker">
+    @if (!showChatSettings && !showGroupInfo && conversation.messages.length) {
+      <button type="button" class="scroll-to-bottom-button" [class.is-visible]="isScrollButtonVisible" [attr.aria-hidden]="!isScrollButtonVisible" [attr.tabindex]="isScrollButtonVisible ? 0 : -1" aria-label="Scroll to latest message" (click)="scrollToLatest()">
+        <ion-icon name="chevron-down-outline"></ion-icon>
+        @if (newMessagesWhileAway > 0) { <span class="scroll-unread-badge" aria-live="polite" aria-atomic="true">{{ newMessagesWhileAway > 9 ? '9+' : newMessagesWhileAway }}</span> }
+      </button>
+    }
     @if (isActiveConversationRequest) {
       <section class="request-decision-panel" aria-label="Message request decision">
         <p>If you accept, {{ conversationTitle(conversation) }} will be able to call you and may see information like your active status and when you’ve read messages.</p>

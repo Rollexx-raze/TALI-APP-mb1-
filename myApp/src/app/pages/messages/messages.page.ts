@@ -172,6 +172,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   communityChatNameDraft = '';
   communityInviteDraft = '';
   communityNotice = '';
+  pendingCommunityInvite: Community | null = null;
   activeConversationId: string | null = null;
   searchQuery = '';
   conversationSearch = '';
@@ -630,16 +631,60 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     const account = this.selectedAccount();
     if (!account) {
       this.communityNotice = 'Select an account before joining this community.';
+      this.clearCommunityInviteContext(inviteCode);
       return;
     }
-    const community = await this.messageService.joinCommunityByInvite(inviteCode, account.id);
+    const community = this.messageService.communities().find((item) => item.inviteCode === inviteCode);
+    this.activeConversationId = null;
+    this.composeMode = null;
     this.activeTab = 'community';
     if (!community) {
       this.communityNotice = 'This community invite link is invalid or could not be saved.';
       this.selectedCommunityId = null;
+      this.clearCommunityInviteContext(inviteCode);
       return;
     }
-    this.openCommunity(community);
+    this.selectedCommunityId = null;
+    this.communityNotice = '';
+    if (community.memberIds.includes(account.id)) {
+      this.openCommunity(community);
+      this.clearCommunityInviteContext(inviteCode);
+      return;
+    }
+    this.pendingCommunityInvite = community;
+  }
+
+  async acceptCommunityInvite() {
+    const community = this.pendingCommunityInvite;
+    const account = this.selectedAccount();
+    if (!community || !account) return;
+    const joinedCommunity = await this.messageService.joinCommunityByInvite(community.inviteCode, account.id);
+    if (!joinedCommunity) {
+      this.communityNotice = 'Could not join this community. Please try again.';
+      this.pendingCommunityInvite = null;
+      this.clearCommunityInviteContext(community.inviteCode);
+      return;
+    }
+    this.pendingCommunityInvite = null;
+    this.openCommunity(joinedCommunity);
+    this.clearCommunityInviteContext(community.inviteCode);
+  }
+
+  dismissCommunityInvite() {
+    const inviteCode = this.pendingCommunityInvite?.inviteCode;
+    this.pendingCommunityInvite = null;
+    this.clearCommunityInviteContext(inviteCode);
+  }
+
+  private clearCommunityInviteContext(inviteCode?: string) {
+    if (inviteCode) this.handledCommunityInvites.delete(inviteCode);
+    if (!this.route.snapshot.queryParamMap.has('communityInvite')) return;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { communityInvite: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   private communityCodeFromInput(value: string) {

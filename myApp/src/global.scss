@@ -328,6 +328,23 @@ app-messages .community-space {
 
 app-messages .community-space.community-detail .community-space-heading { padding: 0; }
 
+app-messages .community-invite-sheet { gap: 12px; }
+app-messages .community-invite-preview { display: flex; min-width: 0; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+app-messages .community-invite-preview .community-heading-icon { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border-radius: 14px; background: color-mix(in srgb, var(--primary) 14%, transparent); color: var(--primary); }
+app-messages .community-invite-preview .community-heading-icon ion-icon { font-size: 24px; }
+app-messages .community-invite-preview > div { min-width: 0; }
+app-messages .community-invite-preview strong { display: block; overflow: hidden; color: var(--text); font-size: 16px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+app-messages .community-invite-preview p,
+app-messages .community-invite-message { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.4; }
+app-messages .community-invite-actions { display: flex; gap: 8px; }
+app-messages .community-invite-actions button { min-width: 0; min-height: 44px; flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+app-messages .community-invite-actions .community-invite-join { border-color: var(--primary); background: var(--primary); color: var(--on-primary, #fff); }
+app-messages .community-invite-actions button:hover,
+app-messages .community-invite-actions button:active { background: var(--surface-2); }
+app-messages .community-invite-actions .community-invite-join:hover,
+app-messages .community-invite-actions .community-invite-join:active { background: var(--primary-hover); }
+app-messages .community-invite-actions button:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
 app-messages .community-tab-notice {
   display: flex;
   box-sizing: border-box;
@@ -1818,11 +1835,11 @@ ion-content.page-content.chat-mode .chat-thread { padding-bottom:var(--chat-foot
 .wave { outline:none; box-shadow:none; }
 .wave:focus-visible { outline:2px solid #fff; outline-offset:3px; }
 
-ion-content.page-content.chat-mode .scroll-to-bottom-button {
+app-messages .chat-footer .scroll-to-bottom-button {
   position:absolute!important;
   z-index:50;
-  right:max(16px,calc((100vw - 560px)/2 + 16px))!important;
-  bottom:calc(var(--chat-footer-height,128px) + 12px)!important;
+  right:max(16px,calc((100vw - var(--chat-max-width,480px))/2 + 16px))!important;
+  bottom:calc(100% + 8px)!important;
   display:grid;
   width:40px!important;
   height:40px!important;
@@ -1839,7 +1856,7 @@ ion-content.page-content.chat-mode .scroll-to-bottom-button {
   transform:translateY(8px) scale(.9);
   transition:opacity 180ms ease,transform 180ms ease,visibility 0s linear 180ms;
 }
-ion-content.page-content.chat-mode .scroll-to-bottom-button.is-visible {
+app-messages .chat-footer .scroll-to-bottom-button.is-visible {
   opacity:1;
   visibility:visible;
   pointer-events:auto;
@@ -1864,11 +1881,8 @@ ion-content.page-content.chat-mode .scroll-to-bottom-button.is-visible {
   font-weight:700;
   line-height:1;
 }
-@media(max-width:600px) {
-  ion-content.page-content.chat-mode .scroll-to-bottom-button { right:16px!important; }
-}
 @media(prefers-reduced-motion:reduce) {
-  ion-content.page-content.chat-mode .scroll-to-bottom-button { transition:none!important; transform:none; }
+  app-messages .chat-footer .scroll-to-bottom-button { transition:none!important; transform:none; }
 }
 /* Reaction chips sit outside the clipped bubble, anchored to the per-message wrapper. */
 .bubble-wrap {
@@ -1950,3 +1964,285 @@ ion-content.page-content.chat-mode .scroll-to-bottom-button.is-visible {
 .photo-message-row .message-action-menu { top:50%; right:auto; left:calc(100% + 8px); transform:translateY(-50%); }
 .message-row.own-message .photo-message-row .message-action-menu { right:calc(100% + 8px); left:auto; }
 .message-bubble-row > .bubble-wrap:has(.bubble.sent) { margin-left:auto!important; }
+
+app-messages .group-compose-sheet {
+  display: flex;
+  box-sizing: border-box;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--border) transparent;
+  scrollbar-width: thin;
+}
+
+app-messages .group-compose-backdrop {
+  z-index: 1300;
+  align-items: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+}
+
+ion-app:has(.group-compose-backdrop) app-bottom-nav { display: none !important; }
+
+@media (max-width: 600px) {
+  app-messages .group-compose-backdrop {
+    align-items: flex-start;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  }
+
+  app-messages .group-compose-sheet {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    flex: 0 0 auto;
+    margin-block: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+app-messages .group-compose-sheet .compose-heading,
+app-messages .group-compose-sheet .group-create-intro,
+app-messages .group-compose-sheet .group-name-label,
+app-messages .group-compose-sheet .group-name-input,
+app-messages .group-compose-sheet .group-member-search,
+app-messages .group-compose-sheet .group-member-requirement,
+app-messages .group-compose-sheet .create-group-button {
+  flex-shrink: 0;
+}
+
+app-messages .group-compose-sheet .selected-members {
+  max-height: 96px;
+  flex: 0 1 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--border) transparent;
+  scrollbar-width: thin;
+}
+
+app-messages .group-compose-sheet .account-picker {
+  min-height: 0;
+  max-height: none;
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--border) transparent;
+  scrollbar-width: thin;
+}
+
+app-messages .group-compose-sheet .account-picker::-webkit-scrollbar,
+app-messages .group-compose-sheet .selected-members::-webkit-scrollbar,
+app-messages .group-compose-sheet::-webkit-scrollbar { width: 6px; }
+app-messages .group-compose-sheet .account-picker::-webkit-scrollbar-track,
+app-messages .group-compose-sheet .selected-members::-webkit-scrollbar-track,
+app-messages .group-compose-sheet::-webkit-scrollbar-track { background: transparent; }
+app-messages .group-compose-sheet .account-picker::-webkit-scrollbar-thumb,
+app-messages .group-compose-sheet .selected-members::-webkit-scrollbar-thumb,
+app-messages .group-compose-sheet::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--border); }
+
+app-messages .group-compose-sheet .group-member-requirement {
+  margin: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+app-messages .group-compose-sheet .create-group-button { margin: 0; }
+
+app-messages .page-content.chat-mode .message-content .message-bubble-row:has(> .message-action-controls) {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+}
+
+app-messages .page-content.chat-mode .message-row.own-message .message-bubble-row:has(> .message-action-controls) {
+  flex-direction: row-reverse;
+  margin-left: auto;
+}
+
+app-messages .page-content.chat-mode .message-row:not(.own-message) .message-content:has(.message-action-controls) {
+  max-width: calc(75% - 2px);
+}
+
+app-messages .page-content.chat-mode .message-bubble-row:has(> .message-action-controls) > .bubble-wrap {
+  min-width: 0;
+  max-width: calc(100% - 38px);
+  flex: 0 1 auto;
+}
+
+app-messages .page-content.chat-mode .message-content .message-action-controls {
+  position: relative !important;
+  inset: auto !important;
+  z-index: 81;
+  flex: 0 0 30px;
+  align-self: center;
+  transform: none !important;
+}
+
+app-messages .page-content.chat-mode .message-bubble-row .message-action-controls .message-action-menu,
+app-messages .page-content.chat-mode .voice-message-row .message-action-controls .message-action-menu {
+  top: 50%;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(220px, calc(100vw - 32px));
+  transform: translateY(-50%);
+}
+
+app-messages .page-content.chat-mode .message-row:not(.own-message) .message-bubble-row .message-action-menu,
+app-messages .page-content.chat-mode .message-row:not(.own-message) .voice-message-row .message-action-menu {
+  right: auto;
+  left: calc(100% + 8px);
+}
+
+app-messages .page-content.chat-mode .message-row.own-message .message-bubble-row .message-action-menu,
+app-messages .page-content.chat-mode .message-row.own-message .voice-message-row .message-action-menu {
+  right: calc(100% + 8px);
+  left: auto;
+}
+
+app-messages .page-content.chat-mode .voice-message-row {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+}
+
+app-messages .page-content.chat-mode .message-content:has(.voice-message-row) {
+  box-sizing: border-box;
+  width: 75%;
+  min-width: 0;
+  max-width: 75%;
+  flex: 0 1 75%;
+}
+
+app-messages .page-content.chat-mode .message-row:not(.own-message) .message-content:has(.voice-message-row) {
+  width: auto;
+  max-width: calc(75% - 40px);
+  flex: 1 1 0;
+}
+
+app-messages .page-content.chat-mode .message-row:not(.own-message) .voice-message-row {
+  flex-direction: row;
+}
+
+app-messages .page-content.chat-mode .message-row.own-message .voice-message-row {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+app-messages .page-content.chat-mode .voice-message-row app-voice-message-bubble {
+  box-sizing: border-box;
+  width: calc(100% - 38px);
+  min-width: 0;
+  max-width: calc(100% - 38px);
+  flex: 1 1 0;
+}
+
+app-messages .page-content.chat-mode .voice-message-row app-voice-message-bubble .bubble-wrap {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+app-messages .page-content.chat-mode .voice-message-row app-voice-message-bubble .bubble {
+  box-sizing: border-box;
+  width: min(350px, 100%);
+  min-width: min(220px, 100%);
+  max-width: 100%;
+}
+
+app-messages .page-content.chat-mode .voice-message-row app-voice-message-bubble .status {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+app-messages .page-content.chat-mode .message-row:not(.own-message) .voice-message-row app-voice-message-bubble .status {
+  text-align: left;
+}
+
+app-messages .page-content.chat-mode .voice-message-row > .message-action-controls {
+  position: static !important;
+  inset: auto !important;
+  z-index: 81;
+  flex: 0 0 30px;
+  align-self: center;
+  margin-top: 0;
+  transform: none !important;
+}
+
+app-messages .page-content.chat-mode .message-content:has(.voice-message-row) .voice-message-row .message-action-controls .message-action-menu {
+  position: absolute;
+  top: 50%;
+  right: auto;
+  left: auto;
+  box-sizing: border-box;
+  width: min(220px, calc(100% - 16px));
+  max-width: calc(100% - 16px);
+  transform: translateY(-50%);
+}
+
+app-messages .page-content.chat-mode .message-row:not(.own-message) .message-content:has(.voice-message-row) .voice-message-row .message-action-controls .message-action-menu {
+  left: 8px;
+}
+
+app-messages .page-content.chat-mode .message-row.own-message .message-content:has(.voice-message-row) .voice-message-row .message-action-controls .message-action-menu {
+  right: 8px;
+}
+
+app-messages .page-content.chat-mode .message-content:has(.message-action-controls) {
+  position: relative !important;
+  box-sizing: border-box;
+  width: 100% !important;
+  min-width: 0;
+  max-width: 100% !important;
+  flex: 1 1 auto;
+}
+
+app-messages .page-content.chat-mode .message-content .message-action-controls {
+  position: static !important;
+}
+
+app-messages .page-content.chat-mode .message-content .message-action-menu {
+  position: absolute !important;
+  top: 50%;
+  right: auto !important;
+  bottom: auto !important;
+  left: 0;
+  box-sizing: border-box;
+  width: min(220px, 100%);
+  min-width: min(156px, 100%);
+  max-width: 100%;
+  transform: translateY(-50%);
+}
+
+app-messages .page-content.chat-mode .message-row.own-message .message-content .message-action-menu {
+  right: 0 !important;
+  left: auto;
+}
+
+app-messages .page-content.chat-mode .message-row.own-message .message-content:has(.photo-message-row) .photo-message-action-controls .message-action-menu {
+  position: absolute !important;
+  top: 50% !important;
+  right: 0 !important;
+  bottom: auto !important;
+  left: auto !important;
+  box-sizing: border-box !important;
+  width: min(220px, 100%) !important;
+  min-width: min(156px, 100%) !important;
+  max-width: 100% !important;
+  transform: translateY(-50%) !important;
+}
