@@ -215,6 +215,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   messageActionsId: string | null = null;
   revealedMessageActionsId: string | null = null;
   messageActionsMenuPosition: { left: number; top: number } | null = null;
+  floatingMessageActions: ChatMessage | null = null;
   photoActionsMessage: ChatMessage | null = null;
   pendingDeleteMessage: ChatMessage | null = null;
   imageLoadStates: Record<string, 'loading' | 'loaded' | 'error'> = {};
@@ -984,9 +985,15 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
       this.messageActionsId = null;
       this.messageActionsMenuPosition = null;
     }
+    if (this.floatingMessageActions && !target.closest('.message-action-controls, .floating-message-action-menu')) {
+      this.floatingMessageActions = null;
+      this.messageActionsId = null;
+      this.messageActionsMenuPosition = null;
+    }
     if (!target.closest('.message-action-controls, .message-action-menu') && this.messageActionsId !== null) {
       this.messageActionsId = null;
       this.messageActionsMenuPosition = null;
+      this.floatingMessageActions = null;
     }
   }
 
@@ -995,6 +1002,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.showComposerEmojiPicker = false;
     this.messageActionsId = null;
     this.messageActionsMenuPosition = null;
+    this.floatingMessageActions = null;
     this.photoActionsMessage = null;
   }
 
@@ -1348,6 +1356,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
       this.revealActionsTimer = null;
     }, 1800);
     this.messageActionsId = message.id;
+    this.floatingMessageActions = message;
     const element = target instanceof HTMLElement
       ? target
       : document.getElementById(`message-${message.id}`);
@@ -1360,6 +1369,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     if (this.messageActionsId === message.id) {
       this.messageActionsId = null;
       this.messageActionsMenuPosition = null;
+      this.floatingMessageActions = null;
       return;
     }
     const button = event.currentTarget;
@@ -1373,11 +1383,13 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
       return;
     }
     this.openMessageActions(message, event.currentTarget);
+    this.floatingMessageActions = null;
     this.photoActionsMessage = message;
   }
 
   closePhotoMessageActions() {
     this.photoActionsMessage = null;
+    this.floatingMessageActions = null;
     this.messageActionsId = null;
     this.messageActionsMenuPosition = null;
   }
@@ -1407,6 +1419,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   openReactionPicker(message: ChatMessage) {
     this.messageActionsId = null;
     this.messageActionsMenuPosition = null;
+    this.floatingMessageActions = null;
     this.reactionPickerMessageId = message.id;
     this.reactionPickerExpanded = false;
     this.reactionPickerForMedia = false;
@@ -1516,6 +1529,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   async copyMessage(message: ChatMessage) {
     this.messageActionsId = null;
     this.messageActionsMenuPosition = null;
+    this.floatingMessageActions = null;
     const content = message.body || (message.attachments ?? []).map((item) => item.name).join('\n');
     try {
       await navigator.clipboard.writeText(content);
@@ -1528,6 +1542,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   requestMessageDelete(message: ChatMessage) {
     if (message.senderId !== this.selectedAccount()?.id) return;
     this.messageActionsId = null;
+    this.floatingMessageActions = null;
     this.pendingDeleteMessage = message;
   }
 
@@ -1591,6 +1606,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     if (!conversation) return;
     this.messageActionsId = null;
     this.messageActionsMenuPosition = null;
+    this.floatingMessageActions = null;
     if (action === 'delete') {
       this.requestMessageDelete(message);
     } else if (action === 'reply') {

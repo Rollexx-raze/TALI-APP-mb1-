@@ -108,15 +108,6 @@
                   <button type="button" class="message-actions-toggle" [class.is-open]="messageActionsId === message.id" [attr.aria-label]="'Message options'" [attr.aria-expanded]="messageActionsId === message.id" (click)="toggleMessageActions(message, $event)">
                     <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
                   </button>
-                  @if (messageActionsId === message.id) {
-                    <div class="message-action-menu" role="menu" aria-label="Message actions" [style.--message-menu-left]="messageActionsMenuPosition ? messageActionsMenuPosition.left + 'px' : null" [style.--message-menu-top]="messageActionsMenuPosition ? messageActionsMenuPosition.top + 'px' : null">
-                      <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
-                      <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
-                      <button type="button" role="menuitem" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
-                      <button type="button" role="menuitem" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
-                      @if (message.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
-                    </div>
-                  }
                 </div>
               }
             </div>
@@ -169,15 +160,6 @@
                       <button type="button" class="message-actions-toggle" [class.is-open]="messageActionsId === message.id" aria-label="Message options" [attr.aria-expanded]="messageActionsId === message.id" (click)="toggleMessageActions(message, $event)">
                         <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
                       </button>
-                      @if (messageActionsId === message.id) {
-                        <div class="message-action-menu" role="menu" aria-label="Message actions">
-                          <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
-                          <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
-                          <button type="button" role="menuitem" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
-                          <button type="button" role="menuitem" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
-                          @if (message.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
-                        </div>
-                      }
                     </div>
                   </div>
                 }
@@ -829,6 +811,18 @@
     }
   </ion-footer>
 } @else {
+}
+@if (floatingMessageActions; as actionMessage) {
+  <div class="floating-message-action-menu message-action-menu" role="menu" aria-label="Message actions"
+    [style.left.px]="messageActionsMenuPosition?.left ?? 12"
+    [style.top.px]="messageActionsMenuPosition?.top ?? 12"
+    (click)="$event.stopPropagation()">
+    <button type="button" role="menuitem" (click)="messageAction(actionMessage, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
+    <button type="button" role="menuitem" (click)="messageAction(actionMessage, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
+    <button type="button" role="menuitem" (click)="copyMessage(actionMessage)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
+    <button type="button" role="menuitem" (click)="openReactionPicker(actionMessage)"><ion-icon name="happy-outline"></ion-icon> React</button>
+    @if (actionMessage.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(actionMessage)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
+  </div>
 }
 @if (photoActionsMessage; as photoMessage) {
   <div class="photo-message-action-menu message-action-menu" role="menu" aria-label="Photo message actions"

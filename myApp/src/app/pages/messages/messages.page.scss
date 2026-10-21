@@ -773,6 +773,19 @@
   transform: none !important;
   animation: photo-action-menu-in 120ms ease-out both;
 }
+.floating-message-action-menu {
+  position: fixed !important;
+  z-index: 10000 !important;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  width: min(184px, calc(100vw - 24px));
+  min-width: min(156px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  transform: none !important;
+  animation: photo-action-menu-in 120ms ease-out both;
+}
 @keyframes photo-action-menu-in { from { opacity: 0; transform: translateY(4px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes message-menu-in { from { opacity: 0; transform: translateY(calc(-50% + 4px)) scale(.98); } to { opacity: 1; transform: translateY(-50%) scale(1); } }
 .compose-backdrop { position: fixed; z-index: 30; inset: 0; display: flex; align-items: center; justify-content: center; padding: var(--s4); background: var(--bg); }
@@ -2674,10 +2687,14 @@
 .page-content.chat-mode .message-row:not(.own-message) .message-content > .message-delivery-meta.text-only-delivery-meta {
   align-self: flex-start !important;
   justify-content: flex-start !important;
+  margin-right: auto !important;
+  margin-left: 0 !important;
 }
 .page-content.chat-mode .message-row.own-message .message-content > .message-delivery-meta.text-only-delivery-meta {
   align-self: flex-end !important;
   justify-content: flex-end !important;
+  margin-right: 0 !important;
+  margin-left: auto !important;
 }
 @media (max-width: 600px) {
   .page-content.chat-mode .photo-message-action-controls .message-action-menu {
@@ -2709,6 +2726,9 @@
   pointer-events: none !important;
 }
 .page-content.chat-mode .message-row:hover .message-action-controls .message-actions-toggle,
+.page-content.chat-mode .message-row:has(.message-bubble:hover) .message-action-controls .message-actions-toggle,
+.page-content.chat-mode .message-row:has(.message-link:hover) .message-action-controls .message-actions-toggle,
+.page-content.chat-mode .message-row:has(.community-invite-link:hover) .message-action-controls .message-actions-toggle,
 .page-content.chat-mode .message-action-controls:focus-within .message-actions-toggle,
 .page-content.chat-mode .message-row.message-actions-revealed .message-action-controls .message-actions-toggle {
   opacity: 1 !important;
