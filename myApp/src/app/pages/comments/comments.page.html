@@ -1,75 +1,332 @@
-<ion-content class="comments-modal-content" [fullscreen]="true">
+<div class="comments-view">
+  <header class="comments-header">
+    <h1>Post</h1>
+
+    <button
+      type="button"
+      class="close-button"
+      aria-label="Close comments"
+      (click)="close()"
+    >
+      <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+    </button>
+  </header>
+
   @if (post; as currentPost) {
-    <div class="comments-dialog">
-      <header class="comments-page-header"><h1>Post</h1><button type="button" aria-label="Close post" (click)="close()"><ion-icon name="close-outline" aria-hidden="true"></ion-icon></button></header>
-      <article class="post-detail-author">
-        <a class="comment-avatar-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()" [attr.aria-label]="'View ' + currentPost.authorName + ' profile'">
-          <div class="comment-avatar">@if (authorImage; as image) { <img [src]="image" alt=""> } @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }</div>
-        </a>
-        <div class="post-detail-author-copy">
-          <a class="comment-profile-link" [routerLink]="currentPost.authorId === null ? null : ['/profile', currentPost.authorId]" (click)="close()"><strong>{{ currentPost.authorName }}</strong><span>{{ currentPost.authorUsername }}</span></a>
-          <time>{{ currentPost.createdAt | date:'short' }}</time>
+    <div class="comments-body">
+      <article class="post-detail">
+        <div class="post-author">
+          <a
+            class="avatar"
+            [routerLink]="
+              currentPost.authorId === null
+                ? null
+                : ['/profile', currentPost.authorId]
+            "
+            (click)="close()"
+            [attr.aria-label]="'View ' + currentPost.authorName + ' profile'"
+          >
+            @if (authorImage; as image) {
+              <img [src]="image" alt="" />
+            } @else {
+              <ion-icon
+                name="person-circle-outline"
+                aria-hidden="true"
+              ></ion-icon>
+            }
+          </a>
+
+          <div class="post-identity">
+            <a
+              [routerLink]="
+                currentPost.authorId === null
+                  ? null
+                  : ['/profile', currentPost.authorId]
+              "
+              (click)="close()"
+            >
+              <strong>{{ currentPost.authorName }}</strong>
+            </a>
+
+            <span>
+              {{ currentPost.authorUsername }}
+              · {{ timeAgo(currentPost.createdAt) }}
+            </span>
+          </div>
         </div>
-        @if (currentPost.body) { <p class="post-detail-caption">{{ currentPost.body }}</p> }
+
+        @if (currentPost.body) {
+          <p class="post-caption">{{ currentPost.body }}</p>
+        }
+
+        @if (selectedMedia; as media) {
+          <div class="post-media">
+            @if (media.type.startsWith('image/')) {
+              <img [src]="media.dataUrl" [alt]="media.name" />
+            } @else {
+              <video controls playsinline [attr.aria-label]="media.name">
+                <source [src]="media.dataUrl" [type]="media.type" />
+              </video>
+            }
+
+            @if (mediaAttachments.length > 1) {
+              <button
+                class="media-arrow previous"
+                type="button"
+                aria-label="Previous attachment"
+                (click)="moveMedia(-1)"
+              >
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </button>
+
+              <button
+                class="media-arrow next"
+                type="button"
+                aria-label="Next attachment"
+                (click)="moveMedia(1)"
+              >
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+
+              <span class="media-counter">
+                {{ mediaNumber }} / {{ mediaAttachments.length }}
+              </span>
+            }
+          </div>
+        }
+
+        <div class="post-reactions" aria-label="Post reactions">
+          <button
+            type="button"
+            [class.is-active]="isLiked"
+            [attr.aria-pressed]="isLiked"
+            [attr.aria-label]="isLiked ? 'Unlike post' : 'Like post'"
+            (click)="toggleLike()"
+          >
+            <ion-icon
+              [name]="isLiked ? 'heart' : 'heart-outline'"
+              aria-hidden="true"
+            ></ion-icon>
+            @if (!hideLikeCounts) {
+              <span>{{ currentPost.likes.length }}</span>
+            }
+          </button>
+
+          <span class="reaction-count">
+            <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
+            <span>{{ visibleComments.length }}</span>
+          </span>
+
+          @if (sharingEnabled || isReposted) {
+            <button
+              type="button"
+              [class.is-active]="isReposted"
+              [attr.aria-pressed]="isReposted"
+              aria-label="Repost post"
+              (click)="toggleRepost()"
+            >
+              <ion-icon name="repeat-outline" aria-hidden="true"></ion-icon>
+              @if (!hideShareCounts) {
+                <span>{{ currentPost.reposts.length }}</span>
+              }
+            </button>
+          }
+
+          @if (sharingEnabled) {
+            <button
+              type="button"
+              aria-label="Share post"
+              (click)="sharePost()"
+            >
+              <ion-icon name="share-outline" aria-hidden="true"></ion-icon>
+            </button>
+          }
+        </div>
       </article>
-      @if (mediaAttachments.length) {
-        <section class="comments-media" aria-label="Post media">
-          @if (selectedMedia; as media) {
-          @if (media.type.startsWith('image/')) {
-            <img class="comments-media-image" [src]="media.dataUrl" [alt]="media.name" />
-          } @else {
-            <video class="comments-media-image" controls playsinline [attr.aria-label]="media.name"><source [src]="media.dataUrl" [type]="media.type" /></video>
-          }
-          @if (mediaAttachments.length > 1) {
-            <button type="button" class="media-arrow media-previous" aria-label="Previous image" (click)="moveMedia(-1)"><ion-icon name="chevron-back-outline"></ion-icon></button>
-            <button type="button" class="media-arrow media-next" aria-label="Next image" (click)="moveMedia(1)"><ion-icon name="chevron-forward-outline"></ion-icon></button>
-            <span class="media-counter">{{ selectedMediaIndex + 1 }} / {{ mediaAttachments.length }}</span>
-          }
-          }
-        </section>
-      }
 
-      <div class="post-detail-actions" aria-label="Post actions">
-        <button type="button" [class.is-active]="isLiked" [attr.aria-pressed]="isLiked" [attr.aria-label]="isLiked ? 'Unlike post' : 'Like post'" (click)="toggleLike()"><ion-icon [name]="isLiked ? 'heart' : 'heart-outline'" aria-hidden="true"></ion-icon>@if (!hideLikeCounts) { <span>{{ currentPost.likes.length }}</span> }</button>
-        <span class="post-action-count"><ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon><span>{{ currentPost.comments.length }}</span></span>
-        <button type="button" [class.is-active]="isReposted" [attr.aria-pressed]="isReposted" aria-label="Repost" (click)="toggleRepost()"><ion-icon name="repeat-outline" aria-hidden="true"></ion-icon>@if (!hideShareCounts) { <span>{{ currentPost.reposts.length }}</span> }</button>
-        <button type="button" aria-label="Share post" (click)="sharePost()"><ion-icon name="share-outline" aria-hidden="true"></ion-icon></button>
-      </div>
-      @if (actionMessage) { <p class="post-action-message" role="status">{{ actionMessage }}</p> }
-      <section class="comments-panel" aria-label="Comments">
-        <h2 class="comments-heading"><span>Comments</span><small>{{ currentPost.comments.length }} comments</small></h2>
-        <div class="comments-scroll">
-          @if (!visibleComments.length) {
-            <p class="comments-empty">No comments yet. Start the conversation.</p>
-          }
-          @for (comment of visibleComments; track comment.id) {
-            <article class="comment-entry">
-              <a class="comment-avatar-link" [routerLink]="['/profile', comment.authorId]" (click)="close()" [attr.aria-label]="'View ' + comment.authorName + ' profile'">
-                <div class="comment-avatar">
-                @if (commentAuthorImage(comment.authorId); as image) { <img [src]="image" alt="" /> }
-                @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
-                </div>
-              </a>
-              <div class="comment-copy">
-                <a class="comment-profile-link" [routerLink]="['/profile', comment.authorId]" (click)="close()">
-                  <strong>{{ comment.authorName }}</strong><span>{{ comment.authorUsername }}</span>
-                </a>
-                <p>{{ comment.body }}</p><time>{{ comment.createdAt | date:'short' }}</time>
-              </div>
-            </article>
-          }
+      <section class="comments-section" aria-label="Comments">
+        <div class="comments-heading">
+          <h2>Comments</h2>
+          <span>
+            {{ visibleComments.length }}
+            {{ visibleComments.length === 1 ? 'comment' : 'comments' }}
+          </span>
         </div>
 
-        @if (commentsEnabled) {
-          <form class="comment-composer" (ngSubmit)="submitComment()">
-            <ion-textarea name="comment" [(ngModel)]="commentDraft" (ngModelChange)="saveDraft()" maxlength="500" rows="1" [autoGrow]="true" placeholder="Add a comment..." aria-label="Add a comment"></ion-textarea>
-            <ion-button type="submit" fill="clear" [disabled]="!commentDraft.trim()">Post</ion-button>
-          </form>
-        } @else { <p class="comments-empty">Comments are turned off for this account.</p> }
-        @if (commentError) { <p class="comment-error" role="alert">{{ commentError }}</p> }
+        @for (row of commentRows; track row.comment.id) {
+          <article
+            class="comment-entry"
+            [class.is-reply]="row.depth > 0"
+            [style.--reply-depth]="row.depth"
+            [attr.id]="'comment-' + row.comment.id"
+          >
+            <a
+              class="avatar comment-avatar"
+              [routerLink]="['/profile', row.comment.authorId]"
+              (click)="close()"
+              [attr.aria-label]="'View ' + row.comment.authorName + ' profile'"
+            >
+              @if (imageFor(row.comment.authorId); as image) {
+                <img [src]="image" alt="" />
+              } @else {
+                <ion-icon
+                  name="person-circle-outline"
+                  aria-hidden="true"
+                ></ion-icon>
+              }
+            </a>
+
+            <div class="comment-copy">
+              <div class="comment-topline">
+                <a
+                  class="comment-name"
+                  [routerLink]="['/profile', row.comment.authorId]"
+                  (click)="close()"
+                >
+                  {{ row.comment.authorName }}
+                </a>
+
+                <time [attr.title]="row.comment.createdAt | date:'medium'">
+                  {{ timeAgo(row.comment.createdAt) }}
+                </time>
+              </div>
+
+              <p>{{ row.comment.body }}</p>
+
+              <div class="comment-reactions" aria-label="Comment reactions">
+                <button
+                  type="button"
+                  [class.is-liked]="commentLiked(row.comment)"
+                  [attr.aria-pressed]="commentLiked(row.comment)"
+                  [attr.aria-label]="
+                    commentLiked(row.comment)
+                      ? 'Unlike comment'
+                      : 'Like comment'
+                  "
+                  (click)="likeComment(row.comment)"
+                >
+                  <ion-icon
+                    [name]="commentLiked(row.comment) ? 'heart' : 'heart-outline'"
+                    aria-hidden="true"
+                  ></ion-icon>
+                  @if (!hideLikeCounts) {
+                    <span>{{ row.comment.likes?.length ?? 0 }}</span>
+                  }
+                </button>
+
+                @if (commentsEnabled) {
+                  <button
+                    type="button"
+                    aria-label="Reply to comment"
+                    (click)="beginReply(row.comment)"
+                  >
+                    <ion-icon
+                      name="chatbubble-outline"
+                      aria-hidden="true"
+                    ></ion-icon>
+                    <span>Reply</span>
+                    @if (replyCount(row.comment)) {
+                      <span>{{ replyCount(row.comment) }}</span>
+                    }
+                  </button>
+                }
+
+                @if (sharingEnabled || commentReposted(row.comment)) {
+                  <button
+                    type="button"
+                    [class.is-active]="commentReposted(row.comment)"
+                    [attr.aria-pressed]="commentReposted(row.comment)"
+                    aria-label="Repost comment"
+                    (click)="repostComment(row.comment)"
+                  >
+                    <ion-icon name="repeat-outline" aria-hidden="true"></ion-icon>
+                    @if (!hideShareCounts) {
+                      <span>{{ row.comment.reposts?.length ?? 0 }}</span>
+                    }
+                  </button>
+                }
+
+                @if (sharingEnabled) {
+                  <button
+                    type="button"
+                    aria-label="Share comment"
+                    (click)="shareComment(row.comment)"
+                  >
+                    <ion-icon name="share-outline" aria-hidden="true"></ion-icon>
+                  </button>
+                }
+              </div>
+            </div>
+          </article>
+        } @empty {
+          <p class="empty-state">
+            No comments yet. Start the conversation.
+          </p>
+        }
       </section>
     </div>
+
+    @if (actionMessage) {
+      <p class="action-notice" role="status">{{ actionMessage }}</p>
+    }
+
+    @if (commentsEnabled) {
+      <footer class="composer-footer">
+        @if (replyTarget; as target) {
+          <div class="reply-notice">
+            <span>Replying to <strong>{{ target.authorName }}</strong></span>
+            <button
+              type="button"
+              aria-label="Cancel reply"
+              (click)="cancelReply()"
+            >
+              <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+        }
+
+        <form class="comment-composer" (ngSubmit)="submitComment()">
+          <div class="avatar composer-avatar" aria-hidden="true">
+            @if (selectedAccountImage; as image) {
+              <img [src]="image" alt="" />
+            } @else {
+              <ion-icon name="person-circle-outline"></ion-icon>
+            }
+          </div>
+
+          <textarea
+            #composerInput
+            class="comment-input"
+            [id]="'comment-draft-' + postId"
+            name="commentDraft"
+            [(ngModel)]="commentDraft"
+            (ngModelChange)="saveDraft()"
+            maxlength="500"
+            rows="1"
+            [placeholder]="replyTarget ? 'Write a reply…' : 'Add a comment…'"
+            aria-label="Write a comment"
+          ></textarea>
+
+          <button
+            class="post-button"
+            type="submit"
+            [disabled]="!commentDraft.trim()"
+          >
+            {{ replyTarget ? 'Reply' : 'Post' }}
+          </button>
+        </form>
+
+        @if (commentError) {
+          <p class="comment-error" role="alert">{{ commentError }}</p>
+        }
+      </footer>
+    } @else {
+      <p class="empty-state">Comments are turned off for this account.</p>
+    }
   } @else {
-    <div class="comments-unavailable"><p>This post is unavailable.</p><ion-button fill="clear" (click)="close()">Close</ion-button></div>
+    <div class="unavailable">
+      <p>{{ loading ? 'Loading post…' : 'This post is unavailable.' }}</p>
+      <button class="post-button" type="button" (click)="close()">Close</button>
+    </div>
   }
-</ion-content>
+</div>
