@@ -60,6 +60,11 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     return entry ? this.messageService.communityChatsForGroup(entry.groupId) : [];
   }
 
+  isJoinedCommunityChat(conversation: Conversation) {
+    const accountId = this.selectedAccount()?.id;
+    return accountId !== undefined && conversation.memberIds.includes(accountId);
+  }
+
   private async handleGroupCommunityEntry(groupId: string | null, action: string | null) {
     const requestId = ++this.groupEntryRequestId;
     if (!groupId || (action !== 'create' && action !== 'join')) {
@@ -201,6 +206,8 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   voicePlaybackProgress: Record<string, number> = {};
   readonly voiceWaveBars = Array.from({ length: 34 }, (_, index) => index);
   reactionPickerMessageId: string | null = null;
+  reactionPickerPosition: { left: number; top: number; width: number; height: number } | null = null;
+  private skipNextReactionOutsideClick = false;
   reactionPickerExpanded = false;
   reactionPickerForMedia = false;
   reactionDetailMessageId: string | null = null;
@@ -208,6 +215,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   messageActionsId: string | null = null;
   revealedMessageActionsId: string | null = null;
   messageActionsMenuPosition: { left: number; top: number } | null = null;
+  photoActionsMessage: ChatMessage | null = null;
   pendingDeleteMessage: ChatMessage | null = null;
   imageLoadStates: Record<string, 'loading' | 'loaded' | 'error'> = {};
   activeImageViewer: { message: ChatMessage; attachments: ChatAttachment[]; index: number } | null = null;
@@ -798,11 +806,6 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
       .toUpperCase();
   }
 
-  messageTimestampInBubble(message: ChatMessage) {
-    return !!message.body && !this.hasPhotoAttachment(message)
-      && !(message.attachments ?? []).some((attachment) => attachment.kind === 'voice');
-  }
-
   accountName(accountId: number) {
     return this.accounts().find((account) => account.id === accountId)?.name;
   }
@@ -972,6 +975,15 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     if (!target.closest('.composer-emoji-picker, .composer-emoji-control')) {
       this.showComposerEmojiPicker = false;
     }
+    if (this.reactionPickerMessageId) {
+      if (this.skipNextReactionOutsideClick) this.skipNextReactionOutsideClick = false;
+      else if (!target.closest('.message-emoji-picker')) this.closeMediaReactionPicker();
+    }
+    if (this.photoActionsMessage && !target.closest('.photo-message-action-controls, .photo-message-action-menu')) {
+      this.photoActionsMessage = null;
+      this.messageActionsId = null;
+      this.messageActionsMenuPosition = null;
+    }
     if (!target.closest('.message-action-controls, .message-action-menu') && this.messageActionsId !== null) {
       this.messageActionsId = null;
       this.messageActionsMenuPosition = null;
@@ -983,6 +995,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.showComposerEmojiPicker = false;
     this.messageActionsId = null;
     this.messageActionsMenuPosition = null;
+    this.photoActionsMessage = null;
   }
 
   fileAttachmentIcon(filename: string) {
@@ -1247,6 +1260,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.reactionPickerMessageId = null;
     this.reactionPickerExpanded = false;
     this.reactionPickerForMedia = false;
+    this.reactionPickerPosition = null;
   }
 
   isMyReaction(message: ChatMessage, emoji: string) {
@@ -1313,6 +1327,15 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     }, 450);
   }
 
+  revealMessageActions(message: ChatMessage) {
+    this.revealedMessageActionsId = message.id;
+    if (this.revealActionsTimer) clearTimeout(this.revealActionsTimer);
+    this.revealActionsTimer = setTimeout(() => {
+      this.revealedMessageActionsId = null;
+      this.revealActionsTimer = null;
+    }, 1800);
+  }
+
   openMessageActions(message: ChatMessage, target?: EventTarget | null) {
     this.clearReactionPress();
     this.reactionPickerMessageId = null;
@@ -1333,6 +1356,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
 
   toggleMessageActions(message: ChatMessage, event: Event) {
     event.stopPropagation();
+    this.photoActionsMessage = null;
     if (this.messageActionsId === message.id) {
       this.messageActionsId = null;
       this.messageActionsMenuPosition = null;
@@ -1342,6 +1366,22 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.openMessageActions(message, button);
   }
 
+  togglePhotoMessageActions(message: ChatMessage, event: Event) {
+    event.stopPropagation();
+    if (this.photoActionsMessage?.id === message.id) {
+      this.closePhotoMessageActions();
+      return;
+    }
+    this.openMessageActions(message, event.currentTarget);
+    this.photoActionsMessage = message;
+  }
+
+  closePhotoMessageActions() {
+    this.photoActionsMessage = null;
+    this.messageActionsId = null;
+    this.messageActionsMenuPosition = null;
+  }
+
   private positionMessageActionsMenu(message: ChatMessage, element: HTMLElement | null) {
     const bounds = element?.getBoundingClientRect();
     if (!bounds) {
@@ -1349,7 +1389,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
       return;
     }
     const menuWidth = Math.min(184, window.innerWidth - 24);
-    const menuHeight = message.senderId === this.selectedAccount()?.id ? 184 : 140;
+    const menuHeight = message.senderId === this.selectedAccount()?.id ? 220 : 180;
     const rightPosition = bounds.right + 8;
     const leftPosition = bounds.left - menuWidth - 8;
     const left = rightPosition + menuWidth <= window.innerWidth - 12
@@ -1370,6 +1410,34 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.reactionPickerMessageId = message.id;
     this.reactionPickerExpanded = false;
     this.reactionPickerForMedia = false;
+    this.reactionPickerPosition = null;
+    this.skipNextReactionOutsideClick = true;
+    setTimeout(() => this.skipNextReactionOutsideClick = false, 0);
+    if (window.innerWidth <= 480) requestAnimationFrame(() => this.positionMobileReactionPicker(message));
+  }
+
+  private positionMobileReactionPicker(message: ChatMessage) {
+    if (this.reactionPickerMessageId !== message.id || window.innerWidth > 480) return;
+    const row = document.getElementById(`message-${message.id}`);
+    const bubble = row?.querySelector<HTMLElement>('.message-bubble, .image-message-bubble, app-voice-message-bubble');
+    const composer = document.querySelector<HTMLElement>('.chat-footer .chat-composer');
+    if (!bubble || !composer) return;
+
+    const bubbleRect = bubble.getBoundingClientRect();
+    const composerTop = composer.getBoundingClientRect().top;
+    const width = Math.min(window.innerWidth - 24, 360);
+    const maxHeight = Math.min(window.innerHeight * 0.4, 320);
+    const safeTop = Math.max(8, document.querySelector('.page-header')?.getBoundingClientRect().bottom ?? 8);
+    const safeBottom = Math.min(window.innerHeight - 8, composerTop - 8);
+    const aboveSpace = Math.max(0, bubbleRect.top - safeTop - 8);
+    const belowSpace = Math.max(0, safeBottom - bubbleRect.bottom - 8);
+    const openBelow = belowSpace >= maxHeight || (aboveSpace < maxHeight && belowSpace >= aboveSpace);
+    const height = Math.min(maxHeight, openBelow ? belowSpace : aboveSpace);
+    const top = openBelow ? bubbleRect.bottom + 8 : bubbleRect.top - height - 8;
+    const ownMessage = message.senderId === this.selectedAccount()?.id;
+    const preferredLeft = ownMessage ? bubbleRect.right - width : bubbleRect.left;
+    const left = Math.max(12, Math.min(preferredLeft, window.innerWidth - width - 12));
+    this.reactionPickerPosition = { left, top, width, height };
   }
 
   openMediaReactionPicker(message: ChatMessage) {
@@ -1389,6 +1457,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.reactionPickerMessageId = null;
     this.reactionPickerExpanded = false;
     this.reactionPickerForMedia = false;
+    this.reactionPickerPosition = null;
   }
 
   handleMediaTap(message: ChatMessage, attachment: ChatAttachment, event: Event) {

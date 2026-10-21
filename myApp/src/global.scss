@@ -1749,6 +1749,22 @@ html.app-reduce-motion *::after {
 .composer-emoji-grid button { min-width:0; min-height:34px; border:0; border-radius:6px; background:transparent; font-size:21px; cursor:pointer; }
 .composer-emoji-grid button:hover { background:var(--surface-2); }
 .composer-emoji-empty { grid-column:1/-1; padding:16px; color:var(--text-muted); text-align:center; }
+@media (max-width: 480px) {
+  .chat-footer .composer-emoji-picker {
+    right: auto;
+    left: 50%;
+    box-sizing: border-box;
+    width: min(340px, calc(100vw - 16px));
+    height: min(320px, 45dvh);
+    max-height: 45dvh;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    overflow: hidden;
+    transform: translateX(-50%);
+  }
+  .chat-footer .composer-emoji-picker > input,
+  .chat-footer .composer-emoji-picker .composer-emoji-categories { flex: 0 0 auto; }
+  .chat-footer .composer-emoji-picker .composer-emoji-grid { min-height: 0; overflow-y: auto; }
+}
 ion-content.page-content.chat-mode .chat-thread { padding-bottom:var(--chat-footer-height,128px)!important; }
 .message-row.grouped-message:has(.image-message-bubble) { margin-top:4px!important; }
 .message-row:has(.image-message-bubble) .message-delivery-meta { width:100%; justify-content:flex-end!important; align-self:stretch!important; gap:4px; margin-top:8px!important; }
@@ -2245,4 +2261,39 @@ app-messages .page-content.chat-mode .message-row.own-message .message-content:h
   min-width: min(156px, 100%) !important;
   max-width: 100% !important;
   transform: translateY(-50%) !important;
+}
+
+@media (max-width: 600px) {
+  app-messages .page-content.chat-mode .message-row.message-actions-open { transform: none !important; }
+  app-messages .page-content.chat-mode .message-row .message-content:has(.photo-message-row) .photo-message-action-controls .message-action-menu,
+  app-messages .page-content.chat-mode .message-row.own-message .message-content:has(.photo-message-row) .photo-message-action-controls .message-action-menu {
+    position: fixed !important;
+    top: var(--message-menu-top, 12px) !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: var(--message-menu-left, 12px) !important;
+    width: min(220px, calc(100vw - 24px)) !important;
+    min-width: min(156px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    z-index: 160 !important;
+  }
+}
+
+/* Keep photo timestamps directly beneath each bubble and aligned to its sender side. */
+app-messages .page-content.chat-mode .message-row:has(.image-message-bubble):not(.own-message) .message-delivery-meta {
+  width: fit-content !important;
+  align-self: flex-start !important;
+  justify-content: flex-start !important;
+  margin-top: 2px !important;
+}
+app-messages .page-content.chat-mode .message-row:has(.image-message-bubble).own-message .message-delivery-meta {
+  width: fit-content !important;
+  align-self: flex-end !important;
+  justify-content: flex-end !important;
+  margin-top: 2px !important;
 }

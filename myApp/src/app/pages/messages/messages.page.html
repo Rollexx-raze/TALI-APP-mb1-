@@ -68,7 +68,7 @@
       }
       @for (message of visibleMessages; track message.id) {
         @if (shouldShowDateSeparator($index)) { <div class="message-date-separator"><span>{{ messageDateLabel(message.createdAt) }}</span></div> }
-        <div class="message-row" [id]="'message-' + message.id" [class.reply-target-highlight]="highlightedReplyMessageId === message.id" [class.own-message]="message.senderId === selectedAccount()?.id" [class.grouped-message]="$index > 0 && !shouldShowDateSeparator($index) && visibleMessages[$index - 1]?.senderId === message.senderId" [class.sender-run-end]="$index === visibleMessages.length - 1 || shouldShowDateSeparator($index + 1) || visibleMessages[$index + 1]?.senderId !== message.senderId" [class.message-actions-revealed]="revealedMessageActionsId === message.id" [class.message-actions-open]="messageActionsId === message.id">
+        <div class="message-row" [id]="'message-' + message.id" [class.reply-target-highlight]="highlightedReplyMessageId === message.id" [class.own-message]="message.senderId === selectedAccount()?.id" [class.grouped-message]="$index > 0 && !shouldShowDateSeparator($index) && visibleMessages[$index - 1]?.senderId === message.senderId" [class.sender-run-end]="$index === visibleMessages.length - 1 || shouldShowDateSeparator($index + 1) || visibleMessages[$index + 1]?.senderId !== message.senderId" [class.message-actions-revealed]="revealedMessageActionsId === message.id" [class.message-actions-open]="messageActionsId === message.id" [class.reaction-picker-active]="reactionPickerMessageId === message.id && !reactionPickerForMedia">
           <a class="message-sender-avatar" [class.own-message-avatar]="message.senderId === selectedAccount()?.id" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
             @if (messageAuthorImage(message); as image) { <img [src]="image" [alt]="messageAuthorName(message)" /> }
             @else { <span aria-hidden="true">{{ messageAuthorInitials(message) }}</span> }
@@ -90,7 +90,7 @@
             <div class="message-bubble-row">
               @if ((message.body && !hasPhotoAttachment(message)) || (message.replyTo && !!message.body)) {
                 <div class="bubble-wrap" [class.has-reaction]="messageReactionList(message).length > 0">
-                <div class="message-bubble" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message, $event.currentTarget)">
+                <div class="message-bubble" (click)="revealMessageActions(message)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message, $event.currentTarget)">
                   @if (message.replyTo; as reply) {
                     <div class="message-quoted-preview in-bubble-quote" role="link" tabindex="0" (click)="navigateToReply(reply.messageId)" (keydown.enter)="navigateToReply(reply.messageId)">
                       @if (replyPreviewAttachment(reply.messageId); as replyImage) { <img [src]="replyImage.url" [alt]="'Photo from ' + replyAuthorLabel(reply.senderId)" /> }
@@ -99,19 +99,6 @@
                     </div>
                   }
                   <p class="message-bubble-copy">@for (part of messageParts(message.body); track $index) { @if (part === '@everyone') { <button type="button" class="message-mention everyone-mention" (click)="$event.stopPropagation(); callNotice = 'Everyone in this conversation was mentioned.'">@everyone</button> } @else if (part.startsWith('@') && mentionAccount(part); as mentioned) { <a class="message-mention" [routerLink]="['/profile', mentioned.id]" (click)="$event.stopPropagation()">{{ part }}</a> } @else if (communityInviteCodeFromUrl(part); as inviteCode) { <a class="message-link community-invite-link" [routerLink]="['/messages']" [queryParams]="{ communityInvite: inviteCode }" (click)="$event.stopPropagation()">{{ part }}</a> } @else if (part.startsWith('https://') || part.startsWith('http://')) { <a class="message-link" [href]="part" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()">{{ part }}</a> } @else { {{ part }} } }</p>
-                  @if (messageTimestampInBubble(message)) {
-                    <div class="message-bubble-meta">
-                      <time class="message-time message-bubble-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time>
-                      @if (message.senderId === selectedAccount()?.id) {
-                        @switch (messageDeliveryStatus(message)) {
-                          @case ('sending') { <span class="message-status sending-status">Sending…</span> }
-                          @case ('failed') { <button type="button" class="message-status failed-status" (click)="$event.stopPropagation(); retryMessage(message)"><ion-icon name="alert-circle-outline"></ion-icon> Failed · Tap to retry</button> }
-                          @case ('seen') { <span class="message-status seen-status" aria-label="Seen"><span aria-hidden="true">✓</span></span> }
-                          @default { <span class="message-status sent-status" aria-label="Sent"><span aria-hidden="true">✓</span></span> }
-                        }
-                      }
-                    </div>
-                  }
                 </div>
                 @if (messageReactionList(message).length) { <div class="message-reaction-tools bubble-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">@for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" [attr.aria-label]="reaction.emoji + ', ' + reaction.count + ' reactions. Tap to see who reacted'" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }</div> }
                 </div>
@@ -122,7 +109,7 @@
                     <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
                   </button>
                   @if (messageActionsId === message.id) {
-                    <div class="message-action-menu" role="menu" aria-label="Message actions">
+                    <div class="message-action-menu" role="menu" aria-label="Message actions" [style.--message-menu-left]="messageActionsMenuPosition ? messageActionsMenuPosition.left + 'px' : null" [style.--message-menu-top]="messageActionsMenuPosition ? messageActionsMenuPosition.top + 'px' : null">
                       <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
                       <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
                       <button type="button" role="menuitem" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
@@ -162,16 +149,7 @@
               @if (messageReactionList(message).length) { <div class="message-reaction-tools bubble-reaction-tools" (click)="$event.stopPropagation()" (pointerdown)="$event.stopPropagation()">@for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }</div> }
               </div>
                 <div class="message-action-controls photo-message-action-controls" (click)="$event.stopPropagation()">
-                  <button type="button" class="message-actions-toggle" [class.is-open]="messageActionsId === message.id" aria-label="Message options" [attr.aria-expanded]="messageActionsId === message.id" (click)="toggleMessageActions(message, $event)"><ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon></button>
-                  @if (messageActionsId === message.id) {
-                    <div class="message-action-menu" role="menu" aria-label="Message actions">
-                      <button type="button" role="menuitem" (click)="messageAction(message, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
-                      <button type="button" role="menuitem" (click)="messageAction(message, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
-                      <button type="button" role="menuitem" (click)="copyMessage(message)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
-                      <button type="button" role="menuitem" (click)="openReactionPicker(message)"><ion-icon name="happy-outline"></ion-icon> React</button>
-                      @if (message.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="requestMessageDelete(message)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
-                    </div>
-                  }
+                  <button type="button" class="message-actions-toggle" [class.is-open]="messageActionsId === message.id" aria-label="Message options" [attr.aria-expanded]="messageActionsId === message.id" (click)="togglePhotoMessageActions(message, $event)"><ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon></button>
                 </div>
               </div>
             }
@@ -217,14 +195,14 @@
                 @for (reaction of messageReactionList(message); track reaction.emoji) { <button type="button" class="message-reaction" [class.my-reaction]="isMyReaction(message, reaction.emoji)" (click)="onReactionChipClick(message, reaction.emoji)">{{ reaction.emoji }} <span>{{ reaction.count }}</span></button> }
               </div>
             }
-            @if ((!message.attachments?.some((attachment) => attachment.kind === 'voice') && !messageTimestampInBubble(message)) || reactionPickerMessageId === message.id) {
-              <div class="message-delivery-meta">
+            @if (!message.attachments?.some((attachment) => attachment.kind === 'voice') || reactionPickerMessageId === message.id) {
+              <div class="message-delivery-meta" [class.text-only-delivery-meta]="!!message.body && !message.attachments?.length">
                 @if (hasPhotoAttachment(message)) {
                   <time class="message-time image-message-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}@if (message.senderId === selectedAccount()?.id) { · {{ voiceDeliveryLabel(message) }}}</time>
-                } @else if (!message.attachments?.some((attachment) => attachment.kind === 'voice') && !messageTimestampInBubble(message)) {
+                } @else if (!message.attachments?.some((attachment) => attachment.kind === 'voice')) {
                   <time class="message-time" [attr.datetime]="message.createdAt.toISOString()">{{ formatMessageTime(message.createdAt) }}</time>
                 }
-                @if (reactionPickerMessageId === message.id && !reactionPickerForMedia) { <emoji-picker class="message-emoji-picker" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker> }
+                @if (reactionPickerMessageId === message.id && !reactionPickerForMedia) { <emoji-picker class="message-emoji-picker" [style.left.px]="reactionPickerPosition?.left ?? null" [style.top.px]="reactionPickerPosition?.top ?? null" [style.width.px]="reactionPickerPosition?.width ?? null" [style.height.px]="reactionPickerPosition?.height ?? null" data-source="/assets/emoji-data.json" (emoji-click)="onEmojiSelected($event, message)"></emoji-picker> }
                 @if (!hasPhotoAttachment(message) && message.senderId === selectedAccount()?.id) {
                   @switch (messageDeliveryStatus(message)) {
                     @case ('sending') { <span class="message-status sending-status">Sending…</span> }
@@ -431,7 +409,7 @@
               <div class="community-topic-row">
                 <span class="community-topic-icon"><ion-icon name="chatbubble-outline"></ion-icon></span>
                 <span class="community-topic-copy"><strong># {{ conversationTitle(conversation) }}</strong><span>{{ conversationPreview(conversation) }}</span></span>
-                <ion-button fill="outline" class="create-group-button" (click)="joinGroupCommunityChat(conversation.id)">Join</ion-button>
+                <ion-button fill="outline" class="community-topic-membership" [disabled]="isJoinedCommunityChat(conversation)" (click)="joinGroupCommunityChat(conversation.id)">{{ isJoinedCommunityChat(conversation) ? 'Joined' : 'Join' }}</ion-button>
               </div>
             }
           </section>
@@ -840,7 +818,7 @@
           <ion-button class="composer-mic-control" type="button" fill="clear" aria-label="Record voice message" [disabled]="isPreferenceEnabled('blockedFor')" (click)="toggleVoiceRecording()" (pointerdown)="micPressStart()" (pointerup)="micPressEnd()" (pointercancel)="micPressEnd()"><ion-icon slot="icon-only" name="mic-outline"></ion-icon></ion-button>
         }
         <div class="chat-input-wrap">
-          <textarea #chatMessageInput class="chat-text-input" name="chatMessage" rows="1" [ngModel]="messageDraft" (ngModelChange)="updateDraftTyping($event)" (input)="resizeComposerInput($event)" (blur)="clearTyping()" placeholder="Write a message" aria-label="Write a message" [disabled]="isPreferenceEnabled('blockedFor')" autocomplete="off"></textarea>
+          <textarea #chatMessageInput class="chat-text-input" name="chatMessage" rows="1" [ngModel]="messageDraft" (ngModelChange)="updateDraftTyping($event)" (input)="resizeComposerInput($event)" (blur)="clearTyping()" placeholder="Message" aria-label="Write a message" [disabled]="isPreferenceEnabled('blockedFor')" autocomplete="off"></textarea>
           <div class="composer-emoji-control"><ion-button type="button" fill="clear" aria-label="Open emoji picker" aria-haspopup="dialog" [attr.aria-expanded]="showComposerEmojiPicker" (click)="toggleComposerEmojiPicker()"><ion-icon slot="icon-only" name="happy-outline"></ion-icon></ion-button></div>
         </div>
         <ion-button type="button" class="quick-heart-button" fill="clear" aria-label="Send quick reaction" [disabled]="isPreferenceEnabled('blockedFor')" (click)="sendQuickReaction()"><span class="quick-heart">{{ quickReactionLabel() }}</span></ion-button>
@@ -851,6 +829,18 @@
     }
   </ion-footer>
 } @else {
+}
+@if (photoActionsMessage; as photoMessage) {
+  <div class="photo-message-action-menu message-action-menu" role="menu" aria-label="Photo message actions"
+    [style.left.px]="messageActionsMenuPosition?.left ?? 12"
+    [style.top.px]="messageActionsMenuPosition?.top ?? 12"
+    (click)="$event.stopPropagation()">
+    <button type="button" role="menuitem" (click)="closePhotoMessageActions(); messageAction(photoMessage, 'reply')"><ion-icon name="arrow-undo-outline"></ion-icon> Reply</button>
+    <button type="button" role="menuitem" (click)="closePhotoMessageActions(); messageAction(photoMessage, 'forward')"><ion-icon name="arrow-redo-outline"></ion-icon> Forward</button>
+    <button type="button" role="menuitem" (click)="closePhotoMessageActions(); copyMessage(photoMessage)"><ion-icon name="copy-outline"></ion-icon> Copy</button>
+    <button type="button" role="menuitem" (click)="closePhotoMessageActions(); openReactionPicker(photoMessage)"><ion-icon name="happy-outline"></ion-icon> React</button>
+    @if (photoMessage.senderId === selectedAccount()?.id) { <button type="button" role="menuitem" class="delete-message-action" (click)="closePhotoMessageActions(); requestMessageDelete(photoMessage)"><ion-icon name="trash-outline"></ion-icon> Delete</button> }
+  </div>
 }
 @if (mentionQuery !== null && activeConversation && !isActiveConversationRequest) {
   <div class="mention-suggestions" role="listbox" aria-label="Group chat members to mention">
