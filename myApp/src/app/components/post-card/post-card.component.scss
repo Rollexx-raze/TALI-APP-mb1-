@@ -206,7 +206,7 @@
   cursor: default;
 }
 
-/* Rounded grouped dropdown */
+/* Post options */
 
 :host .post-topline .post-options-menu {
   box-sizing: border-box;
@@ -513,6 +513,8 @@
   font-size: var(--font-body);
 }
 
+/* Existing responsive styles */
+
 @media (max-width: 380px) {
   .post-card {
     padding-inline: var(--space-2);
@@ -553,18 +555,6 @@
   .post-body {
     font-size: var(--font-body);
     line-height: 1.5;
-  }
-}
-
-/* Reduced-motion support */
-
-@media (prefers-reduced-motion: reduce) {
-  .post-card {
-    transition: none;
-  }
-
-  .post-layout.post-notification-focus .post-card {
-    animation: none;
   }
 }
 
@@ -675,4 +665,302 @@
 
 :host-context(app-profile) .action-button ion-icon {
   font-size: 20px;
+}
+
+/* Homepage post card redesign */
+
+:host-context(app-home) {
+  --home-card-padding: 16px;
+  --home-card-avatar: 40px;
+}
+
+:host-context(app-home) .post-layout {
+  position: relative;
+  display: block;
+  margin-block: 12px;
+}
+
+:host-context(app-home) .post-card {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: var(--home-card-padding);
+  border: 1px solid var(--app-border);
+  border-radius: 20px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  box-shadow: none;
+}
+
+/* Position the existing avatar inside the card visually. */
+
+:host-context(app-home) .post-avatar-link {
+  position: absolute;
+  top: calc(var(--home-card-padding) + 1px);
+  left: calc(var(--home-card-padding) + 1px);
+  z-index: 2;
+  width: var(--home-card-avatar);
+  height: var(--home-card-avatar);
+  margin: 0;
+  border-radius: 50%;
+}
+
+:host-context(app-home) .post-avatar {
+  box-sizing: border-box;
+  width: var(--home-card-avatar);
+  height: var(--home-card-avatar);
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-avatar-fill);
+  color: var(--app-text-muted);
+  box-shadow: none;
+}
+
+:host-context(app-home) .post-topline {
+  min-height: var(--home-card-avatar);
+  align-items: center;
+  gap: 8px;
+}
+
+:host-context(app-home) .post-profile-link {
+  box-sizing: border-box;
+  min-height: var(--home-card-avatar);
+  align-items: center;
+  padding-left: calc(var(--home-card-avatar) + 12px);
+}
+
+:host-context(app-home) .post-user-details {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+:host-context(app-home) .identity-row {
+  align-items: baseline;
+  gap: 8px;
+}
+
+:host-context(app-home) .identity-row strong {
+  min-width: 0;
+  color: var(--app-text);
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+:host-context(app-home) .post-time {
+  flex: 0 0 auto;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+:host-context(app-home) .post-handle {
+  overflow: hidden;
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 13px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host-context(app-home) .post-more {
+  width: 40px;
+  height: 44px;
+  flex: 0 0 40px;
+  margin-right: -6px;
+  color: var(--app-text-muted);
+}
+
+:host-context(app-home) .post-more ion-icon {
+  font-size: 21px;
+}
+
+:host-context(app-home) .post-group-link {
+  margin-top: 12px;
+  color: var(--app-primary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+:host-context(app-home) .post-body {
+  margin: 14px 0 0;
+  color: var(--app-text);
+  font-size: 15px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+:host-context(app-home) .post-body a {
+  color: var(--app-primary);
+}
+
+:host-context(app-home) .post-edit-form {
+  margin-top: 14px;
+}
+
+:host-context(app-home) .post-media-carousel {
+  margin-top: 14px;
+}
+
+:host-context(app-home) .post-attachments {
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 0;
+}
+
+:host-context(app-home) .post-media {
+  box-sizing: border-box;
+  min-width: 0;
+  max-height: 480px;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: var(--app-surface-alt);
+  object-fit: cover;
+}
+
+:host-context(app-home) audio.post-media {
+  height: 54px;
+  max-height: none;
+  aspect-ratio: auto;
+  border-radius: 12px;
+}
+
+:host-context(app-home) .post-file {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  flex: 0 0 100%;
+  min-height: 64px;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+:host-context(app-home) .attachment-arrow {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
+  color: var(--app-text);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+}
+
+:host-context(app-home) .attachment-arrow-previous {
+  left: 8px;
+}
+
+:host-context(app-home) .attachment-arrow-next {
+  right: 8px;
+}
+
+:host-context(app-home) .post-actions {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 4px 18px;
+  margin: 10px 0 -4px;
+  padding: 0;
+  border: 0;
+}
+
+:host-context(app-home) .action-button {
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 0;
+  border-radius: 10px;
+  color: var(--app-text-muted);
+  font-size: 13px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+:host-context(app-home) .action-button ion-icon {
+  flex: 0 0 auto;
+  font-size: 22px;
+}
+
+:host-context(app-home) .action-button.is-active {
+  color: var(--app-primary);
+}
+
+:host-context(app-home) .action-button:first-child.is-active {
+  color: var(--app-text);
+}
+
+:host-context(app-home) .action-message,
+:host-context(app-home) .post-trash-note {
+  margin-top: 10px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (hover: hover) {
+  :host-context(app-home) .action-button:hover {
+    color: var(--app-primary);
+  }
+}
+
+@media (max-width: 380px) {
+  :host-context(app-home) {
+    --home-card-padding: 12px;
+    --home-card-avatar: 36px;
+  }
+
+  :host-context(app-home) .post-card {
+    border-radius: 18px;
+  }
+
+  :host-context(app-home) .post-profile-link {
+    padding-left: calc(var(--home-card-avatar) + 10px);
+  }
+
+  :host-context(app-home) .identity-row {
+    flex-wrap: wrap;
+    gap: 2px 6px;
+  }
+
+  :host-context(app-home) .identity-row strong {
+    font-size: 14px;
+  }
+
+  :host-context(app-home) .post-body {
+    font-size: 14px;
+  }
+
+  :host-context(app-home) .post-actions {
+    column-gap: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  :host-context(app-home) {
+    --home-card-padding: 20px;
+    --home-card-avatar: 44px;
+  }
+
+  :host-context(app-home) .post-layout {
+    margin-block: 16px;
+  }
+
+  :host-context(app-home) .post-body {
+    font-size: 16px;
+  }
+}
+
+/* Reduced-motion support */
+
+@media (prefers-reduced-motion: reduce) {
+  .post-card {
+    transition: none;
+  }
+
+  .post-layout.post-notification-focus .post-card {
+    animation: none;
+  }
 }

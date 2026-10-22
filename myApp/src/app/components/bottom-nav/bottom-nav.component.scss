@@ -9,6 +9,8 @@
   pointer-events: none;
 }
 
+/* Animate the footer, keeping the floating button independent. */
+
 .bottom-nav-footer {
   position: absolute;
   inset: 0;
@@ -16,6 +18,16 @@
   border: 0;
   background: var(--transparent);
   box-shadow: none;
+  pointer-events: none;
+  transform: translateY(0);
+  transition: transform 260ms cubic-bezier(.22, .61, .36, 1);
+}
+
+:host(.nav-hidden) .bottom-nav-footer {
+  transform: translateY(calc(100% + 20px));
+}
+
+:host(.nav-hidden) .page-nav {
   pointer-events: none;
 }
 
@@ -25,7 +37,11 @@
   height: 100%;
   min-height: 0;
   align-items: center;
-  padding: 0 max(var(--space-4), env(safe-area-inset-left, var(--space-0))) env(safe-area-inset-bottom, var(--space-0)) max(var(--space-4), env(safe-area-inset-right, var(--space-0)));
+  padding:
+    0
+    max(var(--space-4), env(safe-area-inset-right, var(--space-0)))
+    env(safe-area-inset-bottom, var(--space-0))
+    max(var(--space-4), env(safe-area-inset-left, var(--space-0)));
   --background: var(--transparent);
   --border-color: var(--transparent);
   pointer-events: none;
@@ -42,7 +58,11 @@
   padding: var(--space-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--surface) 94%, var(--transparent));
+  background: color-mix(
+    in srgb,
+    var(--surface) 94%,
+    var(--transparent)
+  );
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -79,7 +99,10 @@
   background: var(--transparent);
   color: var(--text-muted);
   box-shadow: none;
-  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
 
 .nav-icon-circle {
@@ -91,7 +114,10 @@
   border-radius: var(--radius-pill);
   background: var(--transparent);
   color: var(--text-muted);
-  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
 
 .nav-icon {
@@ -144,6 +170,64 @@
   line-height: 1;
 }
 
+/* Floating create-post button */
+
+.floating-create {
+  position: absolute;
+  right: max(20px, env(safe-area-inset-right, 0px));
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-button);
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(16px) scale(.85);
+  transition:
+    transform 240ms cubic-bezier(.22, .61, .36, 1),
+    opacity 180ms ease,
+    visibility 0s linear 240ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.floating-create svg {
+  display: block;
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+:host(.nav-hidden) .floating-create {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  transition-delay: 80ms, 80ms, 0s;
+}
+
+:host(.nav-hidden) .floating-create:active {
+  transform: scale(.94);
+}
+
+.floating-create:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+/* Desktop sidebar */
+
 @media (min-width: 1024px) {
   :host {
     top: 0;
@@ -156,16 +240,25 @@
     background: var(--surface);
   }
 
-  .bottom-nav-footer {
+  .bottom-nav-footer,
+  :host(.nav-hidden) .bottom-nav-footer {
     position: absolute;
     inset: 0;
     height: 100%;
     overflow: visible;
+    transform: none;
+    transition: none;
   }
 
   .bottom-nav-footer ion-toolbar {
     height: 100%;
-    padding: var(--space-5) var(--space-2) calc(var(--space-5) + env(safe-area-inset-bottom, var(--space-0)));
+    padding:
+      var(--space-5)
+      var(--space-2)
+      calc(
+        var(--space-5) +
+        env(safe-area-inset-bottom, var(--space-0))
+      );
   }
 
   .page-nav {
@@ -201,6 +294,10 @@
     width: 48px;
     height: 48px;
   }
+
+  .floating-create {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -209,7 +306,21 @@
   }
 
   @keyframes nav-active-in {
-    from { opacity: 0.72; transform: scale(0.92); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+      opacity: .72;
+      transform: scale(.92);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-footer,
+  .floating-create {
+    transition: none;
   }
 }
