@@ -2416,6 +2416,34 @@
 }
 .community-create-button ion-icon { font-size:var(--font-18); }
 
+/* Keep the community detail empty-state action compact; the parent is a column flexbox. */
+.community-detail .community-topic-empty > .community-create-button {
+  width: auto;
+  min-width: 168px;
+  min-height: 46px;
+  flex: 0 0 auto;
+  align-self: center;
+  margin-top: 18px;
+  padding: 0 18px;
+  border: 1px solid color-mix(in srgb, var(--primary) 48%, transparent);
+  border-radius: 14px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--primary) 22%, transparent);
+  transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+}
+.community-detail .community-topic-empty > .community-create-button:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--primary) 90%, #000);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+.community-detail .community-topic-empty > .community-create-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.community-detail .community-topic-empty > .community-create-button ion-icon { font-size: 18px; }
+
 /* Final composer presentation overrides */
 .chat-composer { flex-wrap: nowrap !important; align-items: center; gap: 4px; padding: 5px 8px; overflow: visible !important; border-radius: 24px; }
 .chat-composer .chat-attachment-actions { display: flex !important; flex: 0 0 auto; align-items: center; gap: 0; }
