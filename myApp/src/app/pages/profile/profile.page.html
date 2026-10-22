@@ -81,7 +81,26 @@
                 <div class="magazine-footer"><span>{{ post.likes.length }} likes · {{ post.comments.length }} comments</span><a class="magazine-read-label" [routerLink]="['/home']" [queryParams]="{ postId: post.id }" [attr.aria-label]="'Read post by ' + post.authorName">READ STORY <span aria-hidden="true">↗</span></a></div>
               </div>
             </article>
-          } @empty { <div class="magazine-empty"><h3>Your story starts here</h3><p>Share a moment and it will find a place on this page.</p></div> }
+          } @empty {
+            <div class="magazine-empty profile-empty-state">
+              <svg class="profile-empty-illustration" viewBox="0 0 160 128" role="img" aria-label="Illustration of a blank post card and a small sparkle">
+                <rect x="25" y="23" width="100" height="82" rx="20" fill="#EEF2FF" />
+                <rect x="38" y="36" width="74" height="56" rx="12" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="2" />
+                <circle cx="57" cy="56" r="7" fill="#C7D2FE" />
+                <path d="M47 80 64 65l11 10 10-9 18 14H47Z" fill="#E0E7FF" />
+                <path d="M126 24v20m-10-10h20m-17-7 14 14m0-14-14 14" stroke="#8B5CF6" stroke-width="3" stroke-linecap="round" />
+                <circle cx="31" cy="20" r="3" fill="#F472B6" />
+                <circle cx="132" cy="91" r="4" fill="#FB923C" />
+              </svg>
+              <h3>{{ isOwnProfile ? 'Your story starts here' : 'No posts yet' }}</h3>
+              <p>{{ isOwnProfile ? 'Share a moment with your community and it will appear here.' : 'When this profile shares a moment, you’ll find it here.' }}</p>
+              @if (isOwnProfile) {
+                <a class="profile-empty-cta" routerLink="/add-post">Create your first post <span aria-hidden="true">→</span></a>
+              } @else {
+                <a class="profile-empty-cta" routerLink="/home">Explore the feed <span aria-hidden="true">→</span></a>
+              }
+            </div>
+          }
         </div>
       </section>
     }
