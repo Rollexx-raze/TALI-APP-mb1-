@@ -159,11 +159,12 @@
 .login-field label { color:#34415d; font-size:12px; font-weight:650; }
 .login-field input { color:#34415d!important; font-size:13px; }
 .login-password-toggle { min-height:38px; color:#625df0; font-size:12px; font-weight:650; }
-.login-button { min-height:48px; margin-top:1px; --background:#5955df; --background-activated:#5955df; --background-focused:#5955df; --border-radius:12px; --box-shadow:none; font-size:13px; }
+.login-button { min-height:48px; margin-top:1px; --background:#5955df; --background-activated:#5955df; --background-focused:#5955df; --color:#fff; --border-radius:12px; --box-shadow:none; font-size:13px; }
+.login-button-content { color:#fff; }
 .login-button::part(native) { min-height:48px; }
 .login-links { gap:8px; }
 .login-link-button { flex:1; min-height:46px; border:1px solid #e4e9f2; border-radius:12px; background:#fff; --color:#5c57e7; font-size:12px; font-weight:650; }
-.login-link-button:first-child { border-color:#efeeff; background:#efeeff; }
+.login-link-button:first-child { border-color:#e4e9f2; background:#fff; }
 .login-footer-note { margin:24px 0 0; color:#8491aa; font-size:11px; text-align:center; }
 .login-wrapper { gap:14px; }
 .login-control-group { display:grid; gap:7px; }
@@ -247,4 +248,3 @@
 :host-context(html.app-dark) .login-brand-mark .logo-on-dark {
   filter: brightness(0) invert(1) !important;
 }
-

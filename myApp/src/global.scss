@@ -2308,3 +2308,26 @@ app-messages .page-content.chat-mode .message-row:has(.image-message-bubble).own
   justify-content: flex-end !important;
   margin-top: 2px !important;
 }
+
+/* Hover feedback for the three login actions (Ionic renders their faces in Shadow DOM). */
+ion-button.login-button,
+ion-button.login-link-button {
+  transition: transform 0.3s ease, opacity 0.3s ease, filter 0.3s ease, --box-shadow 0.3s ease;
+}
+ion-button.login-button:hover,
+ion-button.login-button:focus-visible,
+ion-button.login-link-button:hover,
+ion-button.login-link-button:focus-visible {
+  transform: scale(0.9) !important;
+  opacity: 0.9 !important;
+  filter: brightness(0.9) !important;
+  --box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3) !important;
+}
+ion-button.login-button:hover::part(native),
+ion-button.login-button:focus-visible::part(native),
+ion-button.login-link-button:hover::part(native),
+ion-button.login-link-button:focus-visible::part(native) {
+  opacity: 0.9 !important;
+  filter: brightness(0.9) !important;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3) !important;
+}
