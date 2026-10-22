@@ -161,12 +161,13 @@ main
 .profile-field input::placeholder, .profile-field textarea::placeholder { color: var(--text-muted);opacity:1; }
 .profile-field textarea, .gender-picker-trigger { border-color: var(--border);background: var(--bg);color: var(--text); }
 .gender-picker { position:relative; }
-.gender-picker-trigger { display:flex;width:100%;min-height:62px;align-items:center;justify-content:space-between;padding: 0 var(--space-4);border: 1px solid var(--border);border-radius: var(--radius-inner);font:inherit;font-size: var(--font-body);text-align:left; }
+.gender-picker-trigger { display:flex;width:100%;min-height:62px;align-items:center;justify-content:space-between;padding: 0 var(--space-4);border: 1px solid var(--border);border-radius: var(--radius-inner);font:inherit;font-size: var(--font-body);text-align:left;cursor:pointer; }
 .gender-picker-trigger ion-icon { color: var(--text-muted);font-size: var(--font-body); }
-.gender-options { position:absolute;z-index:20;right: 0;bottom: calc(100% + var(--space-0));left: 0;padding: var(--space-2) var(--space-4) var(--space-4);border-radius: var(--radius-inner);background: var(--bg);box-shadow: var(--shadow-soft); }
-.gender-options > button { display:flex;width:100%;min-height:64px;align-items:center;justify-content:space-between;padding: 0 var(--space-4);border:0;background: var(--transparent);color: var(--text);font:inherit;text-align:left; }
-.gender-radio { display:grid;width:28px;height:28px;place-items:center;border: 1px solid var(--border);border-radius: var(--radius-circle);color: var(--text); }
-.gender-radio ion-icon { width:19px;height:19px;padding: var(--space-2);border:1px solid var(--app-border);border-radius: var(--radius-circle);background:var(--app-surface-alt);color:var(--app-text); }
+.gender-picker-trigger:focus-visible { outline:2px solid var(--primary);outline-offset:2px; }
+.gender-options { position:absolute;z-index:20;top:calc(100% + var(--space-1));right:0;left:0;overflow:auto;max-height: min(320px, 50vh);padding:var(--space-2) var(--space-2);border:1px solid var(--border);border-radius:var(--radius-inner);background:var(--surface);box-shadow:var(--shadow-soft);opacity:0;transform:translateY(-10px);transition:opacity .3s ease,transform .3s ease,visibility .3s ease;visibility:hidden;pointer-events:none; }
+.gender-picker.is-open .gender-options { opacity:1;transform:translateY(0);visibility:visible;pointer-events:auto; }
+.gender-options > button { display:flex;width:100%;min-height:48px;align-items:center;justify-content:space-between;gap:var(--space-3);padding:0 var(--space-3);border:0;border-radius:var(--radius-sm);background:transparent;color:var(--text);font:inherit;text-align:left;cursor:pointer; }
+.gender-options > button:hover,.gender-options > button:focus-visible { background:var(--surface-2);outline:none; }
 .custom-gender-input { display:block;width:calc(100% - 28px);min-height:60px;margin: 0 var(--space-4) var(--space-2);padding: var(--space-2) var(--space-4);border:0!important;border-radius: var(--radius-inner);background: var(--bg)!important;color: var(--text)!important; }
 .custom-gender-input[hidden] { display:none; }
 .profile-submit-button { min-height:50px;margin-top: var(--space-6); }
@@ -663,8 +664,6 @@ ion-content.settings-content { --padding-bottom: calc(var(--space-8) + env(safe-
 .profile-settings-form .profile-submit-button { width:100%; min-height:46px; margin:18px 0 0; --background:#554bdd; --background-activated:#4940c7; --color:#fff; --border-radius:12px; font-size:13px; font-weight:650; }
 
 .security-panel { color:#25314c; }
-.security-panel > .security-icon { display:grid; width:56px; height:56px; place-items:center; margin:4px 0 16px; border-radius:17px; background:#efefff; color:#6863f2; }
-.security-panel > .security-icon ion-icon { font-size:25px; }
 .security-panel > h2 { margin:0 0 6px; color:#202b45; font-size:25px; font-weight:750; line-height:1.2; }
 .security-panel > .security-intro { margin:0; color:#8491aa; font-size:13px; line-height:1.5; }
 .security-account { display:flex; align-items:center; gap:12px; margin:18px 0; }
@@ -1788,6 +1787,13 @@ ion-header.settings-header:has(+ .settings-content .settings-redesign) h1 {
   background: var(--surface);
   color: var(--text);
 }
+:host-context(html.app-dark) .settings-redesign .settings-logout-row .settings-row-icon {
+  background: rgba(255, 72, 88, 0.18);
+  color: #ff5264;
+}
+:host-context(html.app-dark) .settings-redesign .settings-logout-row .settings-row-icon ion-icon {
+  color: #ff5264;
+}
 :host-context(html.app-dark) .settings-redesign .settings-simple-row {
   border-color: var(--border);
   color: var(--text);
@@ -1859,7 +1865,587 @@ ion-header.settings-header:has(+ .settings-content .settings-redesign) h1 {
   --track-background-checked: var(--primary);
   --handle-background: var(--text);
   --handle-background-checked: var(--text);
-}@media (max-width: 420px) {
+}
+
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) {
+	--background: var(--bg);
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .notification-intro) ion-toolbar,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .notification-intro) ion-toolbar {
+	--background: var(--bg) !important;
+	--color: var(--text) !important;
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .notification-intro) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .notification-intro) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .notification-intro) ion-button,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .notification-intro) ion-button {
+	--color: var(--text) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-redesign .notification-intro h2,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) > h2,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .settings-section-heading,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .notification-setting-row ion-label {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-redesign .notification-intro .detail-copy,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .notification-setting-row ion-label p,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .settings-info-card .detail-copy,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .settings-about-card p,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .settings-about-card small {
+	color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .settings-redesign .notification-intro-icon {
+	background: var(--primary-soft);
+	color: var(--primary);
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .notification-settings-card,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .settings-info-card,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .settings-about-card {
+	border-color: var(--border) !important;
+	background: var(--surface) !important;
+	color: var(--text) !important;
+	box-shadow: none;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .notification-setting-row,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .notification-setting-row::part(native) {
+	--background: var(--surface);
+	--color: var(--text);
+	background: var(--surface) !important;
+	color: var(--text) !important;
+	border-color: var(--border) !important;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .settings-info-card hr {
+	border-color: var(--border);
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.notification-intro) .settings-about-card strong {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(> .settings-info-card) {
+	--background: var(--bg);
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(> .settings-info-card) > h2,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(> .settings-info-card) .settings-info-card h3 {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(> .settings-info-card) .settings-info-card {
+	border-color: var(--border) !important;
+	background: var(--surface) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail > .settings-info-card) ion-toolbar,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .settings-detail > .settings-info-card) ion-toolbar {
+	--background: var(--bg) !important;
+	background: var(--bg) !important;
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail > .settings-info-card) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .settings-detail > .settings-info-card) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail > .settings-info-card) ion-button,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .settings-detail > .settings-info-card) ion-button {
+	--color: var(--text) !important;
+	color: var(--text) !important;
+}
+
+.settings-redesign .account-center-panel {
+  width: min(100%, 680px);
+  margin: 0 auto;
+  color: var(--text);
+}
+.settings-redesign .account-center-panel > h2 {
+  margin: 0 0 18px;
+  color: var(--text);
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 700;
+  letter-spacing: -.03em;
+  line-height: 1.2;
+}
+.settings-redesign .account-profiles-card {
+  min-height: 88px;
+  gap: 14px;
+  padding: 14px 16px;
+  border-color: var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.settings-redesign .profile-avatar-stack {
+  flex-basis: 64px;
+  padding-left: 4px;
+}
+.settings-redesign .profile-avatar-stack > img,
+.settings-redesign .profile-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  flex-basis: 48px;
+}
+.settings-redesign .profile-avatar-stack > :nth-child(2) {
+  margin-left: -10px;
+}
+.settings-redesign .account-profile-copy {
+  gap: 4px;
+}
+.settings-redesign .account-profile-copy strong {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.settings-redesign .account-profile-copy small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.settings-redesign .account-settings-heading {
+  margin: 22px 0 10px !important;
+  color: var(--text) !important;
+  font-size: 16px !important;
+  font-weight: 650;
+}
+.settings-redesign .account-settings-list {
+  padding: 4px 14px;
+  border-color: var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(var(--shadow-rgb), .04);
+}
+.settings-redesign .account-setting-row {
+  min-height: 62px;
+  gap: 12px;
+  padding: 9px 0;
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.settings-redesign .account-setting-row > ion-icon:first-child {
+  width: 36px;
+  height: 36px;
+  flex-basis: 36px;
+  padding: 8px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--primary) 9%, var(--surface));
+  color: var(--primary);
+  font-size: 19px;
+}
+.settings-redesign .account-setting-row > span:not(.settings-row-icon) {
+  color: var(--text);
+}
+.settings-redesign .account-setting-row .account-row-chevron {
+  color: var(--text-muted);
+}
+:host-context(html.app-dark) .settings-redesign .account-profiles-card,
+:host-context(html.app-dark) .settings-redesign .account-settings-list {
+  border-color: var(--border);
+  background: var(--surface);
+}
+:host-context(html.app-dark) .settings-redesign .account-setting-row {
+  border-bottom-color: var(--border);
+  background: transparent;
+}
+
+.settings-redesign .account-center-panel {
+  width: min(100%, 640px);
+  margin: 0 auto;
+}
+.settings-redesign .account-center-intro {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.settings-redesign .account-center-intro > span {
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .09em;
+}
+.settings-redesign .account-center-intro h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(25px, 4vw, 32px);
+  font-weight: 750;
+  letter-spacing: -.04em;
+  line-height: 1.12;
+}
+.settings-redesign .account-center-intro p {
+  max-width: 38ch;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.settings-redesign .account-profiles-card {
+  min-height: 88px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+  text-align: left;
+}
+.settings-redesign .account-profiles-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.settings-redesign .profile-avatar-stack {
+  flex-basis: 60px;
+  padding-left: 2px;
+}
+.settings-redesign .profile-avatar-stack > img,
+.settings-redesign .profile-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  flex-basis: 48px;
+}
+.settings-redesign .profile-avatar-stack > :nth-child(2) {
+  margin-left: -10px;
+}
+.settings-redesign .account-profile-copy {
+  gap: 4px;
+}
+.settings-redesign .account-profile-copy strong {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.settings-redesign .account-profile-copy small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.settings-redesign .account-settings-heading {
+  margin: 26px 0 12px !important;
+  color: var(--text) !important;
+  font-size: 16px !important;
+  font-weight: 700;
+}
+.settings-redesign .account-settings-list {
+  display: grid;
+  gap: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(var(--shadow-rgb), .04);
+}
+.settings-redesign .account-setting-row {
+  min-height: 68px;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  text-align: left;
+}
+.settings-redesign .account-setting-row:last-child {
+  border-bottom: 0;
+}
+.settings-redesign .account-setting-row > ion-icon:first-child {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  padding: 9px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary) 9%, var(--surface));
+  color: var(--primary);
+  font-size: 20px;
+}
+.settings-redesign .account-setting-copy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 3px;
+}
+.settings-redesign .account-setting-copy strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.settings-redesign .account-setting-copy small {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.settings-redesign .account-setting-row .account-row-chevron {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+.settings-redesign .account-setting-row:hover .account-setting-copy strong {
+  color: var(--primary);
+}
+:host-context(html.app-dark) .settings-redesign .account-profiles-card {
+  border-color: color-mix(in srgb, var(--primary) 20%, var(--border));
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+}
+
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) {
+	--background: var(--bg) !important;
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail .privacy-setting-card) ion-toolbar,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .settings-detail .privacy-setting-card) ion-toolbar {
+	--background: var(--bg) !important;
+	--color: var(--text) !important;
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail .privacy-setting-card) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .settings-detail .privacy-setting-card) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail .privacy-setting-card) ion-button,
+:host-context(html.app-dark) ion-header.settings-header:has(+ .settings-content .settings-detail .privacy-setting-card) ion-button {
+	--color: var(--text) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) > h2,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .settings-section-heading,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .privacy-setting-card ion-label,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .settings-privacy-list .account-setting-row > span {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) > .detail-copy,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .privacy-setting-card ion-label p,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .settings-privacy-list .account-setting-row small,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .settings-privacy-list .account-row-chevron {
+	color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .privacy-setting-card,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .settings-privacy-list {
+	border-color: var(--border) !important;
+	background: var(--surface) !important;
+	color: var(--text) !important;
+	box-shadow: none;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .privacy-setting-card ion-item,
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .privacy-setting-card ion-item::part(native),
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .settings-privacy-list .account-setting-row {
+	--background: var(--surface) !important;
+	--color: var(--text) !important;
+	border-color: var(--border) !important;
+	background: var(--surface) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .privacy-setting-card ion-toggle {
+	--track-background: var(--surface-2);
+	--track-background-checked: var(--primary);
+	--handle-background: var(--text-muted);
+	--handle-background-checked: var(--on-primary);
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.privacy-setting-card) .settings-privacy-list .account-setting-row:focus-visible {
+	outline-color: var(--primary);
+}
+
+.settings-redesign .account-center-panel {
+	width: min(100%, 620px);
+	margin: 0 auto;
+	padding: clamp(20px, 5vw, 32px);
+	border: 1px solid var(--border);
+	border-radius: 22px;
+	background: var(--surface);
+	color: var(--text);
+	box-shadow: 0 8px 28px rgba(var(--shadow-rgb), .07);
+}
+.settings-redesign .account-center-heading {
+	display: grid;
+	gap: 8px;
+	margin-bottom: 22px;
+	text-align: left;
+}
+.settings-redesign .account-center-heading > span {
+	color: var(--primary);
+	font-size: 11px;
+	font-weight: 750;
+	letter-spacing: .1em;
+}
+.settings-redesign .account-center-heading h2 {
+	margin: 0;
+	color: var(--text);
+	font-size: clamp(24px, 5vw, 30px);
+	font-weight: 750;
+	letter-spacing: -.035em;
+	line-height: 1.2;
+}
+.settings-redesign .account-center-heading p {
+	margin: 0;
+	color: var(--text-muted);
+	font-size: 14px;
+	line-height: 1.5;
+}
+.settings-redesign .account-center-panel .account-profiles-card {
+	display: grid;
+	width: 100%;
+	min-height: 104px;
+	grid-template-columns: 60px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 14px;
+	margin: 0;
+	padding: 16px;
+	border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+	border-radius: 16px;
+	background: color-mix(in srgb, var(--primary) 9%, var(--surface));
+	color: var(--text);
+	text-align: left;
+	cursor: pointer;
+	transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.settings-redesign .account-center-panel .account-profiles-card:hover {
+	transform: translateY(-1px);
+	border-color: color-mix(in srgb, var(--primary) 50%, var(--border));
+	background: color-mix(in srgb, var(--primary) 13%, var(--surface));
+}
+.settings-redesign .account-center-panel .account-profiles-card:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 3px;
+}
+.settings-redesign .account-center-panel .profile-avatar-stack {
+	width: 60px;
+	height: 52px;
+	flex: 0 0 60px;
+	padding: 0;
+}
+.settings-redesign .account-center-panel .profile-avatar-stack > img,
+.settings-redesign .account-center-panel .profile-avatar-placeholder {
+	width: 48px;
+	height: 48px;
+	flex-basis: 48px;
+	border: 2px solid var(--surface);
+	background: var(--surface-2);
+}
+.settings-redesign .account-center-panel .profile-avatar-stack > :nth-child(2) {
+	margin-left: -12px;
+}
+.settings-redesign .account-center-panel .account-profile-copy {
+	display: grid;
+	min-width: 0;
+	gap: 4px;
+}
+.settings-redesign .account-center-panel .account-profile-copy strong {
+	color: var(--text);
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.35;
+}
+.settings-redesign .account-center-panel .account-profile-copy small {
+	color: var(--text-muted);
+	font-size: 12px;
+	line-height: 1.4;
+}
+.settings-redesign .account-center-panel .account-profile-cta {
+	display: inline-flex;
+	min-height: 38px;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 0 12px;
+	border-radius: 11px;
+	background: var(--primary);
+	color: var(--on-primary);
+	font-size: 12px;
+	font-weight: 650;
+	white-space: nowrap;
+}
+.settings-redesign .account-center-panel .account-profile-cta ion-icon {
+	font-size: 15px;
+}
+.settings-redesign .account-center-panel .account-settings-heading {
+	margin: 26px 0 8px !important;
+	color: var(--text) !important;
+	font-size: 15px !important;
+	font-weight: 700;
+}
+.settings-redesign .account-center-panel .account-settings-list {
+	display: grid;
+	overflow: visible;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+.settings-redesign .account-center-panel .account-setting-row {
+	display: grid;
+	min-height: 58px;
+	grid-template-columns: 36px minmax(0, 1fr) 16px;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 0;
+	border: 0;
+	border-bottom: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+	border-radius: 0;
+	background: transparent;
+	color: var(--text);
+	font-size: 13px;
+	font-weight: 550;
+	text-align: left;
+	transition: color 160ms ease;
+}
+.settings-redesign .account-center-panel .account-setting-row:last-child {
+	border-bottom: 0;
+}
+.settings-redesign .account-center-panel .account-setting-icon {
+	display: grid;
+	width: 36px;
+	height: 36px;
+	place-items: center;
+	border-radius: 11px;
+	background: var(--surface-2);
+	color: var(--primary);
+}
+.settings-redesign .account-center-panel .account-setting-icon ion-icon {
+	width: 19px;
+	height: 19px;
+	font-size: 19px;
+}
+.settings-redesign .account-center-panel .account-setting-row:hover {
+	color: var(--primary);
+}
+.settings-redesign .account-center-panel .account-row-chevron {
+	color: var(--text-muted);
+	font-size: 16px;
+	justify-self: end;
+}
+:host-context(html.app-dark) .settings-redesign .account-center-panel {
+	border-color: var(--border);
+	background: var(--surface);
+}
+
+@media (max-width: 420px) {
+	.settings-redesign .account-center-panel {
+		padding: 20px 16px;
+		border-radius: 18px;
+	}
+	.settings-redesign .account-center-panel .account-profiles-card {
+		grid-template-columns: 52px minmax(0, 1fr);
+		gap: 10px;
+		padding: 12px;
+	}
+	.settings-redesign .account-center-panel .profile-avatar-stack {
+		width: 52px;
+		flex-basis: 52px;
+	}
+	.settings-redesign .account-center-panel .profile-avatar-stack > img,
+	.settings-redesign .account-center-panel .profile-avatar-placeholder {
+		width: 44px;
+		height: 44px;
+		flex-basis: 44px;
+	}
+	.settings-redesign .account-center-panel .account-profile-cta {
+		grid-column: 2;
+		width: max-content;
+		min-height: 34px;
+		margin-top: 2px;
+	}
+}
+
+@media (max-width: 420px) {
   .settings-redesign .profile-settings-form .profile-photo-card {
     display: grid;
     grid-template-columns: 78px minmax(0, 1fr) 34px;

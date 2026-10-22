@@ -17,7 +17,7 @@
     <ion-list class="account-list" lines="none">
       @for (account of previewAccounts; track account.username) {
         <div class="account-entry">
-          <ion-item button="true" (click)="chooseAccount(account)">
+          <ion-item button="true" detail="false" (click)="chooseAccount(account)">
             <ion-avatar slot="start" class="account-avatar">
               @if (account.profileImage) { <img [src]="account.profileImage" [alt]="account.name + ' profile photo'"> }
               @else {

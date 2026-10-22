@@ -106,7 +106,7 @@ ion-label p { color:#8491aa!important; font-size:10px; }
 }
 :host-context(html.app-dark) .account-avatar { background: var(--surface-2) !important; color: var(--primary) !important; }
 :host-context(html.app-dark) .more-link { background: var(--primary-soft) !important; color: var(--primary) !important; border-color: var(--border) !important; }
-:host-context(html.app-dark) .continue-account-button { background: var(--primary) !important; color: var(--on-primary) !important; }
+:host-context(html.app-dark) .continue-account-button { background: var(--primary) !important; color: #fff !important; }
 :host-context(html.app-dark) .auth-header ion-back-button { --color: var(--text-muted) !important; }
 
 .auth-header ion-toolbar { display:flex; justify-content:flex-start; padding:0 10px; }

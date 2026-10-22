@@ -1811,8 +1811,20 @@ main
 }
 :host-context(html.app-dark) .profile-content-panel .profile-sections button.active {
 	border-bottom-color: var(--primary) !important;
-	background: var(--surface) !important;
+	background: transparent !important;
+	background-color: transparent !important;
 	color: var(--primary) !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+	outline: none !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button.active:focus,
+:host-context(html.app-dark) .profile-content-panel .profile-sections button.active:focus-visible,
+:host-context(html.app-dark) .profile-content-panel .profile-sections button.active:active {
+	background: transparent !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+	outline: none !important;
 }
 :host-context(html.app-dark) .profile-top h2,
 :host-context(html.app-dark) .profile-brand,
@@ -1835,6 +1847,29 @@ main
 }
 :host-context(html.app-dark) ion-button.edit-profile-button ion-icon {
 	color: var(--text) !important;
+}
+
+:host .profile-content-panel .profile-sections button.active,
+:host-context(html.app-dark) .profile-content-panel .profile-sections button.active {
+	background: transparent !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+}
+:host .profile-content-panel .profile-sections button:focus-visible {
+	outline: none !important;
+	box-shadow: none !important;
+}
+:host .profile-stats-card .stats-row strong {
+	color: var(--primary) !important;
+}
+:host .profile-sections button.active {
+	background: transparent !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+}
+:host .profile-stats-card .stats-row strong {
+	color: var(--primary) !important;
 }
 
 .profile-page-header:has(.profile-header-back) .profile-brand {

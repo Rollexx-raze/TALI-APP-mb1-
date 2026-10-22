@@ -22,7 +22,7 @@
           <nav class="settings-simple-list" aria-label="Settings">
             <button class="settings-simple-row" type="button" (click)="openSection('account')"><span class="settings-row-icon"><ion-icon name="person-outline" aria-hidden="true"></ion-icon></span><span><strong>Account</strong><small>Profiles, personal details &amp; security</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="settings-simple-row" type="button" (click)="openSection('notifications')"><span class="settings-row-icon"><ion-icon name="notifications-outline" aria-hidden="true"></ion-icon></span><span><strong>Notification</strong><small>Choose what you hear about</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
-            <button class="settings-simple-row" type="button" (click)="openSection('appearance')"><span class="settings-row-icon" aria-hidden="true">◐</span><span><strong>Appearance</strong><small>Light, dark, or system theme</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="settings-simple-row" type="button" (click)="openSection('appearance')"><span class="settings-row-icon" aria-hidden="true">◐</span><span><strong>Appearance</strong><small>Light, dark</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="settings-simple-row" type="button" (click)="openSection('privacy')"><span class="settings-row-icon"><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon></span><span><strong>Privacy</strong><small>Control your connections</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
             <button class="settings-simple-row" type="button" (click)="openSection('help')"><span class="settings-row-icon"><ion-icon name="help-circle-outline" aria-hidden="true"></ion-icon></span><span><strong>Help</strong><small>Guidance, information &amp; about Tali</small></span><ion-icon class="settings-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
           </nav>
@@ -35,7 +35,6 @@
       @if (activeSection === 'profile' && profileSettingsMessage) { <p class="settings-action-feedback" role="status" aria-live="polite">{{ profileSettingsMessage }}</p> }
       @if (activeSection === 'notifications' && notificationMessage) { <p class="settings-action-feedback" role="status" aria-live="polite">{{ notificationMessage }}</p> }
       @if (activeSection === 'profile') {
-        <h2>Edit profile</h2>
         <form class="profile-settings-form" (ngSubmit)="saveProfileSettings()">
           <div class="edit-photo-card profile-photo-card">
             <div class="edit-photo-avatar">
@@ -55,16 +54,14 @@
           </div>
           <label class="profile-field"><strong>Bio</strong><textarea maxlength="150" [(ngModel)]="profileBio" name="bio" placeholder="Bio"></textarea><small>{{ profileBio.length }} / 150</small></label>
           <div class="profile-field gender-field"><strong>Gender</strong>
-            <div class="gender-picker">
-              <button type="button" class="gender-picker-trigger" [attr.aria-expanded]="genderMenuOpen" (click)="genderMenuOpen = !genderMenuOpen">{{ genderLabel }}<ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon></button>
-              @if (genderMenuOpen) {
-                <div class="gender-options" role="listbox" aria-label="Gender">
-                  @for (option of genderOptions; track option.value) {
-                    <button type="button" role="option" [attr.aria-selected]="profileGender === option.value" (click)="chooseGender(option.value)"><span>{{ option.label }}</span><span class="gender-radio">@if (profileGender === option.value) { <ion-icon name="checkmark-outline" aria-hidden="true"></ion-icon> }</span></button>
-                    @if (option.value === 'custom') { <input class="custom-gender-input" [hidden]="profileGender !== 'custom'" [(ngModel)]="customGender" name="customGender" aria-label="Enter custom gender"> }
-                  }
-                </div>
-              }
+            <div class="gender-picker" [class.is-open]="genderMenuOpen" (mouseenter)="genderMenuOpen = true" (mouseleave)="genderMenuOpen = false">
+              <button type="button" class="gender-picker-trigger" [attr.aria-expanded]="genderMenuOpen" aria-controls="gender-options" (click)="genderMenuOpen = true">{{ genderLabel }}<ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon></button>
+              <div id="gender-options" class="gender-options" role="listbox" aria-label="Gender" [attr.aria-hidden]="!genderMenuOpen" [attr.inert]="genderMenuOpen ? null : ''">
+                @for (option of genderOptions; track option.value) {
+                  <button type="button" role="option" [attr.aria-selected]="profileGender === option.value" (click)="chooseGender(option.value)"><span>{{ option.label }}</span></button>
+                  @if (option.value === 'custom') { <input class="custom-gender-input" [hidden]="profileGender !== 'custom'" [(ngModel)]="customGender" name="customGender" aria-label="Enter custom gender"> }
+                }
+              </div>
             </div>
           </div>
           <p class="field-help">This won’t be part of your public profile.</p>
@@ -73,7 +70,11 @@
       }
       @if (activeSection === 'account') {
         <section class="account-center-panel">
-          <h2>Accounts Center</h2>
+          <header class="account-center-heading">
+            <span>ACCOUNT &amp; IDENTITY</span>
+            <h2>Accounts Center</h2>
+            <p>Manage your profiles, security, and account details.</p>
+          </header>
           <button class="account-profiles-card" type="button" (click)="openSection('profile')">
             <span class="profile-avatar-stack">
               @for (account of accountService.accounts().slice(0, 2); track account.id) {
@@ -82,14 +83,14 @@
               }
             </span>
             <span class="account-profile-copy"><strong>Profiles and personal details</strong><small>{{ accountService.accounts().length }} profiles</small></span>
-            <ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+            <span class="account-profile-cta">Manage profiles<ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon></span>
           </button>
           <h3 class="account-settings-heading">Account settings</h3>
           <div class="account-settings-list">
-            <button class="account-setting-row" type="button" (click)="openSection('security')"><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon><span>Password and security</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
-            <button class="account-setting-row" type="button" (click)="openSection('messages')"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon><span>Connected experiences</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
-            <button class="account-setting-row" type="button" (click)="openSection('permissions')"><ion-icon name="document-text-outline" aria-hidden="true"></ion-icon><span>Your information and permissions</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
-            <button class="account-setting-row" type="button" routerLink="/more-accounts"><ion-icon name="people-outline" aria-hidden="true"></ion-icon><span>Manage accounts</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="account-setting-row" type="button" (click)="openSection('security')"><span class="account-setting-icon"><ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon></span><span>Password and security</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="account-setting-row" type="button" (click)="openSection('messages')"><span class="account-setting-icon"><ion-icon name="chatbubbles-outline" aria-hidden="true"></ion-icon></span><span>Connected experiences</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="account-setting-row" type="button" (click)="openSection('permissions')"><span class="account-setting-icon"><ion-icon name="document-text-outline" aria-hidden="true"></ion-icon></span><span>Your information and permissions</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
+            <button class="account-setting-row" type="button" routerLink="/more-accounts"><span class="account-setting-icon"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span><span>Manage accounts</span><ion-icon class="account-row-chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon></button>
           </div>
         </section>
       }
@@ -97,17 +98,13 @@
         <h2>Appearance</h2>
         <p class="detail-copy">Choose how Tali looks on this device.</p>
         <div class="appearance-options" role="group" aria-label="Appearance mode">
-          <button type="button" class="appearance-option" [class.selected]="appearance.mode() === 'light'" [attr.aria-pressed]="appearance.mode() === 'light'" (click)="appearance.setMode('light')">
+          <button type="button" class="appearance-option" [class.selected]="appearance.mode() !== 'dark'" [attr.aria-pressed]="appearance.mode() !== 'dark'" (click)="appearance.setMode('light')">
             <span class="appearance-preview"><i></i><i></i><i></i></span>
             <span class="appearance-option-copy">Light</span>
           </button>
           <button type="button" class="appearance-option" [class.selected]="appearance.mode() === 'dark'" [attr.aria-pressed]="appearance.mode() === 'dark'" (click)="appearance.setMode('dark')">
             <span class="appearance-preview dark-preview"><i></i><i></i><i></i></span>
             <span class="appearance-option-copy">Dark</span>
-          </button>
-          <button type="button" class="appearance-option" [class.selected]="appearance.mode() === 'system'" [attr.aria-pressed]="appearance.mode() === 'system'" (click)="appearance.setMode('system')">
-            <span class="appearance-preview"><i></i><i></i><i></i></span>
-            <span class="appearance-option-copy">System</span>
           </button>
         </div>
       }
@@ -178,7 +175,6 @@
       }
       @if (activeSection === 'security') {
         <section class="security-panel">
-          <div class="security-icon"><ion-icon name="key-outline" aria-hidden="true"></ion-icon></div>
           <h2>A fresh password.</h2>
           <p class="security-intro">Choose a password you don’t use elsewhere. Keep it private and easy for you to remember.</p>
           <div class="security-account">

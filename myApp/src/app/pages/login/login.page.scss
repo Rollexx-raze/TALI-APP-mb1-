@@ -214,9 +214,14 @@
   color: var(--text) !important;
 }
 :host-context(html.app-dark) .login-brand h1,
-:host-context(html.app-dark) .login-field label,
 :host-context(html.app-dark) .login-welcome {
   color: var(--text) !important;
+}
+:host-context(html.app-dark) .login-field label {
+  color: #fff !important;
+}
+:host-context(html.app-dark) .login-control-group > label {
+  color: #fff !important;
 }
 :host-context(html.app-dark) .login-brand p,
 :host-context(html.app-dark) .login-footer-note,
@@ -238,8 +243,8 @@
 }
 :host-context(html.app-dark) .login-link-button:first-child {
   border-color: var(--border) !important;
-  background: var(--primary-soft) !important;
-  color: var(--primary) !important;
+  background: var(--surface-2) !important;
+  color: var(--text-muted) !important;
 }
 :host-context(html.app-dark) .login-password-toggle {
   --color: var(--text-muted) !important;
