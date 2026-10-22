@@ -74,16 +74,11 @@
         <div class="magazine-grid">
           @for (post of magazinePosts(ownPosts); track post.id; let first = $first) {
             <article class="magazine-card" [class.magazine-featured]="first">
-              <div class="magazine-image" [class.has-image]="postImage(post)">
-                @if (postImage(post); as image) { <img [src]="image" alt="" loading="lazy" /> }
-                @else { <span class="magazine-image-mark" aria-hidden="true">T</span> }
-                <span class="magazine-category">{{ post.groupId ? 'COMMUNITY' : 'FIELD NOTES' }}</span>
-              </div>
               <div class="magazine-copy">
                 <div class="magazine-meta"><span>{{ post.createdAt | date:'MMMM d, y' }}</span><span>{{ post.authorName }}</span></div>
                 <h3>{{ magazineTitle(post.body) }}</h3>
                 <p>{{ magazineExcerpt(post.body) }}</p>
-                <div class="magazine-footer"><span>{{ post.likes.length }} appreciations</span><span class="magazine-read-label">READ STORY <span aria-hidden="true">↗</span></span></div>
+                <div class="magazine-footer"><span>{{ post.likes.length }} likes · {{ post.comments.length }} comments</span><a class="magazine-read-label" [routerLink]="['/home']" [queryParams]="{ postId: post.id }" [attr.aria-label]="'Read post by ' + post.authorName">READ STORY <span aria-hidden="true">↗</span></a></div>
               </div>
             </article>
           } @empty { <div class="magazine-empty"><h3>Your story starts here</h3><p>Share a moment and it will find a place on this page.</p></div> }
@@ -103,16 +98,11 @@
         <div class="magazine-grid">
           @for (post of magazinePosts(repostedPosts); track post.id; let first = $first) {
             <article class="magazine-card" [class.magazine-featured]="first">
-              <div class="magazine-image" [class.has-image]="postImage(post)">
-                @if (postImage(post); as image) { <img [src]="image" alt="" loading="lazy" /> }
-                @else { <span class="magazine-image-mark" aria-hidden="true">T</span> }
-                <span class="magazine-category">{{ post.groupId ? 'COMMUNITY' : 'FIELD NOTES' }}</span>
-              </div>
               <div class="magazine-copy">
                 <div class="magazine-meta"><span>{{ post.createdAt | date:'MMMM d, y' }}</span><span>{{ post.authorName }}</span></div>
                 <h3>{{ magazineTitle(post.body) }}</h3>
                 <p>{{ magazineExcerpt(post.body) }}</p>
-                <div class="magazine-footer"><span>{{ post.likes.length }} appreciations</span><span class="magazine-read-label">READ STORY <span aria-hidden="true">↗</span></span></div>
+                <div class="magazine-footer"><span>{{ post.likes.length }} likes · {{ post.comments.length }} comments</span><a class="magazine-read-label" [routerLink]="['/home']" [queryParams]="{ postId: post.id }" [attr.aria-label]="'Read post by ' + post.authorName">READ STORY <span aria-hidden="true">↗</span></a></div>
               </div>
             </article>
           } @empty { <div class="magazine-empty"><h3>Your repost</h3><p>Posts you repost will appear in this collection.</p></div> }
