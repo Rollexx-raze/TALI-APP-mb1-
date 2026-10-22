@@ -1,41 +1,111 @@
 <ion-header class="home-header ion-no-border">
   <ion-toolbar>
     <div class="home-toolbar-row">
-      <div class="home-brand-mark"><img class="logo-on-dark" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="Tali" /><img class="logo-on-light" src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png" alt="" aria-hidden="true" /></div>
-      <ion-button fill="clear" class="search-button" aria-label="Explore" routerLink="/search">
-        <ion-icon slot="icon-only" name="options-outline"></ion-icon>
-      </ion-button>
+      <div class="home-brand-mark">
+        <img
+          class="logo-on-dark"
+          src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png"
+          alt="Tali"
+        />
+        <img
+          class="logo-on-light"
+          src="/assets/Logo%20%E2%80%93%20light@2x-transparent.png"
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      <app-feed-menu
+        style="grid-column: 2; justify-self: end; position: relative; z-index: 1"
+      ></app-feed-menu>
     </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="home-content" [scrollEvents]="true" (ionScroll)="saveScroll($event)">
+<ion-content
+  class="home-content"
+  [scrollEvents]="true"
+  (ionScroll)="saveScroll($event)"
+>
   <div class="screen-shell">
-    <button type="button" class="home-search-prompt" routerLink="/search"><ion-icon name="search-outline" aria-hidden="true"></ion-icon><span>Search Tali</span></button>
+    <button
+      type="button"
+      class="home-search-prompt"
+      routerLink="/search"
+    >
+      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+      <span>Search Tali</span>
+    </button>
+
     @if (accountService.selectedAccount(); as account) {
       <section class="home-account-row" aria-label="Current account">
         <ion-avatar class="profile-avatar">
           @if (profileImageFor(account.id); as profileImage) {
             <img [src]="profileImage" alt="" />
           } @else {
-            <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+            <ion-icon
+              name="person-circle-outline"
+              aria-hidden="true"
+            ></ion-icon>
           }
         </ion-avatar>
+
         <div class="home-account-copy">
-          <span class="home-greeting">Good morning, {{ account.name.split(' ')[0] }}</span>
+          <span class="home-greeting">
+            Good morning, {{ account.name.split(' ')[0] }}
+          </span>
           <strong>What’s your story today?</strong>
         </div>
-        <button type="button" class="home-compose-shortcut" routerLink="/add-post" aria-label="Create a post"><ion-icon name="create-outline" aria-hidden="true"></ion-icon></button>
+
+        <button
+          type="button"
+          class="home-compose-shortcut"
+          routerLink="/add-post"
+          aria-label="Create a post"
+        >
+          <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+        </button>
       </section>
     }
 
-    <div class="feed-tabs" role="tablist" aria-label="Feed">
-      <button type="button" role="tab" class="feed-tab" [class.is-active]="activeFeed === 'for-you'" [attr.aria-selected]="activeFeed === 'for-you'" (click)="setFeed('for-you')">For you</button>
-      <button type="button" role="tab" class="feed-tab" [class.is-active]="activeFeed === 'following'" [attr.aria-selected]="activeFeed === 'following'" (click)="setFeed('following')">Following</button>
+    <div
+      class="feed-tabs"
+      role="tablist"
+      aria-label="Feed"
+      [class.is-following]="activeFeed === 'following'"
+    >
+      <button
+        type="button"
+        role="tab"
+        class="feed-tab"
+        [class.is-active]="activeFeed === 'for-you'"
+        [attr.aria-selected]="activeFeed === 'for-you'"
+        (click)="setFeed('for-you')"
+      >
+        <span>For You</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        class="feed-tab"
+        [class.is-active]="activeFeed === 'following'"
+        [attr.aria-selected]="activeFeed === 'following'"
+        (click)="setFeed('following')"
+      >
+        <span>Following</span>
+      </button>
+
+      <span class="feed-tab-indicator" aria-hidden="true"></span>
     </div>
 
     @if (postService.loading() && visiblePosts.length === 0) {
-      <section class="feed-loading-skeletons" role="status" aria-busy="true" aria-label="Loading posts">
+      <section
+        class="feed-loading-skeletons"
+        role="status"
+        aria-busy="true"
+        aria-label="Loading posts"
+      >
         @for (item of [1, 2, 3]; track item) {
           <article class="feed-loading-card" aria-hidden="true">
             <span class="design-skeleton design-skeleton-avatar"></span>
@@ -49,17 +119,23 @@
       <section class="feed-empty" role="alert">
         <h3>Could not load posts</h3>
         <p>{{ postService.loadError() }}</p>
-        <ion-button fill="outline" (click)="retryLoadingPosts()">Retry</ion-button>
+        <ion-button fill="outline" (click)="retryLoadingPosts()">
+          Retry
+        </ion-button>
       </section>
     } @else if (visiblePosts.length === 0) {
       <section class="feed-empty">
         <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
+
         @if (activeFeed === 'following') {
           <h3>Nothing from people you follow</h3>
           <p>Follow accounts to see their posts here.</p>
         } @else {
           <h3>Welcome to Tali</h3>
-          <p>Your feed is ready. Create a post or explore these sample conversations to get started.</p>
+          <p>
+            Your feed is ready. Create a post or explore these sample
+            conversations to get started.
+          </p>
           <ion-button fill="clear" routerLink="/add-post">
             <ion-icon slot="start" name="add-circle"></ion-icon>
             Create a post
@@ -68,39 +144,75 @@
       </section>
     }
 
-    @if (!postService.loading() && !postService.loadError() && activeFeed === 'for-you' && visiblePosts.length === 0) {
+    @if (
+      !postService.loading() &&
+      !postService.loadError() &&
+      activeFeed === 'for-you' &&
+      visiblePosts.length === 0
+    ) {
       <section class="starter-feed" aria-label="Sample posts">
         <article class="starter-post">
           <div class="starter-avatar" aria-hidden="true">J</div>
           <div class="starter-post-content">
-            <div class="starter-post-heading"><strong>Jordan Cruz</strong><span>@jordan.cruz</span><small>Sample</small></div>
+            <div class="starter-post-heading">
+              <strong>Jordan Cruz</strong>
+              <span>@jordan.cruz</span>
+              <small>Sample</small>
+            </div>
             <p>First thread on Tali, connecting one idea at a time.</p>
-            <div class="starter-post-actions" aria-hidden="true"><span>♡ <b>5</b></span><span>◯ <b>12</b></span><span>↻ <b>1</b></span></div>
+            <div class="starter-post-actions" aria-hidden="true">
+              <span>♡ <b>5</b></span>
+              <span>◯ <b>12</b></span>
+              <span>↻ <b>1</b></span>
+            </div>
           </div>
         </article>
+
         <article class="starter-post">
           <div class="starter-avatar" aria-hidden="true">M</div>
           <div class="starter-post-content">
-            <div class="starter-post-heading"><strong>Mika Santos</strong><span>@mika.santos</span><small>Sample</small></div>
+            <div class="starter-post-heading">
+              <strong>Mika Santos</strong>
+              <span>@mika.santos</span>
+              <small>Sample</small>
+            </div>
             <p>Loving how simple it is to start a conversation here.</p>
-            <div class="starter-post-actions" aria-hidden="true"><span>♡ <b>8</b></span><span>◯ <b>3</b></span><span>↻ <b>2</b></span></div>
+            <div class="starter-post-actions" aria-hidden="true">
+              <span>♡ <b>8</b></span>
+              <span>◯ <b>3</b></span>
+              <span>↻ <b>2</b></span>
+            </div>
           </div>
         </article>
+
         <article class="starter-post">
           <div class="starter-avatar" aria-hidden="true">D</div>
           <div class="starter-post-content">
-            <div class="starter-post-heading"><strong>Dani Reyes</strong><span>@dani.reyes</span><small>Sample</small></div>
+            <div class="starter-post-heading">
+              <strong>Dani Reyes</strong>
+              <span>@dani.reyes</span>
+              <small>Sample</small>
+            </div>
             <p>Anyone else exploring the new features today?</p>
-            <div class="starter-post-actions" aria-hidden="true"><span>♡ <b>4</b></span><span>◯ <b>6</b></span><span>↻ <b>1</b></span></div>
+            <div class="starter-post-actions" aria-hidden="true">
+              <span>♡ <b>4</b></span>
+              <span>◯ <b>6</b></span>
+              <span>↻ <b>1</b></span>
+            </div>
           </div>
         </article>
       </section>
     }
 
-    @if (visiblePosts.length > 0) {
-      @for (post of visiblePosts; track post.id) {
-        <app-post-card [post]="post" [focusPostOnLoad]="post.id === focusedPostId" [openCommentsOnLoad]="post.id === focusedPostId && openCommentsForFocusedPost" [focusRequestId]="notificationFocusKey"></app-post-card>
-      }
+    @for (post of visiblePosts; track post.id) {
+      <app-post-card
+        [post]="post"
+        [focusPostOnLoad]="post.id === focusedPostId"
+        [openCommentsOnLoad]="
+          post.id === focusedPostId && openCommentsForFocusedPost
+        "
+        [focusRequestId]="notificationFocusKey"
+      ></app-post-card>
     }
   </div>
 </ion-content>

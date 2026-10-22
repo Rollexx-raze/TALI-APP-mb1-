@@ -18,10 +18,7 @@
       @if (authorImage; as profileImage) {
         <img [src]="profileImage" alt="" />
       } @else {
-        <ion-icon
-          name="person-circle-outline"
-          aria-hidden="true"
-        ></ion-icon>
+        <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
       }
     </div>
   </ng-template>
@@ -48,9 +45,7 @@
             <span
               class="post-time"
               [attr.title]="post.createdAt | date:'medium'"
-            >
-              {{ timeAgo }}
-            </span>
+            >{{ timeAgo }}</span>
           </div>
           <span class="post-handle">{{ post.authorUsername }}</span>
         </div>
@@ -64,10 +59,7 @@
         [attr.aria-expanded]="showMoreOptions"
         (click)="showMoreOptions = !showMoreOptions"
       >
-        <ion-icon
-          name="ellipsis-horizontal"
-          aria-hidden="true"
-        ></ion-icon>
+        <ion-icon name="ellipsis-horizontal" aria-hidden="true"></ion-icon>
       </button>
 
       @if (showMoreOptions) {
@@ -88,11 +80,7 @@
           @if (isPostOwner) {
             <div class="post-menu-group" role="group" aria-label="Manage post">
               @if (post.trashedAt) {
-                <button
-                  type="button"
-                  role="menuitem"
-                  (click)="restorePost()"
-                >
+                <button type="button" role="menuitem" (click)="restorePost()">
                   <span>Restore post</span>
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M3 10a9 9 0 1 1 2 8"></path>
@@ -155,12 +143,15 @@
             </div>
           }
 
-          <div class="post-menu-group" role="group" aria-label="Post link">
-            <button
-              type="button"
-              role="menuitem"
-              (click)="copyPostLink()"
-            >
+          <div class="post-menu-group" role="group" aria-label="Save and share">
+            @if (!post.trashedAt && !post.archivedAt) {
+              <app-post-save
+                [postId]="post.id"
+                (changed)="showMoreOptions = false"
+              ></app-post-save>
+            }
+
+            <button type="button" role="menuitem" (click)="copyPostLink()">
               <span>Copy link</span>
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M9 7H7a5 5 0 0 0 0 10h2"></path>
@@ -218,6 +209,7 @@
           >
             <ion-icon name="chevron-back-outline"></ion-icon>
           </button>
+
           <button
             class="attachment-arrow attachment-arrow-next"
             type="button"

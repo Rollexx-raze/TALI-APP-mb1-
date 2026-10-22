@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonSearchbar, IonToolbar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import 'emoji-picker-element';
-import { addCircle, alertCircleOutline, archiveOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, documentTextOutline, downloadOutline, ellipsisHorizontal, filterOutline, gridOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, statsChartOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
+import { informationCircleOutline, addCircle, alertCircleOutline, archiveOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, documentTextOutline, downloadOutline, ellipsisHorizontal, filterOutline, gridOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, statsChartOutline, stopCircleOutline, trashOutline, videocamOutline } from 'ionicons/icons';
 import { Account, AccountService } from '../../services/account.service';
 import { GroupService } from '../../services/group.service';
 import { ChatAttachment, ChatMessage, Community, Conversation, MessageService, SharedItemsType } from '../../services/message.service';
@@ -421,7 +421,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   }
 
   constructor() {
-    addIcons({ addCircle, alertCircleOutline, archiveOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, documentTextOutline, downloadOutline, ellipsisHorizontal, filterOutline, gridOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, statsChartOutline, stopCircleOutline, trashOutline, videocamOutline });
+    addIcons({ informationCircleOutline, addCircle, alertCircleOutline, archiveOutline, arrowRedoOutline, arrowUndoOutline, arrowUpOutline, cameraOutline, chatbubbleOutline, checkmarkOutline, chevronBackOutline, chevronDownOutline, closeOutline, copyOutline, createOutline, documentOutline, documentTextOutline, downloadOutline, ellipsisHorizontal, filterOutline, gridOutline, happyOutline, heartOutline, homeOutline, imageOutline, micOutline, notificationsOffOutline, notificationsOutline, paperPlaneOutline, pauseOutline, peopleOutline, personCircleOutline, pinOutline, playOutline, searchOutline, statsChartOutline, stopCircleOutline, trashOutline, videocamOutline });
     effect(() => {
       const conversations = this.conversations();
       const activeId = this.activeConversationId;
