@@ -454,7 +454,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.showSharedItems = saved.showSharedItems ?? false;
     this.sharedItemsType = saved.sharedItemsType ?? 'photos';
     this.showFilters = saved.showFilters ?? false;
-    this.composeMode = saved.composeMode ?? null;
+    this.composeMode = saved.composeMode === 'community' ? null : saved.composeMode ?? null;
     this.selectedCommunityId = saved.selectedCommunityId ?? null;
     this.groupName = saved.groupName ?? '';
     this.selectedMemberIds = saved.selectedMemberIds ?? [];

@@ -248,7 +248,7 @@
             <div class="community-topic-empty"><span><ion-icon name="chatbubble-outline"></ion-icon></span><h3>No topic chats yet</h3><p>Create a topic chat to start conversations within this community.</p><button type="button" class="community-create-button" (click)="setComposeMode('community-chat')"><ion-icon name="add-circle"></ion-icon> Create topic chat</button></div>
           }
         } @else {
-          <header class="community-list-heading"><div><h2>Your communities</h2><p>One community, with separate chats for each topic.</p></div><div class="community-heading-actions"><button type="button" (click)="setComposeMode('join-community')"><ion-icon name="people-outline"></ion-icon> Join with invite</button><button type="button" (click)="setComposeMode('community')"><ion-icon name="add-circle"></ion-icon> Create community</button></div></header>
+          <header class="community-list-heading"><div><h2>Your communities</h2><p>One community, with separate chats for each topic.</p></div><div class="community-heading-actions"><button type="button" (click)="setComposeMode('join-community')"><ion-icon name="people-outline"></ion-icon> Join with invite</button></div></header>
           @if (visibleCommunities.length) {
             <section class="community-card-list">
               @for (community of visibleCommunities; track community.id) {
@@ -263,8 +263,8 @@
             <div class="community-topic-empty">
               <span><ion-icon [name]="searchQuery ? 'search-outline' : 'people-outline'"></ion-icon></span>
               <h3>{{ searchQuery ? 'No results found' : 'No communities yet' }}</h3>
-              <p>{{ searchQuery ? 'Try another community name.' : 'Create a community or join one with an invite link.' }}</p>
-              @if (!searchQuery) { <div class="community-empty-actions"><button type="button" class="community-create-button" (click)="setComposeMode('community')"><ion-icon name="add-circle"></ion-icon> Create community</button><button type="button" class="community-create-button" (click)="setComposeMode('join-community')"><ion-icon name="people-outline"></ion-icon> Join with invite</button></div> }
+              <p>{{ searchQuery ? 'Try another community name.' : 'Join a community with an invite link.' }}</p>
+              @if (!searchQuery) { <div class="community-empty-actions"><button type="button" class="community-create-button" (click)="setComposeMode('join-community')"><ion-icon name="people-outline"></ion-icon> Join with invite</button></div> }
             </div>
           }
         }
@@ -412,10 +412,6 @@
           <button type="button" class="compose-choice" (click)="setComposeMode('group')">
             <strong>Create group chat</strong>
             <span>Start one group conversation with selected members.</span>
-          </button>
-          <button type="button" class="compose-choice" (click)="setComposeMode('community')">
-            <strong>Create a community</strong>
-            <span>Organize several topic chats in one space.</span>
           </button>
           <button type="button" class="compose-choice" (click)="setComposeMode('join-community')">
             <strong>Join a community</strong>
