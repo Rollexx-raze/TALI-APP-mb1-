@@ -1793,7 +1793,73 @@ ion-header.settings-header:has(+ .settings-content .settings-redesign) h1 {
   color: var(--text);
 }
 
-@media (max-width: 420px) {
+/* Privacy and notification detail pages contain fixed light redesign colors. */
+:host-context(html.app-dark) ion-content.settings-content {
+  --background: var(--bg);
+}
+:host-context(html.app-dark) ion-content.settings-content::part(background),
+:host-context(html.app-dark) ion-content.settings-content::part(scroll),
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card),
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) {
+  background: var(--bg) !important;
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content.settings-content .settings-detail .privacy-setting-card),
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content.settings-content .notification-intro),
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content.settings-content .settings-detail .privacy-setting-card) ion-toolbar,
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content.settings-content .notification-intro) ion-toolbar {
+  --background: var(--bg) !important;
+  background: var(--bg) !important;
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content.settings-content .settings-detail .privacy-setting-card) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content.settings-content .notification-intro) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content.settings-content .settings-detail .privacy-setting-card) ion-button,
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content.settings-content .notification-intro) ion-button {
+  --color: var(--text) !important;
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .privacy-setting-card,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .privacy-setting-card ion-item,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .privacy-setting-card ion-item::part(native),
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .settings-privacy-list,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .settings-privacy-list .account-setting-row,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .notification-settings-card,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .notification-setting-row,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .notification-setting-row::part(native),
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .settings-info-card,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .settings-about-card {
+  --background: var(--surface) !important;
+  --color: var(--text) !important;
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) h2,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) h3,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) ion-label,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .account-setting-row > span,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) h2,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) h3,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) ion-label,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .settings-about-card strong {
+  color: var(--text) !important;
+}
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .detail-copy,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) ion-label p,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .account-setting-row small,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .account-row-chevron,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .detail-copy,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) ion-label p,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .settings-about-card p,
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .settings-about-card small {
+  color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .settings-detail:has(.notification-intro) .notification-setting-row ion-toggle,
+:host-context(html.app-dark) .settings-detail:has(.privacy-setting-card) .privacy-setting-card ion-toggle {
+  --track-background: var(--surface-alt);
+  --track-background-checked: var(--primary);
+  --handle-background: var(--text);
+  --handle-background-checked: var(--text);
+}@media (max-width: 420px) {
   .settings-redesign .profile-settings-form .profile-photo-card {
     display: grid;
     grid-template-columns: 78px minmax(0, 1fr) 34px;
