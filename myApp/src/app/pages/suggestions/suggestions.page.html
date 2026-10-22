@@ -67,7 +67,7 @@
       }
       @for (community of messageCommunities; track community.id) {
         <button type="button" class="suggestion-row community-group-card activity-community-group" (click)="openMessageCommunity(community)">
-          <span class="group-chat-avatar"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span>
+          <span class="group-chat-avatar">@if (community.photo) { <img [src]="community.photo" [alt]="community.name + ' group photo'" /> } @else { <ion-icon name="people-outline" aria-hidden="true"></ion-icon> }</span>
           <span class="suggestion-copy"><strong>{{ community.name }}</strong><span>Community chat group</span></span>
           <span class="group-chat-count">{{ community.memberIds.length }} member{{ community.memberIds.length === 1 ? '' : 's' }} · {{ messageCommunityChatCount(community) }} chat{{ messageCommunityChatCount(community) === 1 ? '' : 's' }}</span>
         </button>

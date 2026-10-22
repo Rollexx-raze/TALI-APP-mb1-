@@ -188,6 +188,9 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   sharedItemsType: SharedItemsType = 'photos';
   nicknameDraft = '';
   callNotice = '';
+  groupPhotoNotice = '';
+  showGroupPhotoOptions = false;
+  private groupPhotoTarget: { kind: 'community' | 'conversation'; id: string } | null = null;
   settingsNotice = '';
   showBlockConfirmation = false;
   pendingBlockConversationId: string | null = null;
@@ -713,6 +716,91 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     const otherAccount = this.accounts().find((account) => account.id === otherId);
     const nickname = this.messageService.settingsFor(conversation.id).nicknames[String(otherId)];
     return nickname?.trim() || otherAccount?.name || otherAccount?.username || 'Account unavailable';
+  }
+
+  communityForConversation(conversation: Conversation) {
+    return conversation.communityId
+      ? this.messageService.communities().find((community) => community.id === conversation.communityId) ?? null
+      : null;
+  }
+
+  conversationGroupPhoto(conversation: Conversation) {
+    return this.communityForConversation(conversation)?.photo ?? conversation.photo ?? null;
+  }
+
+  openCommunityPhotoOptions(community: Community) {
+    this.groupPhotoTarget = { kind: 'community', id: community.id };
+    this.groupPhotoNotice = '';
+    this.showGroupPhotoOptions = true;
+  }
+
+  openConversationPhotoOptions(conversation: Conversation) {
+    this.groupPhotoTarget = {
+      kind: conversation.communityId ? 'community' : 'conversation',
+      id: conversation.communityId ?? conversation.id,
+    };
+    this.groupPhotoNotice = '';
+    this.showGroupPhotoOptions = true;
+  }
+
+  get selectedPhotoTargetHasPhoto() {
+    const target = this.groupPhotoTarget;
+    if (!target) return false;
+    return target.kind === 'community'
+      ? !!this.messageService.communities().find((community) => community.id === target.id)?.photo
+      : !!this.messageService.conversations().find((conversation) => conversation.id === target.id)?.photo;
+  }
+
+  deleteSelectedGroupPhoto() {
+    const target = this.groupPhotoTarget;
+    if (!target) return;
+    if (target.kind === 'community') this.messageService.updateCommunityPhoto(target.id, undefined);
+    else this.messageService.updateConversationPhoto(target.id, undefined);
+    this.closeGroupPhotoOptions();
+  }
+
+  closeGroupPhotoOptions() {
+    this.showGroupPhotoOptions = false;
+    this.groupPhotoTarget = null;
+  }
+
+  openPhotoSource(input: HTMLInputElement) {
+    this.showGroupPhotoOptions = false;
+    input.click();
+  }
+
+  async onGroupPhotoSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    const target = this.groupPhotoTarget;
+    this.groupPhotoTarget = null;
+    if (!file || !target) return;
+    this.groupPhotoNotice = '';
+    const dataUrl = await this.readGroupPhoto(file);
+    if (!dataUrl) return;
+    if (target.kind === 'community') this.messageService.updateCommunityPhoto(target.id, dataUrl);
+    else this.messageService.updateConversationPhoto(target.id, dataUrl);
+  }
+
+  private readGroupPhoto(file: File): Promise<string | null> {
+    if (!file.type.startsWith('image/')) {
+      this.groupPhotoNotice = 'Choose an image file for the group photo.';
+      return Promise.resolve(null);
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.groupPhotoNotice = 'Group photos must be 5 MB or smaller.';
+      return Promise.resolve(null);
+    }
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null);
+      reader.onerror = () => {
+        this.groupPhotoNotice = 'The photo could not be loaded. Choose another image.';
+        resolve(null);
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   groupMembers(conversation: Conversation, showAll = false) {

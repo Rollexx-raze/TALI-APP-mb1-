@@ -41,7 +41,9 @@
 .chat-group-title { display: grid; justify-items: start; gap: var(--s2); padding: 0; border: 0; background: var(--transparent); font: inherit; font-weight: 650; text-align: left; cursor: pointer; }
 .chat-group-title span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chat-group-title small { color: var(--text-muted); font-size: var(--fb); font-weight: 450; }
-.chat-group-avatar { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; border: 1px solid var(--border); border-radius: var(--rc); background: var(--surface); color: var(--primary); }
+.chat-group-avatar { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; overflow: hidden; padding: 0; border: 1px solid var(--border); border-radius: var(--rc); background: var(--surface); color: var(--primary); cursor: pointer; }
+.chat-toolbar-row .chat-group-avatar { box-sizing: border-box; width: 28px; min-width: 28px !important; height: 28px; min-height: 28px !important; flex: 0 0 28px; aspect-ratio: 1; border-radius: 50%; }
+.chat-group-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .chat-group-avatar ion-icon { font-size: var(--fb); }
 .chat-header-actions { display: flex; flex: 0 0 auto; align-items: center; }
 .chat-header-actions ion-button { width: 40px; height: 42px; margin: 0; --color: var(--text); font-size: var(--fs); }
@@ -818,6 +820,12 @@
 .group-member-avatar { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; overflow: hidden; border-radius: var(--rc); background: var(--surface); color: var(--text-muted); font-size: var(--fh); }
 .group-member-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .group-member-avatar ion-icon { width: 24px; height: 24px; }
+.group-photo-settings { display: grid; }
+.group-photo-preview { display: flex; align-items: center; gap: 14px; }
+.group-photo-preview > img,
+.group-photo-preview > ion-icon { display: grid; width: 64px; height: 64px; flex: 0 0 64px; place-items: center; overflow: hidden; border: 1px solid var(--border); border-radius: 50%; background: var(--surface-2); color: var(--primary); object-fit: cover; font-size: 32px; }
+.group-photo-preview > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.group-photo-preview button { min-height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--r8); background: var(--surface); color: var(--text); font: inherit; cursor: pointer; }
 .group-member-copy { display: grid; min-width: 0; gap: var(--s2); }
 .group-member-copy strong { overflow: hidden; color: var(--text); font-size: var(--fb); text-overflow: ellipsis; white-space: nowrap; }
 .group-member-copy small { color: var(--text-muted); font-size: var(--fb); }
@@ -825,7 +833,7 @@
 .group-info-backdrop { position: fixed; z-index: 60; inset: var(--s8) 0 0; display: block; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; background: var(--bg); }
 .group-info-backdrop .chat-settings-panel { display: block; width: 100%; height: auto; min-height: 100%; overflow: visible; padding: var(--s2) var(--s4) calc(var(--s5) + env(safe-area-inset-bottom, var(--s0))); background: var(--bg); box-shadow: none; }
 .group-info-backdrop .chat-settings-header,
-.group-info-backdrop .chat-settings-panel > .settings-block:not(.group-members-block),
+.group-info-backdrop .chat-settings-panel > .settings-block:not(.group-members-block):not(.group-photo-settings),
 .group-info-backdrop .chat-settings-panel > .settings-actions,
 .group-info-backdrop .chat-settings-panel > .settings-notice { display: none; }
 .group-info-backdrop .group-members-block { display: grid; gap: var(--s2); padding: var(--s2) 0 var(--s4); border: 0; }
@@ -2210,6 +2218,19 @@
 .community-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .community-card-icon { display: grid; width: 46px; height: 46px; flex: 0 0 46px; place-items: center; border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border)); border-radius: 14px; background: color-mix(in srgb, var(--primary) 15%, var(--surface)); color: var(--primary); }
 .community-card-icon ion-icon { font-size: 22px; }
+.community-card-icon img,
+.community-heading-icon img,
+.community-topic-icon img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.community-photo-button { position: relative; width: 40px; min-width: 40px !important; height: 40px; min-height: 40px !important; flex: 0 0 40px; aspect-ratio: 1; padding: 0; border: 0; border-radius: 50%; color: var(--primary); cursor: pointer; }
+.community-photo-camera { position: absolute; right: -3px; bottom: -3px; display: grid; width: 23px; height: 23px; place-items: center; border: 2px solid var(--surface); border-radius: 50%; background: var(--primary); color: var(--on-primary); }
+.community-photo-camera ion-icon { font-size: 13px; }
+.group-photo-options-backdrop { position: fixed; z-index: 1200; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 16px; background: rgba(0, 0, 0, .58); }
+.group-photo-options-sheet { width: min(100%, 440px); padding: 24px 20px max(20px, env(safe-area-inset-bottom)); border: 1px solid var(--border); border-radius: 28px; background: var(--surface); color: var(--text); box-shadow: 0 18px 56px rgba(0, 0, 0, .32); }
+.group-photo-options-sheet h2 { margin: 0 0 20px; font-size: 22px; font-weight: 650; }
+.group-photo-options-sheet button { display: flex; width: 100%; min-height: 58px; align-items: center; padding: 0 8px; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 17px; text-align: left; cursor: pointer; }
+.group-photo-options-sheet button:focus-visible { border-radius: 10px; outline: 2px solid var(--primary); }
+.group-photo-options-sheet .group-photo-cancel { min-height: 46px; justify-content: center; margin-top: 10px; border-top: 1px solid var(--border); color: var(--text-muted); }
+.group-photo-options-sheet .delete-group-photo-choice { color: var(--danger, #d33); }
 .community-card-copy { display: grid; min-width: 0; flex: 1 1 auto; gap: 4px; }
 .community-card-copy strong { overflow: hidden; color: var(--text); font-size: 14px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 .community-card-copy span { color: var(--text-muted); font-size: 11px; line-height: 1.35; }
