@@ -195,6 +195,9 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   groupMemberSearch = '';
   selectedMemberIds: number[] = [];
   messageDraft = '';
+  quickEmojiPressing = false;
+  quickEmojiScale = 1;
+  private quickEmojiGrowTimer: ReturnType<typeof setInterval> | null = null;
   isComposerExpanded = false;
   private readonly allowedDocumentExtensions = new Set(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'zip']);
   pendingAttachments: ChatAttachment[] = [];
@@ -747,6 +750,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.cancelQuickEmojiPress();
     this.footerResizeObserver?.disconnect();
     if (this.revealActionsTimer) clearTimeout(this.revealActionsTimer);
     if (this.replyHighlightTimer) clearTimeout(this.replyHighlightTimer);
@@ -887,8 +891,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   }
 
   quickReactionLabel() {
-    const emoji = this.activeChatSettings?.reactionEmoji || '❤️';
-    return emoji === '❤️' ? '♥' : emoji;
+    return this.activeChatSettings?.reactionEmoji || '❤️';
   }
 
   async retryMessage(message: ChatMessage) {
@@ -1858,17 +1861,44 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.pendingAttachments = [];
   }
 
-  sendQuickReaction() {
+  startQuickEmojiPress(event: PointerEvent) {
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    event.preventDefault();
+    try { (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId); } catch { /* Pointer capture is optional. */ }
+    this.cancelQuickEmojiPress();
+    this.quickEmojiPressing = true;
+    this.quickEmojiScale = 1;
+    this.quickEmojiGrowTimer = setInterval(() => {
+      this.quickEmojiScale = Math.min(5, this.quickEmojiScale + 0.25);
+    }, 120);
+  }
+
+  finishQuickEmojiPress() {
+    if (!this.quickEmojiPressing) return;
+    const scale = Math.max(2, this.quickEmojiScale);
+    this.cancelQuickEmojiPress();
+    this.sendQuickEmoji(scale);
+  }
+
+  cancelQuickEmojiPress() {
+    if (this.quickEmojiGrowTimer) clearInterval(this.quickEmojiGrowTimer);
+    this.quickEmojiGrowTimer = null;
+    this.quickEmojiPressing = false;
+    this.quickEmojiScale = 1;
+  }
+
+  sendQuickReaction(event?: MouseEvent) {
+    if (event && event.detail !== 0) return;
+    this.sendQuickEmoji(2);
+  }
+
+  private sendQuickEmoji(scale: number) {
     const conversation = this.activeConversation;
     const account = this.selectedAccount();
     if (!conversation || !account || this.isPreferenceEnabled('blockedFor')) return;
     const emoji = this.messageService.settingsFor(conversation.id).reactionEmoji || '❤️';
-    const targetMessage = conversation.messages.at(-1);
-    if (targetMessage) {
-      this.messageService.toggleReaction(conversation.id, targetMessage.id, account.id, emoji);
-      return;
-    }
-    this.messageService.sendMessage(conversation.id, account.id, emoji);
+    this.messageService.sendMessage(conversation.id, account.id, emoji, [], { quickEmojiScale: scale });
+    this.scrollToLatest();
   }
 }
 

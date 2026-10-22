@@ -1121,6 +1121,15 @@
 
 .page-footer img.navigation-icon { display: block; width: 24px; height: 24px; object-fit: contain; }
 
+.quick-emoji-message { display: inline-block; padding: 4px 2px; line-height: 1; background: transparent; transform-origin: center; }
+.quick-emoji-message-row .message-bubble-row { overflow: visible; }
+.chat-composer .quick-heart { display: inline-block; }
+.chat-composer .quick-heart.is-shaking { animation: quick-emoji-shake 110ms ease-in-out infinite alternate; transform-origin: center; }
+@keyframes quick-emoji-shake {
+  from { transform: rotate(-16deg) scale(1.08); }
+  to { transform: rotate(16deg) scale(1.08); }
+}
+
 /* Messages visual refresh */
 .page-header:has(.message-list-header) {
   position: relative;

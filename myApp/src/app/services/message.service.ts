@@ -18,6 +18,7 @@ export interface ChatMessage {
   pinnedFor?: number[];
   reportedFor?: number[];
   forwarded?: boolean;
+  quickEmojiScale?: number;
   replyTo?: { messageId: string; senderId: number; body: string };
 }
 
@@ -238,7 +239,7 @@ export class MessageService {
     return this.typingByConversation().get(conversationId) ?? [];
   }
 
-  sendMessage(conversationId: string, senderId: number, body: string, attachments: ChatAttachment[] = [], metadata: Pick<ChatMessage, 'forwarded' | 'replyTo'> = {}) {
+  sendMessage(conversationId: string, senderId: number, body: string, attachments: ChatAttachment[] = [], metadata: Pick<ChatMessage, 'forwarded' | 'replyTo' | 'quickEmojiScale'> = {}) {
     const text = body.trim();
     if ((!text && !attachments.length) || !this.conversations().some((item) => item.id === conversationId)) return null;
 

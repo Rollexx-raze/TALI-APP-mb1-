@@ -23,6 +23,7 @@
       <div class="message-list-header">
         <div class="message-list-heading">
           <h1>Messages</h1>
+          <ion-button fill="clear" aria-label="Create a message" title="Create a message" (click)="openComposeMenu()"><ion-icon slot="icon-only" name="create-outline"></ion-icon></ion-button>
         </div>
       </div>
     }
@@ -59,7 +60,7 @@
       }
       @for (message of visibleMessages; track message.id) {
         @if (shouldShowDateSeparator($index)) { <div class="message-date-separator"><span>{{ messageDateLabel(message.createdAt) }}</span></div> }
-        <div class="message-row" [id]="'message-' + message.id" [class.reply-target-highlight]="highlightedReplyMessageId === message.id" [class.own-message]="message.senderId === selectedAccount()?.id" [class.grouped-message]="$index > 0 && !shouldShowDateSeparator($index) && visibleMessages[$index - 1]?.senderId === message.senderId" [class.sender-run-end]="$index === visibleMessages.length - 1 || shouldShowDateSeparator($index + 1) || visibleMessages[$index + 1]?.senderId !== message.senderId" [class.message-actions-revealed]="revealedMessageActionsId === message.id" [class.message-actions-open]="messageActionsId === message.id" [class.reaction-picker-active]="reactionPickerMessageId === message.id && !reactionPickerForMedia">
+        <div class="message-row" [id]="'message-' + message.id" [class.quick-emoji-message-row]="!!message.quickEmojiScale" [class.reply-target-highlight]="highlightedReplyMessageId === message.id" [class.own-message]="message.senderId === selectedAccount()?.id" [class.grouped-message]="$index > 0 && !shouldShowDateSeparator($index) && visibleMessages[$index - 1]?.senderId === message.senderId" [class.sender-run-end]="$index === visibleMessages.length - 1 || shouldShowDateSeparator($index + 1) || visibleMessages[$index + 1]?.senderId !== message.senderId" [class.message-actions-revealed]="revealedMessageActionsId === message.id" [class.message-actions-open]="messageActionsId === message.id" [class.reaction-picker-active]="reactionPickerMessageId === message.id && !reactionPickerForMedia">
           <a class="message-sender-avatar" [class.own-message-avatar]="message.senderId === selectedAccount()?.id" [routerLink]="['/profile', message.senderId]" [attr.aria-label]="'View ' + messageAuthorName(message) + ' profile'">
             @if (messageAuthorImage(message); as image) { <img [src]="image" [alt]="messageAuthorName(message)" /> }
             @else { <span aria-hidden="true">{{ messageAuthorInitials(message) }}</span> }
@@ -79,7 +80,9 @@
               }
             }
             <div class="message-bubble-row">
-              @if ((message.body && !hasPhotoAttachment(message)) || (message.replyTo && !!message.body)) {
+              @if (message.quickEmojiScale) {
+                <div class="quick-emoji-message" [style.font-size.rem]="message.quickEmojiScale" aria-label="Emoji message">{{ message.body }}</div>
+              } @else if ((message.body && !hasPhotoAttachment(message)) || (message.replyTo && !!message.body)) {
                 <div class="bubble-wrap" [class.has-reaction]="messageReactionList(message).length > 0">
                 <div class="message-bubble" (click)="revealMessageActions(message)" (pointerdown)="startReactionPress(message)" (pointerup)="clearReactionPress()" (pointerleave)="clearReactionPress()" (pointercancel)="clearReactionPress()" (contextmenu)="$event.preventDefault(); openMessageActions(message, $event.currentTarget)">
                   @if (message.replyTo; as reply) {
@@ -798,7 +801,7 @@
           <textarea #chatMessageInput class="chat-text-input" name="chatMessage" rows="1" [ngModel]="messageDraft" (ngModelChange)="updateDraftTyping($event)" (input)="resizeComposerInput($event)" (blur)="clearTyping()" placeholder="Message" aria-label="Write a message" [disabled]="isPreferenceEnabled('blockedFor')" autocomplete="off"></textarea>
           <div class="composer-emoji-control"><ion-button type="button" fill="clear" aria-label="Open emoji picker" aria-haspopup="dialog" [attr.aria-expanded]="showComposerEmojiPicker" (click)="toggleComposerEmojiPicker()"><ion-icon slot="icon-only" name="happy-outline"></ion-icon></ion-button></div>
         </div>
-        <ion-button type="button" class="quick-heart-button" fill="clear" aria-label="Send quick reaction" [disabled]="isPreferenceEnabled('blockedFor')" (click)="sendQuickReaction()"><span class="quick-heart">{{ quickReactionLabel() }}</span></ion-button>
+        <ion-button type="button" class="quick-heart-button" fill="clear" aria-label="Hold to shake and send a bigger heart emoji" title="Hold to shake and send a bigger heart emoji" [disabled]="isPreferenceEnabled('blockedFor')" (pointerdown)="startQuickEmojiPress($event)" (pointerup)="finishQuickEmojiPress()" (pointercancel)="cancelQuickEmojiPress()" (click)="sendQuickReaction($event)"><span class="quick-heart" [class.is-shaking]="quickEmojiPressing">{{ quickReactionLabel() }}</span></ion-button>
         }
       </form>
       </div>
