@@ -23,15 +23,6 @@
       <div class="message-list-header">
         <div class="message-list-heading">
           <h1>Messages</h1>
-          @if (selectedAccount(); as account) {
-            <a class="inbox-profile-avatar" [routerLink]="['/profile', account.id]" [attr.aria-label]="'View your profile'">
-              @if (canViewProfileImage(account) && account.profileImage) { <img [src]="account.profileImage" [alt]="account.name" /> }
-              @else { <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon> }
-            </a>
-          }
-          <ion-button fill="clear" aria-label="New message" (click)="openComposeMenu()">
-            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-          </ion-button>
         </div>
       </div>
     }
@@ -436,7 +427,11 @@
             <ion-searchbar class="direct-message-search" placeholder="Search name or username" aria-label="Search people" [value]="composeSearch" (ionInput)="composeSearch = $any($event).detail.value ?? ''"></ion-searchbar>
           }
           @if (composeMode === 'group') {
-            <div class="group-create-intro"><span class="group-create-icon"><ion-icon name="people-outline"></ion-icon></span><div><strong>Bring everyone together</strong><p>Give your chat a name, then add at least one person.</p></div></div>
+            <section class="group-create-features" aria-label="Group chat features">
+              <article class="group-feature-tile"><span><ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon></span><h4>Add your people</h4><p>Choose who’s in the chat.</p></article>
+              <article class="group-feature-tile"><span><ion-icon name="create-outline" aria-hidden="true"></ion-icon></span><h4>Name your chat</h4><p>Make it easy to find.</p></article>
+              <article class="group-feature-tile"><span><ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon></span><h4>Stay connected</h4><p>Share plans together.</p></article>
+            </section>
             <label class="group-name-label" for="group-name">Group name</label>
             <ion-input id="group-name" class="group-name-input" [ngModel]="groupName" (ngModelChange)="setGroupName($event)" maxlength="60" placeholder="e.g. Weekend plans" aria-label="Group name"></ion-input>
             <label class="group-name-label" for="group-member-search">Add people</label>
