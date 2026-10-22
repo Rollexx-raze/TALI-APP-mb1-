@@ -1791,6 +1791,164 @@ main
 .magazine-read-label { padding: 0; border: 0; background: transparent; color: var(--primary); font-family: inherit; font-size: 10px; font-weight: 750; letter-spacing: .08em; line-height: 1; text-decoration: none; cursor: pointer; }
 .magazine-read-label:focus-visible { border-radius: 3px; outline: 2px solid var(--primary); outline-offset: 3px; }
 
+/* Final dark-mode overrides for profile refresh rules declared above. */
+:host-context(html.app-dark) .profile-content-panel,
+:host-context(html.app-dark) .profile-content-panel .profile-sections,
+:host-context(html.app-dark) .profile-content-panel .profile-sections button,
+:host-context(html.app-dark) .profile-page-shell,
+:host-context(html.app-dark) .profile-hero,
+:host-context(html.app-dark) .profile-top {
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections {
+	border-color: var(--border) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button {
+	color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button.active {
+	border-bottom-color: var(--primary) !important;
+	background: var(--surface) !important;
+	color: var(--primary) !important;
+}
+:host-context(html.app-dark) .profile-top h2,
+:host-context(html.app-dark) .profile-brand,
+:host-context(html.app-dark) .profile-stats-card,
+:host-context(html.app-dark) .magazine-card,
+:host-context(html.app-dark) .magazine-empty,
+:host-context(html.app-dark) .profile-empty-state {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button {
+	--background: var(--surface-2) !important;
+	--border-color: var(--border) !important;
+	--color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button::part(native) {
+	border-color: var(--border) !important;
+	background: var(--surface-2) !important;
+	color: var(--text) !important;
+	-webkit-text-fill-color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button ion-icon {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-posts,
+:host-context(html.app-dark) .profile-gallery,
+:host-context(html.app-dark) .account-suggestions-section {
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-posts .magazine-empty,
+:host-context(html.app-dark) .profile-posts .magazine-card,
+:host-context(html.app-dark) .profile-gallery .empty-profile {
+	border-color: var(--border) !important;
+	background: var(--surface) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-posts .magazine-heading > span,
+:host-context(html.app-dark) .profile-posts .magazine-read-label {
+	color: var(--primary) !important;
+}
+:host-context(html.app-dark) .profile-posts .magazine-heading p,
+:host-context(html.app-dark) .profile-posts .magazine-copy > p,
+:host-context(html.app-dark) .profile-posts .magazine-meta,
+:host-context(html.app-dark) .profile-posts .magazine-footer,
+:host-context(html.app-dark) .profile-gallery .empty-profile p {
+	color: var(--text-muted) !important;
+}
+
+/* Replace the profile refresh's fixed light surfaces while dark mode is active. */
+:host-context(html.app-dark) .profile-content,
+:host-context(html.app-dark) .profile-page-shell {
+	--background: var(--bg);
+	--color: var(--text);
+	background: var(--bg);
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-hero,
+:host-context(html.app-dark) .profile-page-header,
+:host-context(html.app-dark) .profile-top,
+:host-context(html.app-dark) .profile-content-panel,
+:host-context(html.app-dark) .account-suggestions-section {
+	background: var(--bg);
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-page-header { border-bottom: 1px solid var(--border); }
+:host-context(html.app-dark) .profile-brand,
+:host-context(html.app-dark) .profile-top h2,
+:host-context(html.app-dark) .stats-row strong,
+:host-context(html.app-dark) .magazine-heading h2,
+:host-context(html.app-dark) .magazine-copy h3,
+:host-context(html.app-dark) .profile-empty-state h3,
+:host-context(html.app-dark) .account-suggestions-heading h2 {
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-header-more,
+:host-context(html.app-dark) .profile-header-back {
+	border: 1px solid var(--border);
+	background: var(--surface-2);
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-top ion-avatar {
+	border-color: var(--bg);
+	background: var(--surface-2);
+	box-shadow: 0 0 0 1px var(--border);
+}
+:host-context(html.app-dark) .profile-top p,
+:host-context(html.app-dark) .profile-description p,
+:host-context(html.app-dark) .magazine-heading p,
+:host-context(html.app-dark) .magazine-copy > p,
+:host-context(html.app-dark) .magazine-footer,
+:host-context(html.app-dark) .profile-empty-state p {
+	color: var(--text-muted);
+}
+:host-context(html.app-dark) .profile-description .bio-placeholder,
+:host-context(html.app-dark) .stats-row span,
+:host-context(html.app-dark) .magazine-meta { color: var(--text-muted); }
+:host-context(html.app-dark) .profile-stats-card,
+:host-context(html.app-dark) .magazine-card,
+:host-context(html.app-dark) .magazine-empty,
+:host-context(html.app-dark) .profile-empty-state,
+:host-context(html.app-dark) .suggestion-testimonial-tile {
+	border-color: var(--border);
+	background: var(--surface);
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-stats-card { box-shadow: none; }
+:host-context(html.app-dark) .stats-row > :not(:last-child)::after { background: var(--border); }
+:host-context(html.app-dark) .profile-sections {
+	border-color: var(--border);
+	background: var(--surface);
+}
+:host-context(html.app-dark) .profile-sections button { color: var(--text-muted); }
+:host-context(html.app-dark) .profile-sections button.active {
+	border-bottom-color: var(--primary);
+	background: var(--surface);
+	color: var(--primary);
+}
+:host-context(html.app-dark) .magazine-footer { border-top-color: var(--border); }
+:host-context(html.app-dark) .profile-empty-state { background: var(--surface); }
+:host-context(html.app-dark) .edit-profile-button {
+	--background: var(--surface-2);
+	--border-color: var(--border);
+	--color: var(--text);
+}
+:host-context(html.app-dark) .profile-actions .follow-btn.is-following {
+	border-color: var(--border);
+	background: var(--surface-2);
+	color: var(--text);
+	-webkit-text-fill-color: var(--text);
+}
+:host-context(html.app-dark) .profile-actions .message-profile-button {
+	--background: var(--primary-soft);
+	--color: var(--primary);
+	--border-color: var(--primary-soft);
+}
+:host-context(html.app-dark) .profile-actions .message-profile-button::part(native),
+:host-context(html.app-dark) .message-button-label { color: var(--primary) !important; }
+
 /* Profile refresh: a calm, editorial surface with a compact mobile hierarchy. */
 .profile-content {
 	--background: #f8fafc;
@@ -1971,4 +2129,58 @@ main
 	.profile-page-header { padding-inline: 24px; }
 	.profile-cover { height: 170px; }
 	.profile-top { padding-inline: 28px; }
+}
+
+/* These rules come after the refresh styles so light defaults cannot override dark mode. */
+:host-context(html.app-dark) .profile-content,
+:host-context(html.app-dark) .profile-page-shell,
+:host-context(html.app-dark) .profile-hero,
+:host-context(html.app-dark) .profile-page-header,
+:host-context(html.app-dark) .profile-top,
+:host-context(html.app-dark) .profile-content-panel,
+:host-context(html.app-dark) .profile-sections,
+:host-context(html.app-dark) .profile-sections button {
+	--background: var(--bg) !important;
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections {
+	border-color: var(--border) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button {
+	color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button.active {
+	border-bottom-color: var(--primary) !important;
+	background: var(--surface) !important;
+	color: var(--primary) !important;
+}
+:host-context(html.app-dark) .profile-top h2,
+:host-context(html.app-dark) .profile-brand,
+:host-context(html.app-dark) .magazine-heading h2,
+:host-context(html.app-dark) .magazine-copy h3,
+:host-context(html.app-dark) .profile-empty-state h3 {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-stats-card,
+:host-context(html.app-dark) .magazine-card,
+:host-context(html.app-dark) .magazine-empty,
+:host-context(html.app-dark) .profile-empty-state {
+	border-color: var(--border) !important;
+	background: var(--surface) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button {
+	--background: var(--surface-2) !important;
+	--border-color: var(--border) !important;
+	--color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button::part(native) {
+	border-color: var(--border) !important;
+	background: var(--surface-2) !important;
+	color: var(--text) !important;
+	-webkit-text-fill-color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button ion-icon {
+	color: var(--text) !important;
 }
