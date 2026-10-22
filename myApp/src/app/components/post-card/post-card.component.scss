@@ -667,17 +667,20 @@
   font-size: 20px;
 }
 
-/* Homepage post card redesign */
+/* Homepage post card spacing */
 
 :host-context(app-home) {
-  --home-card-padding: 16px;
+  --home-card-padding: 18px;
   --home-card-avatar: 40px;
 }
+
+/* One 12px gap between cards without doubled vertical margins. */
 
 :host-context(app-home) .post-layout {
   position: relative;
   display: block;
-  margin-block: 12px;
+  margin: 0;
+  padding-block: 6px;
 }
 
 :host-context(app-home) .post-card {
@@ -692,11 +695,11 @@
   box-shadow: none;
 }
 
-/* Position the existing avatar inside the card visually. */
+/* Keep the existing avatar aligned with the padded header. */
 
 :host-context(app-home) .post-avatar-link {
   position: absolute;
-  top: calc(var(--home-card-padding) + 1px);
+  top: calc(6px + var(--home-card-padding) + 1px);
   left: calc(var(--home-card-padding) + 1px);
   z-index: 2;
   width: var(--home-card-avatar);
@@ -785,7 +788,7 @@
 }
 
 :host-context(app-home) .post-body {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   color: var(--app-text);
   font-size: 15px;
   line-height: 1.55;
@@ -798,11 +801,11 @@
 }
 
 :host-context(app-home) .post-edit-form {
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 :host-context(app-home) .post-media-carousel {
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 :host-context(app-home) .post-attachments {
@@ -861,7 +864,7 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   gap: 4px 18px;
-  margin: 10px 0 -4px;
+  margin: 12px 0 0;
   padding: 0;
   border: 0;
 }
@@ -894,7 +897,7 @@
 
 :host-context(app-home) .action-message,
 :host-context(app-home) .post-trash-note {
-  margin-top: 10px;
+  margin-top: 12px;
   color: var(--app-text-muted);
   font-size: 12px;
   line-height: 1.5;
@@ -908,7 +911,7 @@
 
 @media (max-width: 380px) {
   :host-context(app-home) {
-    --home-card-padding: 12px;
+    --home-card-padding: 16px;
     --home-card-avatar: 36px;
   }
 
@@ -942,10 +945,6 @@
   :host-context(app-home) {
     --home-card-padding: 20px;
     --home-card-avatar: 44px;
-  }
-
-  :host-context(app-home) .post-layout {
-    margin-block: 16px;
   }
 
   :host-context(app-home) .post-body {

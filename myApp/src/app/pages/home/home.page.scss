@@ -264,7 +264,7 @@ app-post-card {
 
 .feed-empty {
   min-height: auto;
-  margin: var(--space-3) var(--space-2) var(--space-4);
+  margin: 6px 14px 16px;
   padding: var(--space-5) var(--space-4);
   border: 1px solid var(--page-border);
   border-radius: var(--radius-card);
@@ -316,31 +316,13 @@ app-post-card {
   }
 }
 
-.screen-shell {
-  max-width: 600px;
-  margin: 0 auto;
-  padding-bottom: var(--space-7);
-}
-
-@media (min-width: 768px) {
-  .screen-shell {
-    max-width: none;
-    margin-inline: 0;
-  }
-
-  .screen-shell > app-post-card {
-    width: var(--radius-circle);
-    margin-left: var(--space-2);
-    margin-right: 0;
-  }
-}
-
 :host {
   --page-bg: var(--app-background-bottom);
   --page-surface: var(--app-surface);
   --page-text: var(--app-text);
   --page-muted: var(--app-muted);
   --page-border: var(--app-divider);
+
   display: block;
   min-height: 100%;
   background: var(--app-background);
@@ -406,6 +388,7 @@ ion-header.home-header {
   --color: var(--text) !important;
   --border-radius: var(--radius-inner);
   --box-shadow: none;
+
   width: 44px;
   height: 44px;
   border-radius: var(--radius-inner);
@@ -593,30 +576,6 @@ main .home-account-copy span {
   justify-self: end;
 }
 
-/* Existing responsive feed */
-
-.screen-shell {
-  width: min(100%, 920px);
-  margin-inline: auto;
-  padding-inline: clamp(var(--space-3), 2.5vw, var(--space-5));
-}
-
-.screen-shell > app-post-card {
-  display: block;
-  width: min(100%, 760px) !important;
-  margin: var(--space-4) auto !important;
-}
-
-@media (max-width: 420px) {
-  .screen-shell {
-    padding-inline: var(--space-2);
-  }
-
-  .home-account-row {
-    padding-inline: var(--space-2);
-  }
-}
-
 /* Existing compact homepage */
 
 .home-header ion-toolbar {
@@ -640,14 +599,18 @@ main .home-account-copy span {
 
 .home-content {
   --background: #f9faff;
-  --padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  --padding-bottom: calc(
+    70px + env(safe-area-inset-bottom, 0px)
+  );
 }
 
 .screen-shell {
+  box-sizing: border-box;
   width: min(100%, 560px);
   min-height: 100%;
   margin: 0 auto;
   padding-inline: 0;
+  padding-bottom: var(--space-7);
   background: #f9faff;
 }
 
@@ -710,9 +673,16 @@ main .home-account-copy span {
   font-size: 19px;
 }
 
+/* Home cards: space between the screen edges and cards.
+   Vertical spacing comes from post-card.component.scss. */
+
 .screen-shell > app-post-card {
-  width: 100% !important;
-  margin: 0 auto !important;
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% - 28px);
+  min-width: 0;
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 @media (max-width: 420px) {
