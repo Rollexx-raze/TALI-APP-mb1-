@@ -2849,3 +2849,28 @@
   .request-sender-intro { max-width: 100%; }
   .request-decision-panel { border-radius: 16px 16px 0 0; }
 }
+
+/* Keep conversation names and previews readable in the inbox. */
+.page-content:not(.chat-mode) .conversation-copy .conversation-meta strong {
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text);
+  opacity: 1;
+}
+.page-content:not(.chat-mode) .conversation-copy > .conversation-preview {
+  color: color-mix(in srgb, var(--text) 78%, var(--text-muted)) !important;
+  -webkit-text-fill-color: color-mix(in srgb, var(--text) 78%, var(--text-muted));
+  opacity: 1;
+}
+
+.group-create-features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 4px 0 8px; }
+.group-feature-tile { display: grid; min-width: 0; align-content: start; justify-items: start; gap: 7px; padding: 12px 10px; border: 1px solid var(--border); border-radius: var(--radius-inner); background: var(--surface); }
+.group-feature-tile > span { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 9px; background: var(--primary-soft); color: var(--primary); }
+.group-feature-tile ion-icon { font-size: 17px; }
+.group-feature-tile h4 { margin: 0; color: var(--text); font-size: 11px; font-weight: 700; line-height: 1.25; }
+.group-feature-tile p { margin: 0; color: var(--text-muted); font-size: 10px; line-height: 1.4; }
+@media (max-width: 360px) {
+  .group-create-features { gap: 5px; }
+  .group-feature-tile { padding: 10px 7px; }
+  .group-feature-tile h4 { font-size: 10px; }
+  .group-feature-tile p { font-size: 9px; }
+}

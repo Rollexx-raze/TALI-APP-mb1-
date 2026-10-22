@@ -66,12 +66,22 @@
       <button type="button" aria-label="Posts" title="Posts" [class.active]="activeSection === 'posts'" [attr.aria-pressed]="activeSection === 'posts'" (click)="setProfileSection('posts')"><ion-icon name="grid-outline" aria-hidden="true"></ion-icon><span>Posts</span></button>
       <button type="button" aria-label="Videos" title="Videos" [class.active]="activeSection === 'videos'" [attr.aria-pressed]="activeSection === 'videos'" (click)="setProfileSection('videos')"><ion-icon name="videocam-outline" aria-hidden="true"></ion-icon><span>Videos</span></button>
       <button type="button" aria-label="Reposts" title="Reposts" [class.active]="activeSection === 'reposts'" [attr.aria-pressed]="activeSection === 'reposts'" (click)="setProfileSection('reposts')"><ion-icon name="repeat-outline" aria-hidden="true"></ion-icon><span>Reposts</span></button>
+      <button type="button" aria-label="Account suggestions" title="Account suggestions" [class.active]="activeSection === 'suggestions'" [attr.aria-pressed]="activeSection === 'suggestions'" (click)="setProfileSection('suggestions')"><span>Suggestions</span></button>
     </nav>
     @if (activeSection === 'posts') {
       <section class="profile-posts">
-        
-        <div class="profile-posts-feed">
-          @for (post of ownPosts; track post.id) { <app-post-card [post]="post"></app-post-card> }
+        <div class="magazine-heading"><span class="magazine-kicker">POST</span><h2>Stories & moments</h2><p>A collection of things worth sharing.</p></div>
+        <div class="magazine-grid">
+          @for (post of magazinePosts(ownPosts); track post.id; let first = $first) {
+            <article class="magazine-card" [class.magazine-featured]="first">
+              <div class="magazine-copy">
+                <div class="magazine-meta"><span>{{ post.createdAt | date:'MMMM d, y' }}</span><span>{{ post.authorName }}</span></div>
+                <h3>{{ magazineTitle(post.body) }}</h3>
+                <p>{{ magazineExcerpt(post.body) }}</p>
+                <div class="magazine-footer"><span>{{ post.likes.length }} likes · {{ post.comments.length }} comments</span><a class="magazine-read-label" [routerLink]="['/home']" [queryParams]="{ postId: post.id }" [attr.aria-label]="'Read post by ' + post.authorName">READ STORY <span aria-hidden="true">↗</span></a></div>
+              </div>
+            </article>
+          } @empty { <div class="magazine-empty"><h3>Your story starts here</h3><p>Share a moment and it will find a place on this page.</p></div> }
         </div>
       </section>
     }
@@ -84,10 +94,53 @@
     }
     @if (activeSection === 'reposts') {
       <section class="profile-posts">
-        
-        <div class="profile-posts-feed">
-          @for (post of repostedPosts; track post.id) { <app-post-card [post]="post"></app-post-card> }
+        <div class="magazine-heading"><span class="magazine-kicker">REPOST</span><h2>Stories & moments</h2><p>A collection of things worth sharing.</p></div>
+        <div class="magazine-grid">
+          @for (post of magazinePosts(repostedPosts); track post.id; let first = $first) {
+            <article class="magazine-card" [class.magazine-featured]="first">
+              <div class="magazine-copy">
+                <div class="magazine-meta"><span>{{ post.createdAt | date:'MMMM d, y' }}</span><span>{{ post.authorName }}</span></div>
+                <h3>{{ magazineTitle(post.body) }}</h3>
+                <p>{{ magazineExcerpt(post.body) }}</p>
+                <div class="magazine-footer"><span>{{ post.likes.length }} likes · {{ post.comments.length }} comments</span><a class="magazine-read-label" [routerLink]="['/home']" [queryParams]="{ postId: post.id }" [attr.aria-label]="'Read post by ' + post.authorName">READ STORY <span aria-hidden="true">↗</span></a></div>
+              </div>
+            </article>
+          } @empty { <div class="magazine-empty"><h3>Your repost</h3><p>Posts you repost will appear in this collection.</p></div> }
         </div>
+      </section>
+    }
+    @if (activeSection === 'suggestions') {
+      <section class="account-suggestions-section" aria-labelledby="account-suggestions-title">
+        <div class="account-suggestions-heading"><span>MEET THE COMMUNITY</span><h2 id="account-suggestions-title">Account suggestions</h2><p>New voices and kindred spirits to discover.</p></div>
+        @if (suggestedAccounts.length) {
+          <div class="suggestion-marquee" role="region" aria-label="Suggested accounts, scrolling horizontally" (pointerdown)="startSuggestionDrag($event)" (pointermove)="moveSuggestionDrag($event)" (pointerup)="endSuggestionDrag($event)" (pointercancel)="endSuggestionDrag($event)" (lostpointercapture)="endSuggestionDrag($event)" (click)="suppressSuggestionDragClick($event)">
+            <div class="suggestion-marquee-track">
+              <div class="suggestion-marquee-group">
+                @for (account of suggestedAccounts; track account.id) { <ng-container *ngTemplateOutlet="suggestionTile; context: { $implicit: account }"></ng-container> }
+              </div>
+              <div class="suggestion-marquee-group" aria-hidden="true" inert>
+                @for (account of suggestedAccounts; track account.id) { <ng-container *ngTemplateOutlet="suggestionTile; context: { $implicit: account }"></ng-container> }
+              </div>
+            </div>
+          </div>
+          <ng-template #suggestionTile let-account>
+            <article class="suggestion-testimonial-tile">
+              <p class="suggestion-testimonial-copy">{{ account.bio || 'A new voice in the Tali community. Take a moment to say hello.' }}</p>
+              <div class="suggestion-tile-person">
+                <a class="suggestion-person-link" [routerLink]="['/profile', account.id]">
+                  <span class="suggestion-person-avatar">
+                    @if (canViewProfileImage(account)) { <img [src]="account.profileImage" alt=""> }
+                    @else { <span>{{ profileInitials(account.name) }}</span> }
+                  </span>
+                  <span class="suggestion-person-copy"><strong>{{ account.name }}</strong><small>@{{ account.username }}</small></span>
+                </a>
+                <button type="button" class="suggestion-follow-button" [class.is-following]="isFollowingSuggested(account)" (click)="toggleSuggestedFollow(account)">{{ isFollowingSuggested(account) ? 'Following' : 'Follow' }}</button>
+              </div>
+            </article>
+          </ng-template>
+        } @else {
+          <p class="suggestions-empty">There aren’t any other accounts to suggest yet.</p>
+        }
       </section>
     }
       </div>

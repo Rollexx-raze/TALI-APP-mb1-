@@ -6,7 +6,7 @@ import { addIcons } from 'ionicons';
 import { addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, ellipsisHorizontal, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { Account, AccountService } from '../../services/account.service';
-import { PostService } from '../../services/post.service';
+import { Post, PostService } from '../../services/post.service';
 import { NotificationService } from '../../services/notification.service';
 import { ViewStateService } from '../../services/view-state.service';
 import { MessageService } from '../../services/message.service';
@@ -27,11 +27,13 @@ export class ProfilePage {
   private readonly messageService = inject(MessageService);
   private readonly location = inject(Location);
   readonly viewState = inject(ViewStateService);
-  activeSection: 'posts' | 'videos' | 'reposts' = 'posts';
+  activeSection: 'posts' | 'videos' | 'reposts' | 'suggestions' = 'posts';
   coverImageError = '';
   viewingProfilePhoto = '';
   connectionsView: 'followers' | 'following' | null = null;
   confirmingUnfollow = false;
+  private suggestionDrag: { pointerId: number; startX: number; startScrollLeft: number; element: HTMLElement; dragging: boolean } | null = null;
+  private suppressSuggestionClick = false;
 
   get unreadNotifications() {
     const accountId = this.accountService.selectedAccount()?.id;
@@ -40,7 +42,7 @@ export class ProfilePage {
 
   constructor() {
     addIcons({ addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, ellipsisHorizontal, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline });
-    const saved = this.viewState.read<Partial<{ activeSection: 'posts' | 'photos' | 'videos' | 'reposts' | 'archive' | 'trash'; connectionsView: 'followers' | 'following' | null }>>(this.profileStateKey, {});
+    const saved = this.viewState.read<Partial<{ activeSection: 'posts' | 'photos' | 'videos' | 'reposts' | 'suggestions' | 'archive' | 'trash'; connectionsView: 'followers' | 'following' | null }>>(this.profileStateKey, {});
     if (saved.activeSection && saved.activeSection !== 'archive' && saved.activeSection !== 'trash' && saved.activeSection !== 'photos') this.activeSection = saved.activeSection;
     this.connectionsView = saved.connectionsView ?? null;
   }
@@ -49,9 +51,84 @@ export class ProfilePage {
     return `tali-view-profile:${this.route.snapshot.paramMap.get('accountId') ?? 'current'}`;
   }
 
-  setProfileSection(section: 'posts' | 'videos' | 'reposts') {
+  setProfileSection(section: 'posts' | 'videos' | 'reposts' | 'suggestions') {
     this.activeSection = section;
     this.saveProfileViewState();
+  }
+
+  magazinePosts(posts: Post[]) {
+    return [...posts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  get suggestedAccounts() {
+    const profileId = this.profileAccount?.id;
+    const viewerId = this.accountService.selectedAccount()?.id;
+    return this.accountService.accounts()
+      .filter((account) => account.id !== profileId && account.id !== viewerId)
+      .sort((a, b) => b.followersIds.length - a.followersIds.length);
+  }
+
+  isFollowingSuggested(account: Account) {
+    return this.accountService.selectedAccount()?.followingIds.includes(account.id) ?? false;
+  }
+
+  toggleSuggestedFollow(account: Account) {
+    if (this.isFollowingSuggested(account)) this.accountService.unfollowAccount(account.id);
+    else this.accountService.followAccount(account.id);
+  }
+
+  startSuggestionDrag(event: PointerEvent) {
+    if (event.pointerType !== 'mouse' || event.button !== 0) return;
+    const element = event.currentTarget as HTMLElement;
+    this.suggestionDrag = { pointerId: event.pointerId, startX: event.clientX, startScrollLeft: element.scrollLeft, element, dragging: false };
+    this.suppressSuggestionClick = false;
+  }
+
+  moveSuggestionDrag(event: PointerEvent) {
+    const drag = this.suggestionDrag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const distance = event.clientX - drag.startX;
+    if (!drag.dragging && Math.abs(distance) < 5) return;
+    if (!drag.dragging) {
+      drag.dragging = true;
+      drag.element.classList.add('is-dragging');
+      drag.element.setPointerCapture(event.pointerId);
+    }
+    event.preventDefault();
+    drag.element.scrollLeft = drag.startScrollLeft - distance;
+  }
+
+  endSuggestionDrag(event: PointerEvent) {
+    const drag = this.suggestionDrag;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (drag.dragging) {
+      this.suppressSuggestionClick = true;
+      drag.element.classList.remove('is-dragging');
+    }
+    this.suggestionDrag = null;
+  }
+
+  suppressSuggestionDragClick(event: MouseEvent) {
+    if (!this.suppressSuggestionClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.suppressSuggestionClick = false;
+  }
+
+  postImage(post: Post) {
+    return post.attachments.find((attachment) => attachment.type.startsWith('image/'))?.dataUrl ?? '';
+  }
+
+  magazineTitle(body: string) {
+    const clean = body.replace(/https?:\/\/\S+/g, '').replace(/\s+/g, ' ').trim();
+    if (!clean) return 'A moment worth keeping';
+    const firstSentence = clean.split(/(?<=[.!?])\s/)[0];
+    return firstSentence.length > 84 ? `${firstSentence.slice(0, 81).trimEnd()}…` : firstSentence;
+  }
+
+  magazineExcerpt(body: string) {
+    const clean = body.replace(/https?:\/\/\S+/g, '').replace(/\s+/g, ' ').trim();
+    return clean.length > 220 ? `${clean.slice(0, 217).trimEnd()}…` : clean || 'A little note from the community.';
   }
 
   setConnectionsView(view: 'followers' | 'following' | null) {
