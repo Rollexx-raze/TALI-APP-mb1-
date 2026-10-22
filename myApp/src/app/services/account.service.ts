@@ -38,7 +38,7 @@ export class AccountService {
   private readonly hiddenAccountIds = signal<number[]>(loadStoredIds(hiddenAccountIdsStorageKey));
 
   selectedAccount = signal<Account | null>(null);
-  private loginPrefillAccountId: number | null = null;
+  private loginPrefillAccount: Account | null = null;
   private changedBeforeHydration = false;
   private selectionChanged = false;
 
@@ -69,13 +69,13 @@ export class AccountService {
   }
 
   prepareAccountLogin(account: Account) {
-    this.loginPrefillAccountId = account.id;
+    this.loginPrefillAccount = { ...account };
   }
 
   consumeAccountLoginPrefill() {
-    const accountId = this.loginPrefillAccountId;
-    this.loginPrefillAccountId = null;
-    return accountId === null ? null : this.accounts().find((account) => account.id === accountId) ?? null;
+    const account = this.loginPrefillAccount;
+    this.loginPrefillAccount = null;
+    return account;
   }
 
   listedAccounts() {

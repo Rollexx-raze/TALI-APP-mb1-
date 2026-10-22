@@ -1,7 +1,7 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { IonContent, IonButton } from '@ionic/angular';
 import { AccountService } from '../../services/account.service';
 import { AuthError, AuthService, isValidContact } from '../../services/auth.service';
@@ -14,7 +14,6 @@ import { AuthError, AuthService, isValidContact } from '../../services/auth.serv
   imports: [CommonModule, FormsModule, IonContent, IonButton],
 })
 export class LoginPage {
-  @ViewChild('passwordInput') private passwordInput?: ElementRef<HTMLInputElement>;
   identifier = '';
   password = '';
   submitted = false;
@@ -25,11 +24,17 @@ export class LoginPage {
 
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
   readonly accountService = inject(AccountService);
 
-  ionViewWillEnter() {
-    const shouldFocusPassword = this.prepareSelectedAccountLogin();
-    if (shouldFocusPassword) setTimeout(() => this.passwordInput?.nativeElement.focus(), 0);
+  constructor() {
+    this.router.events.subscribe((event) => {
+      if (!(event instanceof NavigationEnd)) return;
+      const path = event.urlAfterRedirects.split(/[?#]/, 1)[0].replace(/\/$/, '');
+      if (path !== '/login') return;
+      this.prepareSelectedAccountLogin();
+      this.changeDetector.detectChanges();
+    });
   }
 
   private prepareSelectedAccountLogin() {
@@ -46,7 +51,6 @@ export class LoginPage {
     }
     this.submitted = false;
     this.errorMessage = '';
-    return !!account;
   }
 
   get identifierError() {

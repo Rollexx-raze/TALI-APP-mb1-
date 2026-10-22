@@ -1388,6 +1388,68 @@ ion-content.settings-content { --padding-bottom: calc(var(--space-8) + env(safe-
   }
 }
 
+/* Keep the edit profile form readable when the app is in dark mode. */
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail .profile-settings-form),
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail .profile-settings-form) ion-toolbar {
+  --background: var(--bg);
+  background: var(--bg);
+}
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail .profile-settings-form) h1,
+:host-context(html.app-dark) ion-header.settings-header:has(+ ion-content .settings-detail .profile-settings-form) ion-button {
+  color: var(--text);
+  --color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.profile-settings-form) {
+  background: var(--bg);
+  color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .settings-detail:has(.profile-settings-form) > h2,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .profile-field > strong,
+:host-context(html.app-dark) .settings-redesign .profile-photo-card .edit-photo-name strong {
+  color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .profile-photo-card .edit-photo-avatar {
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .profile-photo-card .edit-photo-avatar ion-icon,
+:host-context(html.app-dark) .settings-redesign .profile-photo-card .edit-photo-name span,
+:host-context(html.app-dark) .settings-redesign .profile-photo-button,
+:host-context(html.app-dark) .settings-redesign .profile-photo-button ion-icon {
+  color: var(--primary);
+}
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .profile-field input,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .profile-field textarea,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .gender-picker-trigger,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .custom-gender-input {
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .profile-field input::placeholder,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .profile-field textarea::placeholder,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .profile-field textarea + small,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .field-help,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .name-change-note,
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .gender-picker-trigger ion-icon {
+  color: var(--text-muted);
+  -webkit-text-fill-color: var(--text-muted);
+}
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .gender-options {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .gender-options > button {
+  color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .profile-settings-form .profile-submit-button {
+  --background: var(--primary);
+  --color: var(--on-primary);
+}
+
 ion-header.settings-header:has(+ ion-content .notification-intro),
 ion-header.settings-header:has(+ .settings-content .notification-intro) {
   background:#fff;
@@ -1682,4 +1744,69 @@ ion-header.settings-header:has(+ .settings-content .settings-redesign) h1 {
   color:#111827;
   font-size:18px!important;
   font-weight:600!important;
+}
+
+/* Keep the settings header and overview surfaces in the active dark palette. */
+:host-context(html.app-dark) ion-header.settings-header,
+:host-context(html.app-dark) ion-header.settings-header ion-toolbar {
+  --background: var(--bg);
+  --color: var(--text);
+  background: var(--bg);
+  color: var(--text);
+}
+:host-context(html.app-dark) ion-header.settings-header h1,
+:host-context(html.app-dark) ion-header.settings-header ion-button {
+  color: var(--text) !important;
+  --color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .settings-home {
+  background: var(--bg);
+  color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .settings-intro-eyebrow,
+:host-context(html.app-dark) .settings-redesign .settings-row-icon,
+:host-context(html.app-dark) .settings-redesign .settings-active-avatar {
+  color: var(--primary);
+}
+:host-context(html.app-dark) .settings-redesign .settings-intro h2,
+:host-context(html.app-dark) .settings-redesign .settings-active-account strong,
+:host-context(html.app-dark) .settings-redesign .settings-simple-row strong,
+:host-context(html.app-dark) .settings-redesign .settings-section-heading {
+  color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .settings-intro p,
+:host-context(html.app-dark) .settings-redesign .settings-active-account small,
+:host-context(html.app-dark) .settings-redesign .settings-simple-row small,
+:host-context(html.app-dark) .settings-redesign .settings-footer-brand,
+:host-context(html.app-dark) .settings-redesign .settings-row-chevron {
+  color: var(--text-muted);
+}
+:host-context(html.app-dark) .settings-redesign .settings-active-account,
+:host-context(html.app-dark) .settings-redesign .settings-simple-list,
+:host-context(html.app-dark) .settings-redesign .settings-logout-row {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+:host-context(html.app-dark) .settings-redesign .settings-simple-row {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+@media (max-width: 420px) {
+  .settings-redesign .profile-settings-form .profile-photo-card {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr) 34px;
+    gap: 12px;
+  }
+
+  .settings-redesign .profile-settings-form .profile-photo-card .edit-photo-avatar {
+    width: 78px;
+    height: 78px;
+    flex-basis: 78px;
+  }
+
+  .settings-redesign .profile-settings-form .profile-photo-card .edit-photo-name {
+    min-width: 0;
+  }
 }

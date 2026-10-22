@@ -1790,3 +1790,404 @@ main
 .magazine-featured .magazine-copy { min-height: 0; justify-content: center; padding: clamp(22px, 4vw, 40px); }
 .magazine-read-label { padding: 0; border: 0; background: transparent; color: var(--primary); font-family: inherit; font-size: 10px; font-weight: 750; letter-spacing: .08em; line-height: 1; text-decoration: none; cursor: pointer; }
 .magazine-read-label:focus-visible { border-radius: 3px; outline: 2px solid var(--primary); outline-offset: 3px; }
+
+/* Final dark-mode overrides for profile refresh rules declared above. */
+:host-context(html.app-dark) .profile-content-panel,
+:host-context(html.app-dark) .profile-content-panel .profile-sections,
+:host-context(html.app-dark) .profile-content-panel .profile-sections button,
+:host-context(html.app-dark) .profile-page-shell,
+:host-context(html.app-dark) .profile-hero,
+:host-context(html.app-dark) .profile-top {
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections {
+	border-color: var(--border) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button {
+	color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button.active {
+	border-bottom-color: var(--primary) !important;
+	background: var(--surface) !important;
+	color: var(--primary) !important;
+}
+:host-context(html.app-dark) .profile-top h2,
+:host-context(html.app-dark) .profile-brand,
+:host-context(html.app-dark) .profile-stats-card,
+:host-context(html.app-dark) .magazine-card,
+:host-context(html.app-dark) .magazine-empty,
+:host-context(html.app-dark) .profile-empty-state {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button {
+	--background: var(--surface-2) !important;
+	--border-color: var(--border) !important;
+	--color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button::part(native) {
+	border-color: var(--border) !important;
+	background: var(--surface-2) !important;
+	color: var(--text) !important;
+	-webkit-text-fill-color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button ion-icon {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-posts,
+:host-context(html.app-dark) .profile-gallery,
+:host-context(html.app-dark) .account-suggestions-section {
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-posts .magazine-empty,
+:host-context(html.app-dark) .profile-posts .magazine-card,
+:host-context(html.app-dark) .profile-gallery .empty-profile {
+	border-color: var(--border) !important;
+	background: var(--surface) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-posts .magazine-heading > span,
+:host-context(html.app-dark) .profile-posts .magazine-read-label {
+	color: var(--primary) !important;
+}
+:host-context(html.app-dark) .profile-posts .magazine-heading p,
+:host-context(html.app-dark) .profile-posts .magazine-copy > p,
+:host-context(html.app-dark) .profile-posts .magazine-meta,
+:host-context(html.app-dark) .profile-posts .magazine-footer,
+:host-context(html.app-dark) .profile-gallery .empty-profile p {
+	color: var(--text-muted) !important;
+}
+:host .profile-stats-card .stats-row strong {
+	font-size: 16px !important;
+}
+:host .profile-stats-card .stats-row span {
+	font-size: 12px !important;
+	text-transform: none !important;
+}
+
+/* Replace the profile refresh's fixed light surfaces while dark mode is active. */
+:host-context(html.app-dark) .profile-content,
+:host-context(html.app-dark) .profile-page-shell {
+	--background: var(--bg);
+	--color: var(--text);
+	background: var(--bg);
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-hero,
+:host-context(html.app-dark) .profile-page-header,
+:host-context(html.app-dark) .profile-top,
+:host-context(html.app-dark) .profile-content-panel,
+:host-context(html.app-dark) .account-suggestions-section {
+	background: var(--bg);
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-page-header { border-bottom: 1px solid var(--border); }
+:host-context(html.app-dark) .profile-brand,
+:host-context(html.app-dark) .profile-top h2,
+:host-context(html.app-dark) .stats-row strong,
+:host-context(html.app-dark) .magazine-heading h2,
+:host-context(html.app-dark) .magazine-copy h3,
+:host-context(html.app-dark) .profile-empty-state h3,
+:host-context(html.app-dark) .account-suggestions-heading h2 {
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-header-more,
+:host-context(html.app-dark) .profile-header-back {
+	border: 1px solid var(--border);
+	background: var(--surface-2);
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-top ion-avatar {
+	border-color: var(--bg);
+	background: var(--surface-2);
+	box-shadow: 0 0 0 1px var(--border);
+}
+:host-context(html.app-dark) .profile-top p,
+:host-context(html.app-dark) .profile-description p,
+:host-context(html.app-dark) .magazine-heading p,
+:host-context(html.app-dark) .magazine-copy > p,
+:host-context(html.app-dark) .magazine-footer,
+:host-context(html.app-dark) .profile-empty-state p {
+	color: var(--text-muted);
+}
+:host-context(html.app-dark) .profile-description .bio-placeholder,
+:host-context(html.app-dark) .stats-row span,
+:host-context(html.app-dark) .magazine-meta { color: var(--text-muted); }
+:host-context(html.app-dark) .profile-stats-card,
+:host-context(html.app-dark) .magazine-card,
+:host-context(html.app-dark) .magazine-empty,
+:host-context(html.app-dark) .profile-empty-state,
+:host-context(html.app-dark) .suggestion-testimonial-tile {
+	border-color: var(--border);
+	background: var(--surface);
+	color: var(--text);
+}
+:host-context(html.app-dark) .profile-stats-card { box-shadow: none; }
+:host-context(html.app-dark) .stats-row > :not(:last-child)::after { background: var(--border); }
+:host-context(html.app-dark) .profile-sections {
+	border-color: var(--border);
+	background: var(--surface);
+}
+:host-context(html.app-dark) .profile-sections button { color: var(--text-muted); }
+:host-context(html.app-dark) .profile-sections button.active {
+	border-bottom-color: var(--primary);
+	background: var(--surface);
+	color: var(--primary);
+}
+:host-context(html.app-dark) .magazine-footer { border-top-color: var(--border); }
+:host-context(html.app-dark) .profile-empty-state { background: var(--surface); }
+:host-context(html.app-dark) .edit-profile-button {
+	--background: var(--surface-2);
+	--border-color: var(--border);
+	--color: var(--text);
+}
+:host-context(html.app-dark) .profile-actions .follow-btn.is-following {
+	border-color: var(--border);
+	background: var(--surface-2);
+	color: var(--text);
+	-webkit-text-fill-color: var(--text);
+}
+:host-context(html.app-dark) .profile-actions .message-profile-button {
+	--background: var(--primary-soft);
+	--color: var(--primary);
+	--border-color: var(--primary-soft);
+}
+:host-context(html.app-dark) .profile-actions .message-profile-button::part(native),
+:host-context(html.app-dark) .message-button-label { color: var(--primary) !important; }
+
+/* Profile refresh: a calm, editorial surface with a compact mobile hierarchy. */
+.profile-content {
+	--background: #f8fafc;
+	--color: #0f172a;
+	--padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+.profile-page-shell {
+	width: min(100%, 680px);
+	min-height: 100%;
+	padding: 0 0 24px;
+	background: #f8fafc;
+}
+.profile-hero { overflow: hidden; border-radius: 0; background: #fff; }
+.profile-page-header {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	min-height: calc(56px + env(safe-area-inset-top, 0px));
+	align-items: center;
+	justify-content: space-between;
+	padding: env(safe-area-inset-top, 0px) 20px 0;
+	background: #fff;
+}
+.profile-brand { color: #0f172a; font-size: 24px; font-weight: 700; letter-spacing: -.045em; }
+.profile-header-more, .profile-header-back {
+	position: static;
+	display: grid;
+	width: 42px;
+	height: 42px;
+	place-items: center;
+	border: 0;
+	border-radius: 14px;
+	background: #f1f5f9;
+	color: #475569;
+}
+.profile-header-back { margin-right: auto; }
+.profile-cover {
+	height: 128px;
+	border-radius: 0;
+	background: linear-gradient(110deg, #8b5cf6 0%, #ec4899 54%, #fb923c 100%);
+}
+.profile-cover:not(.has-cover-image)::after {
+	position: absolute;
+	inset: 0;
+	background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,.55) 1px, transparent 0);
+	background-size: 12px 12px;
+	content: "";
+	opacity: .2;
+}
+.profile-cover.has-cover-image::after, .profile-cover:has(img)::after { background: linear-gradient(0deg, rgba(15,23,42,.08), transparent 55%); }
+.cover-empty-state { position: relative; z-index: 1; color: white; }
+.cover-empty-state span { font-size: 14px; font-weight: 600; letter-spacing: .02em; }
+.profile-top {
+	grid-template-columns: 1fr;
+	justify-items: stretch;
+	align-items: start;
+	gap: 12px;
+	margin: 0;
+	padding: 0 20px 22px;
+	background: #fff;
+}
+.profile-avatar-wrap {
+	grid-column: 1;
+	grid-row: 1;
+	width: 88px;
+	height: 88px;
+	margin-top: -44px;
+}
+.profile-top ion-avatar { border: 4px solid #fff; border-radius: 28px; background: #eef2ff; box-shadow: 0 4px 14px rgba(15,23,42,.1); }
+.profile-identity { grid-column: 1; grid-row: 2; }
+.profile-top h2 { margin: 0 0 3px; color: #0f172a; font-size: 20px; font-weight: 700; letter-spacing: -.025em; }
+.profile-top p { margin: 0; color: #64748b; font-size: 14px; }
+.profile-top .verified-badge { color: #4f46e5; }
+.profile-stats-card {
+	grid-column: 1;
+	grid-row: 4;
+	margin-top: 4px;
+	padding: 14px 8px;
+	border: 1px solid #f1f5f9;
+	border-radius: 20px;
+	background: #fff;
+	box-shadow: 0 2px 8px rgba(15,23,42,.035);
+}
+.stats-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.stats-row div, .stats-row button { gap: 3px; padding: 0 5px; }
+.stats-row > :not(:last-child)::after { background: #e2e8f0; }
+.stats-row strong { color: #0f172a; font-size: 17px; font-weight: 700; }
+.stats-row span { color: #94a3b8; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.profile-description { grid-column: 1; grid-row: 3; display: grid; gap: 4px; }
+.profile-description p { color: #475569; font-size: 14px; line-height: 1.55; }
+.profile-description .profile-website a { color: #4f46e5; font-weight: 600; text-decoration: none; }
+.profile-description .bio-placeholder { color: #94a3b8; }
+.edit-profile-button { grid-column: 1; grid-row: 5; width: 100%; margin: 0; --border-color: #e2e8f0; --border-radius: 12px; --color: #334155; }
+.profile-actions { grid-column: 1; grid-row: 5; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.profile-actions .follow-btn, .profile-actions ion-button { min-height: 42px; border-radius: 12px; }
+.profile-actions .follow-btn { border-color: #4f46e5; background: #4f46e5; color: white; -webkit-text-fill-color: white; }
+.profile-actions .follow-btn.is-following { border-color: #e2e8f0; background: #f8fafc; color: #334155; -webkit-text-fill-color: #334155; }
+.profile-actions .message-profile-button { width: 100%; --background: #eef2ff; --color: #4f46e5; --border-color: #eef2ff; }
+.profile-actions .message-profile-button::part(native) { color: #4f46e5 !important; }
+.message-button-label { color: #4f46e5 !important; }
+.profile-content-panel { min-height: 320px; margin-top: 12px; background: #fff; }
+.profile-sections {
+	position: sticky;
+	top: 0;
+	z-index: 5;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0;
+	padding: 0 12px;
+	border: 0;
+	border-bottom: 1px solid #e2e8f0;
+	background: rgba(255,255,255,.96);
+}
+.profile-sections button {
+	min-height: 52px;
+	border-radius: 0;
+	border-bottom: 2px solid transparent;
+	color: #94a3b8;
+	font-size: 12px;
+}
+.profile-sections button ion-icon { display: none; }
+.profile-sections button.active { border-bottom-color: #4f46e5; background: transparent; color: #4f46e5; }
+.profile-posts { padding: 22px 16px 28px; }
+.magazine-heading { margin: 0 0 14px; }
+.magazine-heading > span { color: #4f46e5; }
+.magazine-heading h2 { color: #0f172a; font-size: 19px; letter-spacing: -.03em; }
+.magazine-heading p { color: #64748b; font-size: 13px; }
+.magazine-grid { gap: 12px; }
+.magazine-card { border: 1px solid #e2e8f0; border-radius: 20px; background: #fff; box-shadow: 0 2px 8px rgba(15,23,42,.035); }
+.magazine-copy { padding: 18px; }
+.magazine-meta { color: #94a3b8; font-size: 10px; }
+.magazine-copy h3 { color: #0f172a; font-size: 18px; letter-spacing: -.025em; }
+.magazine-copy > p { color: #64748b; font-size: 14px; line-height: 1.55; }
+.magazine-footer { padding-top: 14px; border-top: 1px solid #f1f5f9; color: #64748b; }
+.magazine-read-label { color: #4f46e5; }
+.magazine-empty { border: 1px dashed #cbd5e1; border-radius: 20px; background: #fff; }
+.profile-gallery { padding: 18px 16px 28px; }
+.account-suggestions-section { background: #fff; }
+.account-suggestions-heading h2 { color: #0f172a; font-size: 22px; }
+.suggestion-testimonial-tile { border-radius: 20px; background: #fff; box-shadow: 0 2px 8px rgba(15,23,42,.035); }
+.profile-empty-state {
+	display: flex;
+	min-height: 290px;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 28px 20px;
+	border: 1px solid #e2e8f0;
+	border-radius: 22px;
+	background: linear-gradient(180deg, #fff 0%, #fafaff 100%);
+	text-align: center;
+}
+.profile-empty-illustration { display: block; width: 144px; height: 116px; margin-bottom: 12px; }
+.profile-empty-state h3 { margin: 0 0 6px; color: #0f172a; font-size: 18px; font-weight: 650; letter-spacing: -.025em; }
+.profile-empty-state p { max-width: 290px; margin: 0; color: #64748b; font-size: 13px; line-height: 1.55; }
+.profile-empty-cta {
+	display: inline-flex;
+	min-height: 42px;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 18px;
+	padding: 0 16px;
+	border: 1px solid #4f46e5;
+	border-radius: 12px;
+	background: #4f46e5;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 650;
+	text-decoration: none;
+	transition: background-color .16s ease, transform .16s ease;
+}
+.profile-empty-cta:hover { background: #4338ca; color: #fff; }
+.profile-empty-cta:active { transform: scale(.97); }
+.profile-empty-cta:focus-visible { outline: 3px solid #c7d2fe; outline-offset: 3px; }
+@media (min-width: 680px) {
+	.profile-page-shell { margin: 18px auto; overflow: visible; border: 1px solid #e2e8f0; border-radius: 24px; box-shadow: 0 8px 30px rgba(15,23,42,.04); }
+	.profile-hero { overflow: hidden; border-radius: 24px 24px 0 0; }
+	.profile-page-header { padding-inline: 24px; }
+	.profile-cover { height: 170px; }
+	.profile-top { padding-inline: 28px; }
+}
+
+/* These rules come after the refresh styles so light defaults cannot override dark mode. */
+:host-context(html.app-dark) .profile-content,
+:host-context(html.app-dark) .profile-page-shell,
+:host-context(html.app-dark) .profile-hero,
+:host-context(html.app-dark) .profile-page-header,
+:host-context(html.app-dark) .profile-top,
+:host-context(html.app-dark) .profile-content-panel,
+:host-context(html.app-dark) .profile-sections,
+:host-context(html.app-dark) .profile-sections button {
+	--background: var(--bg) !important;
+	background: var(--bg) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections {
+	border-color: var(--border) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button {
+	color: var(--text-muted) !important;
+}
+:host-context(html.app-dark) .profile-content-panel .profile-sections button.active {
+	border-bottom-color: var(--primary) !important;
+	background: var(--surface) !important;
+	color: var(--primary) !important;
+}
+:host-context(html.app-dark) .profile-top h2,
+:host-context(html.app-dark) .profile-brand,
+:host-context(html.app-dark) .magazine-heading h2,
+:host-context(html.app-dark) .magazine-copy h3,
+:host-context(html.app-dark) .profile-empty-state h3 {
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) .profile-stats-card,
+:host-context(html.app-dark) .magazine-card,
+:host-context(html.app-dark) .magazine-empty,
+:host-context(html.app-dark) .profile-empty-state {
+	border-color: var(--border) !important;
+	background: var(--surface) !important;
+	color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button {
+	--background: var(--surface-2) !important;
+	--border-color: var(--border) !important;
+	--color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button::part(native) {
+	border-color: var(--border) !important;
+	background: var(--surface-2) !important;
+	color: var(--text) !important;
+	-webkit-text-fill-color: var(--text) !important;
+}
+:host-context(html.app-dark) ion-button.edit-profile-button ion-icon {
+	color: var(--text) !important;
+}

@@ -180,3 +180,32 @@
   .publish-button { min-width: 84px; padding-inline: var(--space-2); }
   .character-count { font-size: var(--font-12); }
 }
+
+:host-context(html.app-dark) .composer-page-header,
+:host-context(html.app-dark) .composer-page-header ion-toolbar,
+:host-context(html.app-dark) .composer-stage { background: var(--bg); }
+:host-context(html.app-dark) .composer-page-header ion-toolbar { --background: var(--bg); }
+:host-context(html.app-dark) .composer-page-header h1,
+:host-context(html.app-dark) .composer-card,
+:host-context(html.app-dark) .author-copy strong,
+:host-context(html.app-dark) .audience-control { color: var(--text); }
+:host-context(html.app-dark) .composer-card { background: var(--surface); }
+:host-context(html.app-dark) .composer-close-top,
+:host-context(html.app-dark) .author-copy span,
+:host-context(html.app-dark) .composer-prompt,
+:host-context(html.app-dark) .audience-control small,
+:host-context(html.app-dark) .audience-chevron,
+:host-context(html.app-dark) .character-count { color: var(--text-muted); }
+:host-context(html.app-dark) .composer-card > ion-textarea {
+  border-color: var(--border);
+  background: var(--surface-2) !important;
+  --background: var(--surface-2);
+  --color: var(--text);
+  --placeholder-color: var(--text-muted);
+}
+:host-context(html.app-dark) .composer-card > ion-textarea::part(native) { color: var(--text); }
+:host-context(html.app-dark) .audience-control { border-top-color: var(--border); }
+:host-context(html.app-dark) .audience-control-icon { background: var(--primary-soft); color: var(--primary); }
+:host-context(html.app-dark) .audience-menu { border-color: var(--border); background: var(--surface-2); }
+:host-context(html.app-dark) .audience-menu button { color: var(--text); }
+:host-context(html.app-dark) .attachment-preview { border-color: var(--border); background: var(--surface-2); color: var(--text); }
