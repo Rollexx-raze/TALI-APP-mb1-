@@ -52,6 +52,7 @@ export interface Conversation {
   id: string;
   memberIds: number[];
   groupName: string | null;
+  photo?: string;
   communityId?: string;
   messages: ChatMessage[];
   updatedAt: Date;
@@ -66,6 +67,7 @@ export interface Community {
   inviteCode: string;
   createdAt: Date;
   groupId?: string;
+  photo?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -335,6 +337,20 @@ export class MessageService {
     this.persistConversations();
   }
 
+  updateConversationPhoto(conversationId: string, photo: string | undefined) {
+    this.conversations.update((items) => items.map((conversation) => conversation.id === conversationId
+      ? { ...conversation, photo }
+      : conversation));
+    this.persistConversations();
+  }
+
+  updateCommunityPhoto(communityId: string, photo: string | undefined) {
+    this.communities.update((items) => items.map((community) => community.id === communityId
+      ? { ...community, photo }
+      : community));
+    this.persistCommunities();
+  }
+
   deleteConversation(conversationId: string) {
     this.conversations.update((items) => items.filter((item) => item.id !== conversationId));
     this.persistConversations();
@@ -446,6 +462,7 @@ function isStoredCommunityList(value: unknown): value is Community[] {
     return typeof community.id === 'string' && typeof community.name === 'string' &&
       Number.isSafeInteger(community.ownerId) && Array.isArray(community.memberIds) &&
       (community.groupId === undefined || typeof community.groupId === 'string') &&
+      (community.photo === undefined || typeof community.photo === 'string') &&
       typeof community.inviteCode === 'string' &&
       (typeof community.createdAt === 'string' || community.createdAt instanceof Date);
   });
@@ -464,6 +481,7 @@ function isStoredConversationList(value: unknown): value is Conversation[] {
     return typeof conversation.id === 'string' &&
       Array.isArray(conversation.memberIds) &&
       (typeof conversation.groupName === 'string' || conversation.groupName === null) &&
+      (conversation.photo === undefined || typeof conversation.photo === 'string') &&
       Array.isArray(conversation.messages) &&
       (typeof conversation.updatedAt === 'string' || conversation.updatedAt instanceof Date) &&
       conversation.messages.every((message) =>

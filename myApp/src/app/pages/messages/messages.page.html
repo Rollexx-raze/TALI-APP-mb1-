@@ -12,7 +12,7 @@
             <span class="chat-profile-copy"><strong class="chat-profile-name">{{ conversationTitle(conversation) }}</strong><small class="chat-presence"><i aria-hidden="true"></i>{{ presenceLabel(person) }}</small></span>
           </a>
         } @else {
-          <span class="chat-group-avatar"><ion-icon name="people-outline"></ion-icon></span>
+          <button type="button" class="chat-group-avatar" [attr.aria-label]="conversationGroupPhoto(conversation) ? 'Change group photo' : 'Add group photo'" title="Change group photo" (click)="openConversationPhotoOptions(conversation)">@if (conversationGroupPhoto(conversation); as image) { <img [src]="image" [alt]="conversationTitle(conversation) + ' group photo'" /> } @else { <ion-icon name="people-outline"></ion-icon> }</button>
           <button type="button" class="chat-group-title" aria-label="Open group info" (click)="openGroupInfo()"><span>{{ conversationTitle(conversation) }}</span><small>{{ conversation.memberIds.length }} members{{ showGroupInfo ? ' · Group info' : '' }}</small></button>
         }
         <span class="chat-header-actions">
@@ -29,6 +29,20 @@
     }
   </ion-toolbar>
 </ion-header>
+
+<input #groupPhotoCameraPicker hidden type="file" accept="image/*" capture="environment" (change)="onGroupPhotoSelected($event)" />
+<input #groupPhotoLibraryPicker hidden type="file" accept="image/*" (change)="onGroupPhotoSelected($event)" />
+@if (showGroupPhotoOptions) {
+  <div class="group-photo-options-backdrop" (click)="closeGroupPhotoOptions()">
+    <section class="group-photo-options-sheet" role="dialog" aria-modal="true" aria-labelledby="group-photo-options-title" (click)="$event.stopPropagation()">
+      <h2 id="group-photo-options-title">Change group photo</h2>
+      <button type="button" (click)="openPhotoSource(groupPhotoCameraPicker)">Take photo</button>
+      <button type="button" (click)="openPhotoSource(groupPhotoLibraryPicker)">Choose photo</button>
+      @if (selectedPhotoTargetHasPhoto) { <button type="button" class="delete-group-photo-choice" (click)="deleteSelectedGroupPhoto()">Delete photo</button> }
+      <button type="button" class="group-photo-cancel" (click)="closeGroupPhotoOptions()">Cancel</button>
+    </section>
+  </div>
+}
 
 <ion-content class="page-content" [class.chat-mode]="activeConversation !== null" [class.community-tab-active]="!activeConversation && activeTab === 'community'" [class.chat-theme-light]="activeChatSettings?.theme === 'light'" [class.chat-theme-dark]="activeChatSettings?.theme === 'dark'" [style.--chat-footer-height.px]="chatFooterHeight" [fullscreen]="true" [scrollEvents]="true" (click)="openConversationMenuId = null" (ionScroll)="onThreadScroll($event)">
   @if (messageService.loadError(); as messageLoadError) {
@@ -227,18 +241,19 @@
         @if (selectedCommunity; as community) {
           <header class="community-space-heading">
             <button type="button" class="community-back-button" aria-label="Back to communities" (click)="showCommunityList()"><ion-icon name="chevron-back-outline"></ion-icon><span>Communities</span></button>
-            <div class="community-heading-copy"><span class="community-heading-icon"><ion-icon name="people-outline"></ion-icon></span><div><h2>{{ community.name }}</h2><p>{{ community.memberIds.length }} {{ community.memberIds.length === 1 ? 'member' : 'members' }} · {{ selectedCommunityChats.length }} {{ selectedCommunityChats.length === 1 ? 'topic chat' : 'topic chats' }}</p></div></div>
+            <div class="community-heading-copy"><button type="button" class="community-heading-icon community-photo-button" [attr.aria-label]="community.photo ? 'Change ' + community.name + ' group photo' : 'Add ' + community.name + ' group photo'" title="Change group photo" (click)="openCommunityPhotoOptions(community)">@if (community.photo) { <img [src]="community.photo" [alt]="community.name + ' group photo'" /> } @else { <ion-icon name="people-outline" aria-hidden="true"></ion-icon> }<span class="community-photo-camera"><ion-icon name="camera-outline" aria-hidden="true"></ion-icon></span></button><div><h2>{{ community.name }}</h2><p>{{ community.memberIds.length }} {{ community.memberIds.length === 1 ? 'member' : 'members' }} · {{ selectedCommunityChats.length }} {{ selectedCommunityChats.length === 1 ? 'topic chat' : 'topic chats' }}</p></div></div>
             <div class="community-heading-actions">
               <button type="button" (click)="copyCommunityInvite(community)"><ion-icon name="copy-outline"></ion-icon><span>Copy invite link</span></button>
               <button type="button" (click)="setComposeMode('community-chat')"><ion-icon name="add-circle"></ion-icon><span>New topic chat</span></button>
             </div>
           </header>
+          @if (groupPhotoNotice) { <p class="community-notice" role="status">{{ groupPhotoNotice }}</p> }
           @if (selectedCommunityChats.length) {
             <h3 class="community-topics-heading">Topic chats <span>{{ selectedCommunityChats.length }} {{ selectedCommunityChats.length === 1 ? 'topic' : 'topics' }}</span></h3>
             <section class="community-topic-list" aria-label="Community topic chats">
               @for (conversation of selectedCommunityChats; track conversation.id) {
                 <button type="button" class="community-topic-row" (click)="openConversation(conversation.id)">
-                  <span class="community-topic-icon"><ion-icon name="chatbubble-outline"></ion-icon></span>
+                  <span class="community-topic-icon">@if (community.photo) { <img [src]="community.photo" [alt]="community.name + ' group photo'" /> } @else { <ion-icon name="chatbubble-outline"></ion-icon> }</span>
                   <span class="community-topic-copy"><strong># {{ conversationTitle(conversation) }}</strong></span>
                   <ion-icon class="community-topic-chevron" name="chevron-back-outline"></ion-icon>
                 </button>
@@ -253,7 +268,7 @@
             <section class="community-card-list">
               @for (community of visibleCommunities; track community.id) {
                 <button type="button" class="community-card" (click)="openCommunity(community)">
-                  <span class="community-card-icon"><ion-icon name="people-outline"></ion-icon></span>
+                  <span class="community-card-icon">@if (community.photo) { <img [src]="community.photo" [alt]="community.name + ' group photo'" /> } @else { <ion-icon name="people-outline"></ion-icon> }</span>
                   <span class="community-card-copy"><strong>{{ community.name }}</strong><span>{{ community.memberIds.length }} members · {{ communityChatCount(community.id) }} topic chats</span></span>
                   <ion-icon class="community-topic-chevron" name="chevron-back-outline"></ion-icon>
                 </button>
@@ -276,7 +291,8 @@
             @let latestMessage = conversation.messages.at(-1);
             <button type="button" class="conversation-row" (click)="openConversation(conversation.id)">
               <span class="conversation-avatar">
-                @if (!conversation.groupName && conversationProfileImage(conversation); as image) { <img [src]="image" [alt]="conversationTitle(conversation)" /> }
+                @if (conversation.groupName && conversationGroupPhoto(conversation); as image) { <img [src]="image" [alt]="conversationTitle(conversation) + ' group photo'" /> }
+                @else if (!conversation.groupName && conversationProfileImage(conversation); as image) { <img [src]="image" [alt]="conversationTitle(conversation)" /> }
                 @else { <ion-icon [name]="conversation.groupName ? 'people-outline' : 'person-circle-outline'"></ion-icon> }
               </span>
               <span class="conversation-copy">
@@ -492,6 +508,16 @@
           <button type="button" aria-label="Back to conversation" title="Back to conversation" (click)="closeChatSettings()"><ion-icon name="chevron-back-outline"></ion-icon></button>
         </header>
         @if (showGroupInfo && settingsConversation.groupName) {
+          <section class="settings-block group-photo-settings" aria-label="Group photo">
+            <h3>Group photo</h3>
+            <div class="group-photo-preview">
+              @if (conversationGroupPhoto(settingsConversation); as image) { <img [src]="image" [alt]="conversationTitle(settingsConversation) + ' group photo'" /> }
+              @else { <ion-icon name="people-outline" aria-hidden="true"></ion-icon> }
+              <div><button type="button" (click)="openConversationPhotoOptions(settingsConversation)">{{ conversationGroupPhoto(settingsConversation) ? 'Change photo' : 'Add photo' }}</button></div>
+            </div>
+            <p class="settings-description">Choose an image up to 5 MB. Community chats share their community photo.</p>
+            @if (groupPhotoNotice) { <p class="community-notice" role="status">{{ groupPhotoNotice }}</p> }
+          </section>
           <section class="settings-block group-members-block" aria-label="Group members">
             @for (member of groupMembers(settingsConversation, showAllGroupMembers); track member.id) {
               <a class="group-member-row" [routerLink]="['/profile', member.id]">
