@@ -25,6 +25,7 @@
     "@capacitor/keyboard": "8.0.5",
     "@capacitor/status-bar": "8.0.3",
     "@ionic/angular": "^9.0.0",
+    "@supabase/supabase-js": "^2.118.0",
     "emoji-picker-element": "^1.29.1",
     "emoji-picker-element-data": "^1.8.0",
     "ionicons": "^8.1.0",
