@@ -13,8 +13,6 @@
 .group-actions-menu button:hover, .group-actions-menu button:focus-visible { background: var(--app-surface-alt); outline: none; }
 .group-actions-menu button span { display: grid; min-width: 20px; height: 20px; place-items: center; border-radius: var(--radius-pill); background: var(--app-primary); color: var(--on-primary); font-size: var(--font-body); }
 .group-actions-menu button.danger-action { color: var(--text-muted); }
-.create-group-button { --background: var(--app-surface-alt); --color: var(--app-text); --border-radius: var(--radius-inner); font-size: var(--font-body); }
-.create-group-button > span:first-child { font-size: var(--font-subheading); line-height: 1; }
 .groups-page { --background: var(--app-background); --color: var(--app-text); }
 .groups-content { width: min(100%, 720px); margin: 0 auto; padding: var(--space-5) var(--space-4) var(--space-7); }
 .groups-hero, .group-card { border: 1px solid var(--app-border); border-radius: var(--radius-card); background: var(--app-surface); color: var(--app-text); box-shadow: var(--shadow-soft); }

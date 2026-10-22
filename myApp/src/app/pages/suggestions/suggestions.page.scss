@@ -108,6 +108,7 @@
 .activity-switcher button { min-height:32px; border:0; border-radius:9px; background:transparent; color:#8491aa; font-size:10px; }
 .activity-switcher button.active { background:#fff; color:#5d58e9; box-shadow:none; }
 .notification-count { min-width:15px; height:15px; padding:0 4px; border-radius:9px; background:#5d58e9; color:white; font-size:9px; }
+.group-activity-count { min-width:15px; height:15px; padding:0 4px; font-size:9px; }
 .suggestion-tabs { gap:6px; padding:0 14px 10px; }
 .suggestion-tabs button { min-height:29px; padding:0 10px; border:1px solid #e8ecf3; border-radius:20px; background:#fff; color:#8491aa; font-size:9px; }
 .suggestion-tabs button.active { border-color:#efeeff; background:#efeeff; color:#5d58e9; box-shadow:none; }

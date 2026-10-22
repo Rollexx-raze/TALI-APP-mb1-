@@ -1834,6 +1834,45 @@ main
 :host-context(html.app-dark) ion-button.edit-profile-button ion-icon {
 	color: var(--text) !important;
 }
+
+.profile-page-header:has(.profile-header-back) .profile-brand {
+	position: absolute;
+	left: 50%;
+	margin: 0;
+	transform: translateX(-50%);
+	white-space: nowrap;
+}
+.profile-page-header:has(.profile-header-back) .profile-header-back {
+	z-index: 1;
+}
+.profile-page-shell:has(.profile-header-back) .profile-sections {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.profile-top:has(.profile-actions) .profile-actions {
+	width: min(100%, 320px);
+	max-width: 320px;
+	justify-self: center;
+	margin-inline: auto;
+	padding-inline: 0;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.profile-top:has(.profile-actions) .profile-actions .follow-btn:not(.is-following) {
+	background: #4f46e5;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+}
+.profile-top:has(.profile-actions) .profile-actions .message-profile-button {
+	--background: #4f46e5;
+	--background-hover: #4338ca;
+	--background-activated: #4338ca;
+	--color: #fff;
+	--border-color: #4f46e5;
+}
+.profile-top:has(.profile-actions) .profile-actions .message-profile-button::part(native),
+.profile-top:has(.profile-actions) .profile-actions .message-button-label {
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+}
 :host-context(html.app-dark) .profile-posts,
 :host-context(html.app-dark) .profile-gallery,
 :host-context(html.app-dark) .account-suggestions-section {

@@ -4,7 +4,7 @@
       <section class="profile-hero">
         <div class="profile-page-header">
           @if (!isOwnProfile) { <button type="button" class="profile-header-back" (click)="goBack()" aria-label="Back"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></button> }
-          <div class="profile-brand"><span>Profile</span></div>
+          <div class="profile-brand"><span>{{ isOwnProfile ? 'Profile' : (profile.username.startsWith('@') ? profile.username : '@' + profile.username) }}</span></div>
           @if (isOwnProfile) {
             <button type="button" class="profile-header-more" routerLink="/settings" aria-label="Settings"><ion-icon name="settings-outline" aria-hidden="true"></ion-icon></button>
           }
@@ -37,7 +37,7 @@
           </div>
           <div class="profile-identity">
             <h2>{{ profile.name }} @if (profile.verified) { <ion-icon class="verified-badge" name="checkmark-circle" aria-label="Verified account"></ion-icon> }</h2>
-            <p class="profile-handle">@{{ profile.username }}</p>
+            <p class="profile-handle">{{ profile.username.startsWith('@') ? profile.username : '@' + profile.username }}</p>
           </div>
           <section class="profile-stats-card" aria-label="Profile statistics">
             <div class="stats-row">
@@ -66,7 +66,9 @@
       <button type="button" aria-label="Posts" title="Posts" [class.active]="activeSection === 'posts'" [attr.aria-pressed]="activeSection === 'posts'" (click)="setProfileSection('posts')"><ion-icon name="grid-outline" aria-hidden="true"></ion-icon><span>Posts</span></button>
       <button type="button" aria-label="Videos" title="Videos" [class.active]="activeSection === 'videos'" [attr.aria-pressed]="activeSection === 'videos'" (click)="setProfileSection('videos')"><ion-icon name="videocam-outline" aria-hidden="true"></ion-icon><span>Videos</span></button>
       <button type="button" aria-label="Reposts" title="Reposts" [class.active]="activeSection === 'reposts'" [attr.aria-pressed]="activeSection === 'reposts'" (click)="setProfileSection('reposts')"><ion-icon name="repeat-outline" aria-hidden="true"></ion-icon><span>Reposts</span></button>
-      <button type="button" aria-label="Account suggestions" title="Account suggestions" [class.active]="activeSection === 'suggestions'" [attr.aria-pressed]="activeSection === 'suggestions'" (click)="setProfileSection('suggestions')"><span>Suggestions</span></button>
+      @if (isOwnProfile) {
+        <button type="button" aria-label="Account suggestions" title="Account suggestions" [class.active]="activeSection === 'suggestions'" [attr.aria-pressed]="activeSection === 'suggestions'" (click)="setProfileSection('suggestions')"><span>Suggestions</span></button>
+      }
     </nav>
     @if (activeSection === 'posts') {
       <section class="profile-posts">
@@ -128,7 +130,7 @@
         </div>
       </section>
     }
-    @if (activeSection === 'suggestions') {
+    @if (isOwnProfile && activeSection === 'suggestions') {
       <section class="account-suggestions-section" aria-labelledby="account-suggestions-title">
         <div class="account-suggestions-heading"><span>MEET THE COMMUNITY</span><h2 id="account-suggestions-title">Account suggestions</h2><p>New voices and kindred spirits to discover.</p></div>
         @if (suggestedAccounts.length) {

@@ -43,7 +43,7 @@ export class ProfilePage {
   constructor() {
     addIcons({ addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, ellipsisHorizontal, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline });
     const saved = this.viewState.read<Partial<{ activeSection: 'posts' | 'photos' | 'videos' | 'reposts' | 'suggestions' | 'archive' | 'trash'; connectionsView: 'followers' | 'following' | null }>>(this.profileStateKey, {});
-    if (saved.activeSection && saved.activeSection !== 'archive' && saved.activeSection !== 'trash' && saved.activeSection !== 'photos') this.activeSection = saved.activeSection;
+    if (saved.activeSection && saved.activeSection !== 'archive' && saved.activeSection !== 'trash' && saved.activeSection !== 'photos' && (saved.activeSection !== 'suggestions' || this.isOwnProfile)) this.activeSection = saved.activeSection;
     this.connectionsView = saved.connectionsView ?? null;
   }
 

@@ -99,7 +99,7 @@
   font-size: 13px;
   font-weight: 650;
 }
-.group-form-actions ion-button:first-child { --color: var(--app-primary); }
+.group-form-actions ion-button:first-child { --color: #fff; }
 .group-form-actions ion-button:last-child { --background: var(--app-primary); --color: var(--on-primary); }
 .photo-preview { justify-content: flex-start; }
 .photo-preview img { width: 100%; height: auto; max-height: 190px; border-radius: 12px; object-fit: cover; }
