@@ -1792,3 +1792,21 @@ ion-header.settings-header:has(+ .settings-content .settings-redesign) h1 {
   border-color: var(--border);
   color: var(--text);
 }
+
+@media (max-width: 420px) {
+  .settings-redesign .profile-settings-form .profile-photo-card {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr) 34px;
+    gap: 12px;
+  }
+
+  .settings-redesign .profile-settings-form .profile-photo-card .edit-photo-avatar {
+    width: 78px;
+    height: 78px;
+    flex-basis: 78px;
+  }
+
+  .settings-redesign .profile-settings-form .profile-photo-card .edit-photo-name {
+    min-width: 0;
+  }
+}
