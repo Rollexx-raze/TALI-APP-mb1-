@@ -51,16 +51,6 @@
       } @empty { <p class="empty-suggestions">No posts to suggest yet.</p> }
     }
     @if (selectedCategory === 'groups') {
-      <section class="intro groups-intro"><div><h2>Your group chats</h2><p>Pick up a conversation with your group.</p></div><ion-button (click)="createGroupChat()"><ion-icon slot="start" name="add-circle"></ion-icon>Create group chat</ion-button></section>
-      @for (conversation of groupChats; track conversation.id) {
-        <button type="button" class="suggestion-row community-group-card group-chat-row" (click)="openGroupChat(conversation.id)">
-          <span class="group-chat-avatar"><ion-icon name="people-outline"></ion-icon></span>
-          <span class="suggestion-copy"><strong>{{ conversation.groupName }}</strong><span>{{ groupChatPreview(conversation) }}</span></span>
-          <span class="group-chat-count">{{ conversation.memberIds.length }} members</span>
-          @if (groupUnreadCount(conversation)) { <span class="group-activity-count" [attr.aria-label]="groupUnreadCount(conversation) + ' unread messages'">{{ groupUnreadCount(conversation) }}</span> }
-        </button>
-      }
-      @empty { <p class="empty-suggestions">No group chats yet. Create one to get started.</p> }
       <section class="intro community-heading">
         <div><h2>Community groups</h2><p>Groups around shared interests.</p></div>
         <ion-button fill="outline" routerLink="/groups/create"><ion-icon slot="start" name="add-circle"></ion-icon>Create community group</ion-button>
@@ -74,9 +64,15 @@
           <span class="suggestion-copy"><strong>{{ group.name }}</strong><span>{{ group.description || 'A new community group.' }}</span></span>
           <span class="group-chat-count">{{ group.memberIds.length }} member{{ group.memberIds.length === 1 ? '' : 's' }} · {{ group.privacy === 'private' ? 'Private' : 'Public' }}</span>
         </button>
-      } @empty {
-        <p class="empty-suggestions">No community groups yet. Create one to get started.</p>
       }
+      @for (community of messageCommunities; track community.id) {
+        <button type="button" class="suggestion-row community-group-card activity-community-group" (click)="openMessageCommunity(community)">
+          <span class="group-chat-avatar"><ion-icon name="people-outline" aria-hidden="true"></ion-icon></span>
+          <span class="suggestion-copy"><strong>{{ community.name }}</strong><span>Community chat group</span></span>
+          <span class="group-chat-count">{{ community.memberIds.length }} member{{ community.memberIds.length === 1 ? '' : 's' }} · {{ messageCommunityChatCount(community) }} chat{{ messageCommunityChatCount(community) === 1 ? '' : 's' }}</span>
+        </button>
+      }
+      @if (!groups.length && !messageCommunities.length) { <p class="empty-suggestions">No community groups yet. Create one to get started.</p> }
     }
   }
 

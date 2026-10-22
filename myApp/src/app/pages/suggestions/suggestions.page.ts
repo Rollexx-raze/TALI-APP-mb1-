@@ -7,7 +7,7 @@ import { addCircle, atOutline, chatbubbleOutline, heartOutline, homeOutline, not
 import { Account, AccountService } from '../../services/account.service';
 import { AppNotification, NotificationService } from '../../services/notification.service';
 import { PostService } from '../../services/post.service';
-import { Conversation, MessageService } from '../../services/message.service';
+import { Community, Conversation, MessageService } from '../../services/message.service';
 import { ViewStateService } from '../../services/view-state.service';
 import { GroupService } from '../../services/group.service';
 
@@ -34,6 +34,15 @@ export class SuggestionsPage {
 
   get groups() {
     return this.groupService.getGroups();
+  }
+
+  get messageCommunities() {
+    const accountId = this.accountService.selectedAccount()?.id;
+    const groupIds = new Set(this.groups.map((group) => group.id));
+    return this.messageService.communities()
+      .filter((community) => accountId !== undefined && community.memberIds.includes(accountId))
+      .filter((community) => !community.groupId || !groupIds.has(community.groupId))
+      .sort((first, second) => second.createdAt.getTime() - first.createdAt.getTime());
   }
 
   get groupChats() {
@@ -221,6 +230,24 @@ export class SuggestionsPage {
       return;
     }
     void this.router.navigate(['/groups', groupId]);
+  }
+
+  openMessageCommunity(community: Community) {
+    const accountId = this.accountService.selectedAccount()?.id;
+    if (accountId === undefined || !community.memberIds.includes(accountId)) return;
+    const saved = this.viewState.read<Record<string, unknown>>('tali-view-messages', {});
+    this.viewState.write('tali-view-messages', {
+      ...saved,
+      activeTab: 'community',
+      activeConversationId: null,
+      selectedCommunityId: community.id,
+      composeMode: null,
+    });
+    void this.router.navigate(['/messages']);
+  }
+
+  messageCommunityChatCount(community: Community) {
+    return this.messageService.conversations().filter((conversation) => conversation.communityId === community.id).length;
   }
 
   private async showToast(message: string) {
