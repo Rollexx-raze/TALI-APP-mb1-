@@ -6,7 +6,7 @@ import { addIcons } from 'ionicons';
 import { addCircle, cameraOutline, chatbubbleOutline, checkmarkCircle, chevronBackOutline, createOutline, ellipsisHorizontal, gridOutline, homeOutline, notificationsOutline, personCircleOutline, repeatOutline, settingsOutline, trendingUpOutline, videocamOutline } from 'ionicons/icons';
 import { PostCardComponent } from '../../components/post-card/post-card.component';
 import { Account, AccountService } from '../../services/account.service';
-import { Post, PostService } from '../../services/post.service';
+import { Post, PostAttachment, PostService } from '../../services/post.service';
 import { NotificationService } from '../../services/notification.service';
 import { ViewStateService } from '../../services/view-state.service';
 import { MessageService } from '../../services/message.service';
@@ -115,8 +115,8 @@ export class ProfilePage {
     this.suppressSuggestionClick = false;
   }
 
-  postImage(post: Post) {
-    return post.attachments.find((attachment) => attachment.type.startsWith('image/'))?.dataUrl ?? '';
+  postImage(post: Post): PostAttachment | undefined {
+    return post.attachments.find((attachment) => attachment.type.startsWith('image/'));
   }
 
   magazineTitle(body: string) {

@@ -76,6 +76,11 @@
         <div class="magazine-grid">
           @for (post of magazinePosts(ownPosts); track post.id; let first = $first) {
             <article class="magazine-card" [class.magazine-featured]="first">
+              @if (postImage(post); as image) {
+                <div class="magazine-image">
+                  <img [src]="image.dataUrl" [alt]="image.name" />
+                </div>
+              }
               <div class="magazine-copy">
                 <div class="magazine-meta"><span>{{ post.createdAt | date:'MMMM d, y' }}</span><span>{{ post.authorName }}</span></div>
                 <h3>{{ magazineTitle(post.body) }}</h3>
@@ -119,6 +124,11 @@
         <div class="magazine-grid">
           @for (post of magazinePosts(repostedPosts); track post.id; let first = $first) {
             <article class="magazine-card" [class.magazine-featured]="first">
+              @if (postImage(post); as image) {
+                <div class="magazine-image">
+                  <img [src]="image.dataUrl" [alt]="image.name" />
+                </div>
+              }
               <div class="magazine-copy">
                 <div class="magazine-meta"><span>{{ post.createdAt | date:'MMMM d, y' }}</span><span>{{ post.authorName }}</span></div>
                 <h3>{{ magazineTitle(post.body) }}</h3>
@@ -207,7 +217,16 @@
     <section class="edit-dialog connections-dialog" role="dialog" aria-modal="true" [attr.aria-label]="connectionsView === 'followers' ? 'Followers' : 'Following'" (click)="$event.stopPropagation()">
       <h2>{{ connectionsView === 'followers' ? 'Followers' : 'Following' }}</h2>
       @for (person of (connectionsView === 'followers' ? followers : following); track person.id) {
-        <a class="connection-row" [routerLink]="['/profile', person.id]" (click)="setConnectionsView(null)"><ion-icon name="person-circle-outline"></ion-icon><div><strong>{{ person.name }}</strong><span>{{ person.username }}</span></div></a>
+        <a class="connection-row" [routerLink]="['/profile', person.id]" (click)="setConnectionsView(null)">
+          <span class="connection-avatar">
+            @if (canViewProfileImage(person)) {
+              <img [src]="person.profileImage" [alt]="person.name + ' profile photo'" />
+            } @else {
+              <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+            }
+          </span>
+          <div><strong>{{ person.name }}</strong><span>{{ person.username }}</span></div>
+        </a>
       } @empty { <p class="connection-empty">No {{ connectionsView }} yet.</p> }
       <div class="edit-actions"><ion-button fill="clear" (click)="setConnectionsView(null)">Close</ion-button></div>
     </section>
