@@ -192,6 +192,7 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
   showGroupPhotoOptions = false;
   private groupPhotoTarget: { kind: 'community' | 'conversation'; id: string } | null = null;
   settingsNotice = '';
+  conversationActionNotice = '';
   showBlockConfirmation = false;
   pendingBlockConversationId: string | null = null;
   groupName = '';
@@ -1197,10 +1198,14 @@ export class MessagesPage implements AfterViewChecked, OnDestroy {
     this.openConversationMenuId = this.openConversationMenuId === id ? null : id;
   }
 
-  conversationAction(conversation: Conversation, action: 'unreadFor' | 'pinnedFor' | 'mutedFor' | 'archivedFor' | 'restrictedFor' | 'blockedFor' | 'delete') {
+  async conversationAction(conversation: Conversation, action: 'unreadFor' | 'pinnedFor' | 'mutedFor' | 'archivedFor' | 'restrictedFor' | 'blockedFor' | 'delete' | 'leave') {
     const accountId = this.selectedAccount()?.id;
     if (accountId === undefined) return;
-    if (action === 'delete') {
+    if (action === 'leave') {
+      const left = await this.messageService.leaveGroupConversation(conversation.id, accountId);
+      this.conversationActionNotice = left ? '' : 'Could not leave this group chat. Please try again.';
+      if (left && this.activeConversationId === conversation.id) this.closeConversation();
+    } else if (action === 'delete') {
       this.messageService.deleteConversation(conversation.id);
     } else if (action === 'blockedFor') {
       const blocked = this.messageService.settingsFor(conversation.id).blockedFor.includes(accountId);

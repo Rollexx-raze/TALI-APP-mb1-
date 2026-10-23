@@ -48,6 +48,9 @@
   @if (messageService.loadError(); as messageLoadError) {
     <section class="message-data-error" role="alert"><p>{{ messageLoadError }}</p><button type="button" (click)="retryLoadingMessages()">Retry</button></section>
   }
+  @if (conversationActionNotice) {
+    <p class="conversation-action-notice" role="alert">{{ conversationActionNotice }}</p>
+  }
   @if (activeConversation; as conversation) {
     @if (isActiveConversationRequest && activeChatAccount; as requester) {
       <section class="request-sender-intro" aria-label="Message request sender">
@@ -323,6 +326,7 @@
                 <button type="button" role="menuitem" (click)="conversationAction(conversation, 'mutedFor')">{{ messageService.settingsFor(conversation.id).mutedFor.includes(selectedAccount()?.id ?? -1) ? 'Unmute' : 'Mute' }}</button>
                 <button type="button" role="menuitem" (click)="conversationAction(conversation, 'archivedFor')">{{ messageService.settingsFor(conversation.id).archivedFor.includes(selectedAccount()?.id ?? -1) ? 'Unarchive' : 'Archive' }}</button>
                 <button type="button" role="menuitem" (click)="conversationAction(conversation, 'unreadFor')">{{ conversationIsUnread(conversation) ? 'Mark read' : 'Mark unread' }}</button>
+                @if (conversation.groupName) { <button type="button" role="menuitem" class="leave-chat-action" (click)="conversationAction(conversation, 'leave')">Leave chat</button> }
                 <button type="button" role="menuitem" class="delete-chat-action" (click)="conversationAction(conversation, 'delete')">Delete chat</button>
               </div>
             }
@@ -383,7 +387,7 @@
 
   @if (groupCommunityEntry; as groupEntry) {
     <div class="compose-backdrop" (click)="closeGroupCommunityEntry()">
-      <section class="compose-sheet" role="dialog" aria-modal="true" aria-labelledby="group-community-entry-title" (click)="$event.stopPropagation()">
+      <section class="compose-sheet community-entry-sheet" role="dialog" aria-modal="true" aria-labelledby="group-community-entry-title" (click)="$event.stopPropagation()">
         <div class="compose-heading">
           <h2 id="group-community-entry-title">{{ groupEntry.action === 'create' ? 'Create Community Chat' : 'Join Community Chats' }}</h2>
           <ion-button fill="clear" aria-label="Close" (click)="closeGroupCommunityEntry()">Close</ion-button>
@@ -401,7 +405,7 @@
               <div class="community-topic-row">
                 <span class="community-topic-icon"><ion-icon name="chatbubble-outline"></ion-icon></span>
                 <span class="community-topic-copy"><strong># {{ conversationTitle(conversation) }}</strong><span>{{ conversationPreview(conversation) }}</span></span>
-                <ion-button fill="outline" class="community-topic-membership" [disabled]="isJoinedCommunityChat(conversation)" (click)="joinGroupCommunityChat(conversation.id)">{{ isJoinedCommunityChat(conversation) ? 'Joined' : 'Join' }}</ion-button>
+                <ion-button fill="outline" class="community-topic-membership" (click)="joinGroupCommunityChat(conversation.id)">{{ isJoinedCommunityChat(conversation) ? 'Open chat' : 'Join' }}</ion-button>
               </div>
             }
           </section>

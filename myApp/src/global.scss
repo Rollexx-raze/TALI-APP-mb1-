@@ -547,6 +547,43 @@ app-messages .community-detail .community-topic-copy strong { display: block; mi
 app-messages .community-detail .community-topic-chevron { flex: 0 0 16px; color: var(--text-muted); font-size: 16px; transform: rotate(180deg); }
 app-messages .community-detail .community-topic-empty { min-width: 0; }
 
+app-messages .compose-backdrop:has(.community-entry-sheet) {
+  padding: 20px;
+  background: color-mix(in srgb, var(--bg) 68%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+app-messages .compose-sheet.community-entry-sheet {
+  box-sizing: border-box;
+  width: min(100%, 480px);
+  max-width: 480px;
+  max-height: min(80vh, 640px);
+  gap: 16px;
+  overflow-y: auto;
+  padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+app-messages .community-entry-sheet .compose-heading { padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+app-messages .community-entry-sheet .compose-heading h2 { font-size: 20px; line-height: 1.25; }
+app-messages .community-entry-sheet .community-form-intro { display: flex; align-items: center; gap: 12px; margin: 0; padding: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-2); }
+app-messages .community-entry-sheet .community-heading-icon { display: grid; width: 44px; height: 44px; flex: 0 0 44px; place-items: center; border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border)); border-radius: 13px; background: color-mix(in srgb, var(--primary) 14%, var(--surface)); color: var(--primary); }
+app-messages .community-entry-sheet .community-heading-icon ion-icon { font-size: 22px; }
+app-messages .community-entry-sheet .community-form-intro strong { display: block; color: var(--text); font-size: 15px; font-weight: 700; line-height: 1.35; }
+app-messages .community-entry-sheet .community-form-intro p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.45; }
+app-messages .community-entry-sheet .community-topic-list { display: grid; gap: 10px; }
+app-messages .community-entry-sheet .community-topic-row { min-height: 72px; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+app-messages .community-entry-sheet .community-topic-icon { display: grid; width: 42px; height: 42px; flex: 0 0 42px; place-items: center; border-radius: 13px; background: color-mix(in srgb, var(--primary) 14%, var(--surface)); color: var(--primary); }
+app-messages .community-entry-sheet .community-topic-icon ion-icon { font-size: 20px; }
+app-messages .community-entry-sheet .community-topic-copy { display: grid; min-width: 0; flex: 1; gap: 4px; }
+app-messages .community-entry-sheet .community-topic-copy strong { color: var(--text); font-size: 14px; font-weight: 700; line-height: 1.35; }
+app-messages .community-entry-sheet .community-topic-copy span { display: block; overflow: hidden; color: var(--text-muted); font-size: 12px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+app-messages .community-entry-sheet .community-topic-membership { min-height: 40px; margin: 0; --border-color: var(--primary); --border-radius: 12px; --color: var(--primary); font-size: 13px; font-weight: 650; }
+app-messages .community-entry-sheet .community-topic-membership[disabled] { opacity: .7; }
+
 @media (max-width: 600px) {
   app-messages .community-space { max-width: 100%; }
 }

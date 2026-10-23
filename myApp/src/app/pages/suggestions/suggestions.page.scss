@@ -6,6 +6,7 @@
 .notification-count { display: inline-grid; min-width: 20px; height: 20px; place-items: center; padding: 0 var(--space-2); border-radius: var(--radius-pill); background: var(--ion-color-primary); color: var(--ion-color-primary-contrast); font-size: var(--font-body); font-weight: 700; }
 .notification-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4); border-bottom: 1px solid var(--page-border); }
 .notification-heading h2 { margin: 0; color: var(--page-text); font-size: var(--font-body); }
+:host-context(html.app-dark) .notification-heading h2 { color: #fff; }
 .notification-heading p { margin: var(--space-2) 0 0; color: var(--page-muted); font-size: var(--font-body); }
 .notification-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap: var(--space-2); }
 .mark-read-button { min-height: 44px; padding: 0 var(--space-2); border: 1px solid var(--border); border-radius: var(--radius-inner); background: var(--page-surface); color: var(--ion-color-primary); font: inherit; font-size: var(--font-body); cursor: pointer; }
@@ -147,6 +148,60 @@
 .activity-group-cta { display:grid; min-height:38px; place-items:center; border-radius:10px; background:#efeeff; color:#5d58e9; font-size:10px; font-weight:700; }
 .notification-avatar { overflow:hidden; }
 .notification-avatar img { width:100%; height:100%; object-fit:cover; }
+
+:host .activity-content .community-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 18px 16px 12px;
+	border: 0;
+}
+:host .activity-content .community-heading > div { min-width: 0; }
+:host .activity-content .community-heading h2 { margin: 0; color: var(--text); font-size: 18px; font-weight: 700; line-height: 1.3; }
+:host .activity-content .community-heading p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.4; }
+:host .activity-content .community-heading ion-button {
+	flex: 0 0 auto;
+	min-height: 40px;
+	margin: 0;
+	--background: var(--primary-soft);
+	--background-hover: var(--primary-soft);
+	--background-activated: var(--primary-soft);
+	--color: var(--primary);
+	--border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
+	--border-radius: 12px;
+	font-size: 12px;
+	font-weight: 650;
+}
+:host .activity-content .community-heading ion-button::part(native) { min-height: 40px; }
+:host .activity-content .activity-community-group {
+	box-sizing: border-box;
+	width: calc(100% - 28px);
+	min-height: 76px;
+	gap: 12px;
+	margin: 8px 14px;
+	padding: 12px;
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	background: var(--surface);
+	color: var(--text);
+	box-shadow: var(--shadow-soft);
+}
+:host .activity-content .activity-community-group:hover,
+:host .activity-content .activity-community-group:focus-visible { border-color: color-mix(in srgb, var(--primary) 42%, var(--border)); background: var(--surface-alt); }
+:host .activity-content .activity-community-group .group-chat-avatar {
+	width: 46px;
+	height: 46px;
+	flex-basis: 46px;
+	border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+	border-radius: 14px;
+	background: var(--primary-soft);
+	color: var(--primary);
+}
+:host .activity-content .activity-community-group .suggestion-copy { display: grid; min-width: 0; gap: 4px; }
+:host .activity-content .activity-community-group .suggestion-copy strong { overflow: hidden; color: var(--text); font-size: 14px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+:host .activity-content .activity-community-group .suggestion-copy span { overflow: hidden; color: var(--text-muted); font-size: 12px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+:host .activity-content .activity-community-group .group-chat-count { flex: 0 0 auto; color: var(--text-muted); font-size: 12px; line-height: 1.4; white-space: nowrap; }
 
 :host-context(html.app-dark) .activity-content { --background:var(--bg)!important; }
 :host-context(html.app-dark) .activity-page-header,

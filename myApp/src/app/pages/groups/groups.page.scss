@@ -57,7 +57,8 @@
 .group-post-form, .group-about-panel, .group-member-row, .group-empty-state { border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface); color: var(--app-text); }
 .group-post-form { display: grid; gap: var(--space-2); margin-bottom: var(--space-2); padding: var(--space-4); }
 .group-post-text { position: relative; min-width: 0; padding: var(--space-2) var(--space-2) var(--space-5); border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface-alt); }
-.group-post-form ion-textarea { --color: var(--app-text); --placeholder-color: var(--app-text-muted); --padding-start: var(--space-2); --padding-end: var(--space-2); --padding-top: var(--space-2); --padding-bottom: var(--space-2); font-size: var(--font-body); }
+.group-post-form ion-textarea { --color: var(--app-text); --placeholder-color: var(--app-text-muted); --highlight-color-focused: transparent; --highlight-color-valid: transparent; --padding-start: var(--space-2); --padding-end: var(--space-2); --padding-top: var(--space-2); --padding-bottom: var(--space-2); font-size: var(--font-body); }
+.group-post-form ion-textarea::part(native) { border-bottom: 0; box-shadow: none; }
 .group-character-count { position: absolute; right: var(--space-3); bottom: var(--space-2); color: var(--app-text-muted); font-size: var(--font-body); }
 .group-composer-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .group-composer-tool { display: inline-flex; min-width: 82px; min-height: 44px; align-items: center; justify-content: center; gap: var(--space-2); padding: 0 var(--space-2); border: 1px solid var(--app-border); border-radius: var(--radius-inner); background: var(--app-surface-alt); color: var(--app-text); font: inherit; font-size: var(--font-body); font-weight: 650; cursor: pointer; transition: background-color .15s ease, transform .15s ease; }
@@ -77,9 +78,9 @@
 .group-item-progress { position: absolute; right: 0; bottom: 0; left: 0; width: 100%; height: 5px; --background: var(--surface); --progress-background: var(--surface); }
 .group-composer-submit-row { display: flex; min-height: 44px; align-items: center; justify-content: flex-end; gap: var(--space-2); }
 .group-upload-status { flex: 1; color: var(--app-text-muted); font-size: var(--font-body); }
-.group-post-form ion-button.group-post-submit { min-width: 92px; min-height: 44px; margin: 0; --background: var(--surface); --background-activated: var(--surface); --color: var(--app-text-dark); --border-radius: var(--radius-pill); font-size: var(--font-body); font-weight: 750; }
-.group-post-form ion-button.group-post-submit[disabled] { opacity: .48; }
-.group-post-submit ion-spinner { width: 19px; height: 19px; color: var(--app-text-dark); }
+.group-post-form ion-button.group-post-submit { min-width: 92px; min-height: 44px; margin: 0; --background: var(--app-primary); --background-hover: var(--app-primary); --background-activated: var(--app-primary); --color: var(--on-primary, #fff); --border-radius: var(--radius-pill); font-size: var(--font-body); font-weight: 750; }
+.group-post-form ion-button.group-post-submit[disabled] { --background: var(--app-surface-alt); --color: var(--app-text-muted); opacity: 1; }
+.group-post-submit ion-spinner { width: 19px; height: 19px; color: currentColor; }
 .group-posts { display: grid; gap: var(--space-4); }
 .group-about-panel { padding: var(--space-4); }
 .group-about-panel h2 { margin: 0 0 var(--space-2); color: var(--app-text); font-size: var(--font-body); }

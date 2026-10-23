@@ -356,6 +356,37 @@ export class MessageService {
     this.persistConversations();
   }
 
+  async leaveGroupConversation(conversationId: string, accountId: number) {
+    await this.conversationDataHydrated;
+    const previousConversations = this.conversations();
+    const conversation = previousConversations.find((item) => item.id === conversationId);
+    if (!conversation?.groupName || !conversation.memberIds.includes(accountId)) return false;
+
+    const settings = normalizeChatSettings(conversation.settings);
+    this.conversations.update((items) => items.map((item) => item.id === conversationId
+      ? {
+        ...item,
+        memberIds: item.memberIds.filter((id) => id !== accountId),
+        settings: {
+          ...settings,
+          pinnedFor: settings.pinnedFor.filter((id) => id !== accountId),
+          acceptedFor: settings.acceptedFor.filter((id) => id !== accountId),
+          archivedFor: settings.archivedFor.filter((id) => id !== accountId),
+          unreadFor: settings.unreadFor.filter((id) => id !== accountId),
+          mutedFor: settings.mutedFor.filter((id) => id !== accountId),
+          restrictedFor: settings.restrictedFor.filter((id) => id !== accountId),
+          blockedFor: settings.blockedFor.filter((id) => id !== accountId),
+          reportedFor: settings.reportedFor.filter((id) => id !== accountId),
+        },
+      }
+      : item));
+
+    if (await this.persistConversations()) return true;
+    this.conversations.set(previousConversations);
+    await this.persistConversations();
+    return false;
+  }
+
   toggleAccountPreference(
     conversationId: string,
     preference: 'pinnedFor' | 'archivedFor' | 'unreadFor' | 'mutedFor' | 'restrictedFor' | 'blockedFor' | 'reportedFor',
