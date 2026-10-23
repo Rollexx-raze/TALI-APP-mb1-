@@ -2423,13 +2423,13 @@ ion-header.settings-header:has(+ .settings-content .settings-redesign) h1 {
 		border-radius: 18px;
 	}
 	.settings-redesign .account-center-panel .account-profiles-card {
-		grid-template-columns: 52px minmax(0, 1fr);
+		grid-template-columns: 68px minmax(0, 1fr);
 		gap: 10px;
 		padding: 12px;
 	}
 	.settings-redesign .account-center-panel .profile-avatar-stack {
-		width: 52px;
-		flex-basis: 52px;
+		width: 68px;
+		flex-basis: 68px;
 	}
 	.settings-redesign .account-center-panel .profile-avatar-stack > img,
 	.settings-redesign .account-center-panel .profile-avatar-placeholder {
