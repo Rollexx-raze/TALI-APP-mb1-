@@ -124,6 +124,7 @@
 .signup-actions { grid-template-columns:1fr; gap:9px; margin-top:18px; }
 .signup-step-button, .create-account-button { min-height:47px; border-radius:11px; font-size:12px; }
 .create-account-button { --background:#5955df; --background-activated:#5955df; --color:#fff; --box-shadow:none; }
+.create-account-button[disabled] { --background:#5955df; --background-activated:#5955df; --color:#fff; opacity:1; }
 .signup-step-button { --background:#fff; --border-color:#e4e9f2; --color:#5d58e9; }
 .create-account-footer { margin-top:16px; font-size:11px; }
 .create-account-footer button { min-height:32px; color:#5d58e9; font-size:11px; }
@@ -206,6 +207,7 @@
 :host-context(html.app-dark) .create-account-field input:-webkit-autofill { -webkit-box-shadow:0 0 0 1000px var(--bg) inset!important; -webkit-text-fill-color:var(--text)!important; }
 :host-context(html.app-dark) .create-account-button::part(native),
 :host-context(html.app-dark) .signup-step-button::part(native) { background:var(--primary)!important; color:var(--on-primary)!important; }
+:host-context(html.app-dark) .create-account-button::part(native) { background:var(--primary)!important; color:#fff!important; }
 
 
 @media (min-width:768px) {
