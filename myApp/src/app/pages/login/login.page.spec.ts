@@ -24,6 +24,23 @@ describe('LoginPage', () => {
     expect(component).toBeTruthy();
   });
 
+  it('prefills the selected account contact and saved password when the login page initializes', async () => {
+    const auth = TestBed.inject(AuthService);
+    const account = await auth.register({
+      firstName: 'Rae', lastName: 'Santos', username: 'rae.santos', contact: 'rae@example.com', password: 'strong-pass-123',
+    });
+    const accounts = TestBed.inject(AccountService);
+    accounts.prepareAccountLogin(account);
+    fixture.destroy();
+
+    fixture = TestBed.createComponent(LoginPage);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.identifier).toBe('rae@example.com');
+    expect(component.password).toBe('strong-pass-123');
+  });
+
   it('signs in a valid local account and routes home', async () => {
     const auth = TestBed.inject(AuthService);
     const router = TestBed.inject(Router);

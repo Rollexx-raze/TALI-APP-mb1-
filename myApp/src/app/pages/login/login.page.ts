@@ -28,6 +28,7 @@ export class LoginPage {
   readonly accountService = inject(AccountService);
 
   constructor() {
+    this.prepareSelectedAccountLogin();
     this.router.events.subscribe((event) => {
       if (!(event instanceof NavigationEnd)) return;
       const path = event.urlAfterRedirects.split(/[?#]/, 1)[0].replace(/\/$/, '');
@@ -39,16 +40,11 @@ export class LoginPage {
 
   private prepareSelectedAccountLogin() {
     const account = this.accountService.consumeAccountLoginPrefill();
-    if (account) {
-      this.welcomeName = account.name.trim().split(/\s+/)[0] ?? '';
-      this.identifier = account.contact;
-      this.password = this.accountService.isPasswordSaved(account.id) ? account.password : '';
-    }
-    else {
-      this.welcomeName = '';
-      this.identifier = '';
-      this.password = '';
-    }
+    if (!account) return;
+
+    this.welcomeName = account.name.trim().split(/\s+/)[0] ?? '';
+    this.identifier = account.contact;
+    this.password = this.accountService.isPasswordSaved(account.id) ? account.password : '';
     this.submitted = false;
     this.errorMessage = '';
   }

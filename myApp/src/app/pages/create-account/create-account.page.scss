@@ -132,7 +132,6 @@
 .password-strength > span { height:3px; }
 :host-context(html.app-light) .create-account-content { --background:#f9faff; }
 .auth-header ion-toolbar { min-height:46px; padding:0 8px; }
-.auth-header h1 { position:absolute; left:50px; top:50%; margin:0; transform:translateY(-50%); color:#202b45; font-size:14px; font-weight:700; }
 .auth-header ion-back-button { min-width:34px; min-height:38px; --color:#66738e; }
 .create-account-wrapper { padding-top:calc(env(safe-area-inset-top,0px) + 54px); }
 .signup-progress { gap:7px; margin-bottom:20px; }
@@ -176,7 +175,6 @@
   color: var(--text) !important;
 }
 :host-context(html.app-dark) .create-account-heading h1,
-:host-context(html.app-dark) .auth-header h1,
 :host-context(html.app-dark) .signup-progress-steps .is-current {
   color: var(--text) !important;
 }
@@ -213,4 +211,83 @@
 @media (min-width:768px) {
   .create-account-content { width:100%; max-width:none; margin:0; }
   .create-account-wrapper { width:100%; max-width:none; margin-inline:auto; }
+}
+
+.signup-progress-bars span {
+  transition: background-color 220ms ease-out, transform 220ms ease-out;
+}
+.signup-progress-bars span.is-complete { transform:scaleY(1.15); }
+.create-account-field input {
+  transition: border-color 180ms ease-out, box-shadow 180ms ease-out;
+}
+.create-account-field input:focus-visible {
+  border-color:#625df0;
+  box-shadow:0 0 0 3px rgb(98 93 240 / 16%);
+}
+.create-account-button::part(native),
+.signup-step-button::part(native) {
+  transition:transform 160ms ease-out, box-shadow 180ms ease-out, filter 180ms ease-out;
+}
+.create-account-footer button {
+  transition:background-color 160ms ease-out, color 160ms ease-out;
+}
+.auth-header ion-back-button { transition:transform 160ms ease-out, opacity 160ms ease-out; }
+.create-account-heading,
+.create-account-fields,
+.signup-actions,
+.create-account-footer {
+  animation:signup-step-enter 240ms ease-out both;
+}
+.create-account-fields { animation-delay:30ms; }
+.signup-actions { animation-delay:50ms; }
+.create-account-footer { animation-delay:65ms; }
+@keyframes signup-step-enter {
+  from { opacity:0; transform:translateY(7px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@media (hover:hover) and (pointer:fine) {
+  .create-account-button:not([disabled]):hover::part(native) {
+    transform:translateY(-1px);
+    filter:brightness(1.06);
+    box-shadow:0 6px 16px rgb(89 85 223 / 24%);
+  }
+  .signup-step-button:not([disabled]):hover::part(native) {
+    transform:translateY(-1px);
+    box-shadow:0 4px 12px rgb(32 43 69 / 10%);
+  }
+  .create-account-footer button:hover {
+    background:rgb(93 88 233 / 9%);
+  }
+  .auth-header ion-back-button:hover { transform:translateX(-2px); }
+}
+.create-account-button:not([disabled]):active::part(native),
+.signup-step-button:not([disabled]):active::part(native) {
+  transform:scale(.98);
+  filter:brightness(.96);
+}
+.create-account-footer button:active { background:rgb(93 88 233 / 14%); }
+.auth-header ion-back-button:active { opacity:.7; }
+.create-account-button:focus-visible::part(native),
+.signup-step-button:focus-visible::part(native),
+.create-account-footer button:focus-visible {
+  outline:3px solid rgb(98 93 240 / 45%);
+  outline-offset:3px;
+}
+@media (prefers-reduced-motion:reduce) {
+  .signup-progress-bars span,
+  .create-account-field input,
+  .create-account-button::part(native),
+  .signup-step-button::part(native),
+  .create-account-footer button,
+  .auth-header ion-back-button {
+    transition:none;
+  }
+  .create-account-heading,
+  .create-account-fields,
+  .signup-actions,
+  .create-account-footer {
+    animation:none;
+  }
+  .signup-progress-bars span.is-complete { transform:none; }
+  .auth-spinner { animation:none; }
 }

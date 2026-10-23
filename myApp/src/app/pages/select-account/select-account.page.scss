@@ -56,13 +56,14 @@ ion-label p { color: var(--text) !important; }
 .account-list { width:min(calc(100% - 36px),460px); padding:4px 12px; border-color:#e4e9f2; border-radius:16px; background:#fff!important; box-shadow:none; }
 .account-entry { border-bottom:1px solid #e9edf4; }
 .account-entry:last-child { border-bottom:0; }
-ion-item { --background:#fff!important; --ion-item-background:#fff!important; --color:#202b45!important; --inner-padding-end:4px; --min-height:68px; margin:0; border:0; border-radius:0; }
+ion-item { --background:#fff!important; --ion-item-background:#fff!important; --color:#202b45!important; --inner-padding-end:4px; --padding-top:4px; --padding-bottom:4px; --min-height:64px; margin:0; border:0; border-radius:0; }
 ion-item::part(native) { background:#fff!important; color:#202b45!important; }
 .account-avatar { width:40px; height:40px; border:0; background:#e6eaf3; color:#5d58e9; }
 .account-avatar img { width:100%; height:100%; object-fit:cover; }
 .account-initials { display:grid; width:100%; height:100%; place-items:center; color:#5d58e9; font-size:12px; font-weight:750; }
-ion-label h2 { color:#25314b; font-size:12px; font-weight:700; }
-ion-label p { color:#8491aa!important; font-size:10px; }
+ion-item ion-label { min-width:0; }
+ion-item ion-label h2 { display:block; width:100%; min-width:0; overflow:hidden; color:#25314b!important; font-size:14px!important; font-weight:600!important; line-height:1.3!important; text-overflow:ellipsis; white-space:nowrap; }
+ion-item ion-label p { display:block; width:100%; min-width:0; overflow:hidden; color:#8491aa!important; font-size:12px!important; line-height:1.3; text-overflow:ellipsis; white-space:nowrap; }
 .account-more-button { width:34px; height:34px; color:#65728c; font-size:17px; }
 .more-link { justify-content:center; min-height:46px; margin-top:14px; border:0; border-radius:11px; background:#efeeff; color:#5d58e9; font-size:12px; font-weight:700; }
 .more-link ion-icon { display:none; }

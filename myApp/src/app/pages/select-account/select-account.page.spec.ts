@@ -34,4 +34,13 @@ describe('SelectAccountPage', () => {
     expect(accounts.consumeAccountLoginPrefill()?.id).toBe(account!.id);
     expect(navigate).toHaveBeenCalledWith('/login');
   });
+
+  it('shows all saved accounts with the selected account first', () => {
+    const accounts = TestBed.inject(AccountService);
+    const first = accounts.createAccount('Rae', 'Santos', 'rae.santos', 'rae@example.com', 'strong-pass-123');
+    const second = accounts.createAccount('Alex', 'Rivera', 'alex.rivera', 'alex@example.com', 'strong-pass-456');
+    accounts.selectAccount(first!);
+
+    expect(component.previewAccounts.map((account) => account.id)).toEqual([first!.id, second!.id]);
+  });
 });

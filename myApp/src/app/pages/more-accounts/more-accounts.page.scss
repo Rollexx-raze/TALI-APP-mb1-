@@ -47,13 +47,14 @@ ion-label p { color: var(--text) !important; }
 .more-content ion-list { width:min(calc(100% - 36px),460px); padding:4px 12px; border-color:#e4e9f2; border-radius:16px; background:#fff!important; box-shadow:none; }
 .more-content .account-entry { border-bottom:1px solid #e9edf4; }
 .more-content .account-entry:last-child { border-bottom:0; }
-.more-content ion-item { --background:#fff!important; --ion-item-background:#fff!important; --color:#202b45!important; --inner-padding-end:4px; --min-height:65px; margin:0; border:0; border-radius:0; }
+.more-content ion-item { --background:#fff!important; --ion-item-background:#fff!important; --color:#202b45!important; --inner-padding-end:4px; --padding-top:4px; --padding-bottom:4px; --min-height:61px; margin:0; border:0; border-radius:0; }
 .more-content ion-item::part(native) { background:#fff!important; color:#202b45!important; }
 .more-content .account-avatar { width:40px; height:40px; border:0; border-radius:50%; background:#e6eaf3; }
 .more-content .account-avatar img { width:100%; height:100%; object-fit:cover; }
 .more-content .account-initials { display:grid; width:100%; height:100%; place-items:center; color:#5d58e9; font-size:12px; font-weight:750; }
-.more-content ion-label h2 { color:#25314b; font-size:12px; font-weight:700; }
-.more-content ion-label p { color:#8491aa!important; font-size:10px; }
+.more-content ion-label { min-width:0; }
+.more-content ion-label h2 { display:block; width:100%; min-width:0; overflow:hidden; color:#25314b!important; font-size:14px!important; font-weight:600!important; line-height:1.3!important; text-overflow:ellipsis; white-space:nowrap; }
+.more-content ion-label p { display:block; width:100%; min-width:0; overflow:hidden; color:#8491aa!important; font-size:12px!important; line-height:1.3; text-overflow:ellipsis; white-space:nowrap; }
 .more-content .account-more-button { width:34px; height:34px; color:#65728c; font-size:17px; }
 .more-selected-note { width:min(calc(100% - 36px),460px); margin:14px auto 20px; color:#8491aa; font-size:11px; line-height:1.5; }
 .more-actions { display:grid; width:min(calc(100% - 36px),460px); gap:9px; margin:18px auto 0; }

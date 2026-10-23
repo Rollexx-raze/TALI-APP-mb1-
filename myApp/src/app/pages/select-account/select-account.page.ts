@@ -42,8 +42,8 @@ export class SelectAccountPage {
   get previewAccounts() {
     const accounts = this.accountService.listedAccounts();
     const selected = this.accountService.selectedAccount();
-    const account = selected && accounts.some((item) => item.id === selected.id) ? selected : accounts[0];
-    return account ? [account] : [];
+    if (!selected || !accounts.some((item) => item.id === selected.id)) return accounts;
+    return [selected, ...accounts.filter((account) => account.id !== selected.id)];
   }
 
   accountInitials(name: string) {
