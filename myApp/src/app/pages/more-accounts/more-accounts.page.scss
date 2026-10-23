@@ -17,9 +17,9 @@ ion-item::part(native) { background: var(--surface) !important; color: var(--aut
 .account-avatar { width: 42px; height: 42px; border: 1px solid var(--primary); background: var(--surface-2); color: var(--text); }
 ion-label h2 { color: var(--auth-paper); font-size: var(--font-body); font-weight: 600; }
 ion-label p { color: var(--text) !important; }
-.auth-empty-state { width: min(calc(100% - 32px), 460px); box-sizing: border-box; margin: var(--space-4) auto; padding: var(--space-5) var(--space-5); border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); color: var(--auth-paper); text-align: center; }
-.auth-empty-state h1 { margin: 0; color: var(--auth-paper); font-size: var(--font-body); font-weight: 600; }
-.auth-empty-state p { margin: var(--space-2) 0 0; color: var(--text); font-size: var(--font-body); }
+.auth-empty-state { width: min(calc(100% - 32px), 460px); box-sizing: border-box; margin: var(--space-4) auto; padding: var(--space-5) var(--space-5); border: 0; border-radius: var(--radius-card); background: #fff; color: #202b45; text-align: center; }
+.auth-empty-state h1 { margin: 0; color: #202b45; font-size: var(--font-body); font-weight: 600; }
+.auth-empty-state p { margin: var(--space-2) 0 0; color: #65728c; font-size: var(--font-body); }
 
 @media (max-width: 560px) {
   .more-heading h1 { font-size: var(--font-heading); }
@@ -74,23 +74,24 @@ ion-label p { color: var(--text) !important; }
 }
 :host-context(html.app-dark) .more-content::part(background) { background: var(--bg) !important; }
 :host-context(html.app-dark) .more-heading h1,
-:host-context(html.app-dark) .auth-empty-state h1,
 :host-context(html.app-dark) ion-label h2 {
   color: var(--text) !important;
 }
+:host-context(html.app-dark) .auth-empty-state h1 { color: #202b45 !important; }
 :host-context(html.app-dark) .more-heading p,
-:host-context(html.app-dark) .auth-empty-state p,
 :host-context(html.app-dark) ion-label p,
 :host-context(html.app-dark) .more-selected-note,
 :host-context(html.app-dark) .more-eyebrow,
 :host-context(html.app-dark) .more-count {
   color: var(--text-muted) !important;
 }
+:host-context(html.app-dark) .auth-empty-state p { color: #53617a !important; }
 :host-context(html.app-dark) ion-list,
 :host-context(html.app-dark) .auth-empty-state {
   background: var(--surface) !important;
   border-color: var(--border) !important;
 }
+:host-context(html.app-dark) .auth-empty-state { background: #fff !important; }
 :host-context(html.app-dark) ion-item,
 :host-context(html.app-dark) ion-item::part(native) {
   background: var(--surface) !important;
